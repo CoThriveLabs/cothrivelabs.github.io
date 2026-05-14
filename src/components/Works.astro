@@ -18,9 +18,10 @@ const works = [
     description:
       '銀座の高級モダン・フレンチをイメージした静的サイト。AI 開発チームのデザイン実力試し。',
     tags: ['HTML', 'CSS', 'JS'],
-    link: '#',
-    status: '公開準備中',
+    link: 'https://le-ciel-etoile.netlify.app/',
+    status: '公開中',
     thumb: 'leciel',
+    image: '/works/le-ciel-etoile.png',
   },
 ];
 ---
@@ -40,7 +41,10 @@ const works = [
     <div class="works-grid">
       {works.map((w, i) => (
         <article class="work-card" data-fade style={`transition-delay:${i * 80}ms`}>
-          <div class={`work-thumb work-thumb--${w.thumb}`} aria-hidden="true">
+          <div class={`work-thumb work-thumb--${w.thumb}`} aria-hidden={w.image ? undefined : 'true'}>
+            {w.image ? (
+              <img class="thumb-img" src={w.image} alt={`${w.title}のサムネイル`} loading="lazy" width="800" height="450" />
+            ) : (<>
             {w.thumb === 'sprout' && (
               <svg class="thumb-svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet">
                 <defs>
@@ -84,6 +88,7 @@ const works = [
                 <ellipse cx="165" cy="162" rx="14" ry="3" fill="#D9B36A" opacity="0.85" />
               </svg>
             )}
+            </>)}
           </div>
           <div class="work-card-body">
             <div class="work-card-head">
@@ -187,14 +192,19 @@ const works = [
     overflow: hidden;
     background: var(--color-bg-soft);
   }
-  .thumb-svg {
+  .thumb-svg,
+  .thumb-img {
     width: 100%;
     height: 100%;
     display: block;
     transition: transform 0.5s var(--ease), filter 0.5s var(--ease);
     filter: blur(0);
   }
-  .work-card:hover .thumb-svg {
+  .thumb-img {
+    object-fit: cover;
+  }
+  .work-card:hover .thumb-svg,
+  .work-card:hover .thumb-img {
     transform: scale(1.06);
   }
   /* 初期描画時に若干ブラー、ホバーで解除（ふわっと焦点が合う演出） */
