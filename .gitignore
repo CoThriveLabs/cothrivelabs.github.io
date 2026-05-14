@@ -33,3 +33,9 @@ Thumbs.db
 # misc
 *.log
 .cache/
+
+# 社内設計書・運用ドキュメント（公開対象外、履歴含めて完全抹消済 2026-05-14）
+SPEC.md
+DESIGN_PHASE_*.md
+DEPLOY.md
+scripts/

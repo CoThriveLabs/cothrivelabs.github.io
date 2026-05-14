@@ -56,23 +56,14 @@ src/
   pages/        # index.astro
 public/
   favicon.svg / favicon.ico / apple-touch-icon.png
-  og-image.png  # SNS シェア用（暫定版・差し替え予定）
-scripts/
-  generate_favicons.py    # favicon 生成（Pillow）
-  generate_og_image.py    # og-image 暫定版生成
+  og-image.png  # SNS シェア用
 .github/workflows/
   deploy.yml    # GitHub Pages への自動デプロイ
 ```
 
 ## デプロイ
 
-`main` ブランチへ push すると GitHub Actions が走り、`https://cothrivelabs.github.io` へ自動公開されます。詳しい手順は [DEPLOY.md](./DEPLOY.md) を参照。
-
-## 仕様書
-
-- [SPEC.md](./SPEC.md) — サイト全体の仕様
-- [DESIGN_PHASE_3_5.md](./DESIGN_PHASE_3_5.md) — Phase 3.5 デザイン設計
-- [DESIGN_PHASE_3_6.md](./DESIGN_PHASE_3_6.md) — Phase 3.6 微調整設計
+`main` ブランチへ push すると GitHub Actions が走り、`https://cothrivelabs.github.io` へ自動公開されます。
 
 ## ライセンス
 
