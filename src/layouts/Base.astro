@@ -1,0 +1,282 @@
+---
+import Header from '../components/Header.astro';
+const {
+  title = 'Co-Thrive Labs — AI 4人と作る作品集',
+  description = 'AI 社員 4 人とオーナー 1 人で運営する個人 AI 会社「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用した共生型開発を実践しています。',
+  ogImage = '/og-image.png',
+} = Astro.props;
+// canonical URL（Astro.site が未設定の場合は pathname のみ）
+const canonicalURL = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : Astro.url.pathname;
+const ogImageURL = Astro.site
+  ? new URL(ogImage, Astro.site).toString()
+  : ogImage;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- SEO 基本 -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="theme-color" content="#6B8E5A" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:site_name" content="Co-Thrive Labs" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+
+    <!-- フォント -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+    />
+  </head>
+  <body>
+    <Header />
+    <slot />
+    <script is:inline>
+      // scroll で要素が見えたら fade-in
+      document.addEventListener('DOMContentLoaded', () => {
+        const targets = document.querySelectorAll('[data-fade]');
+        if (!('IntersectionObserver' in window)) {
+          targets.forEach((el) => el.classList.add('is-visible'));
+        } else {
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-visible');
+                  io.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.08, rootMargin: '0px 0px -5% 0px' }
+          );
+          targets.forEach((el) => io.observe(el));
+          // 保険: ファーストビュー内の要素は即 visible にする
+          // （IntersectionObserver の初回 callback がレイアウト確定前に走ると
+          //  isIntersecting=false で来るブラウザがあるため）
+          requestAnimationFrame(() => {
+            targets.forEach((el) => {
+              const rect = el.getBoundingClientRect();
+              if (rect.top < window.innerHeight && rect.bottom > 0) {
+                el.classList.add('is-visible');
+                io.unobserve(el);
+              }
+            });
+          });
+        }
+
+        // Header: スクロールで shrink + 背景半透明
+        const header = document.querySelector('[data-header]');
+        if (header) {
+          const onScroll = () => {
+            if (window.scrollY > 80) {
+              header.classList.add('is-scrolled');
+            } else {
+              header.classList.remove('is-scrolled');
+            }
+          };
+          onScroll();
+          window.addEventListener('scroll', onScroll, { passive: true });
+        }
+
+        // Header: モバイルメニュー開閉
+        const toggle = document.querySelector('[data-nav-toggle]');
+        const nav = document.querySelector('[data-nav]');
+        if (toggle && nav) {
+          toggle.addEventListener('click', () => {
+            const open = nav.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(open));
+            document.body.style.overflow = open ? 'hidden' : '';
+          });
+          // メニュー内リンククリックで閉じる
+          nav.querySelectorAll('a').forEach((a) => {
+            a.addEventListener('click', () => {
+              nav.classList.remove('is-open');
+              toggle.setAttribute('aria-expanded', 'false');
+              document.body.style.overflow = '';
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-primary: #6B8E5A;
+    --color-primary-dark: #547046;
+    --color-accent: #C97B5E;
+    --color-accent-dark: #B0664B;
+    --color-text: #2a2a2a;
+    --color-text-sub: #555;
+    --color-text-mute: #888;
+    --color-bg: #ffffff;
+    --color-bg-soft: #f8f6f0;
+    --color-border: #e8e4dc;
+    --font-jp: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+    --font-en: 'Inter', system-ui, -apple-system, sans-serif;
+    --radius: 14px;
+    --shadow-sm: 0 2px 8px rgba(42, 42, 42, 0.04);
+    --shadow-md: 0 8px 24px rgba(42, 42, 42, 0.08);
+    --shadow-lg: 0 16px 40px rgba(42, 42, 42, 0.12);
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+    /* Phase 3.5 追加トークン */
+    --fs-h1: clamp(2.4rem, 6vw, 4.2rem);
+    --fs-h2: clamp(1.8rem, 4vw, 2.8rem);
+    --fs-section-num: clamp(3rem, 10vw, 7rem);
+    --ls-tight: -0.02em;
+    --max-w: 1120px;
+    --header-h: 72px;
+    --header-h-scrolled: 56px;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--header-h-scrolled);
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-jp);
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 和文見出しは Noto Sans JP を優先（L-1 対応）。
+     英字のみのクラス（.section-num / .footer-logo 等）は個別に Inter を当てる。 */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-jp);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* fade-in 共通 */
+  [data-fade] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    will-change: opacity, transform;
+  }
+  [data-fade].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* L-2: .eyebrow / .section-label / .section-num の DRY 化 */
+  .eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-en);
+    font-size: 0.78rem;
+    letter-spacing: 0.32em;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  /* E-05: セクション番号ラベル（"01 About" 等） */
+  .section-label {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.85rem;
+    margin: 0 0 1rem;
+    line-height: 1;
+  }
+  .section-label .num {
+    font-family: var(--font-en);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-accent);
+    font-feature-settings: "tnum" 1;
+  }
+  .section-label .text {
+    font-family: var(--font-en);
+    font-size: 0.78rem;
+    letter-spacing: 0.32em;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  /* セクションタイトル背面に置く巨大番号（opacity 0.08） */
+  .section-num-bg {
+    position: absolute;
+    top: -0.15em;
+    left: -0.05em;
+    font-family: var(--font-en);
+    font-weight: 800;
+    font-size: var(--fs-section-num);
+    line-height: 1;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-primary);
+    opacity: 0.08;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* E-12: フォーカス可視（キーボード操作時のみ） */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    [data-fade] {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

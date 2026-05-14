@@ -1,0 +1,231 @@
+---
+// Footer セクション: ブランド + ミッション + 外部リンク + クラフト一行 + コピーライト
+// Phase 3.6: ミッション一文（日英2行）、Made with ☕ in Tokyo、noise texture を追加
+// note / X は URL 未確定のため「近日公開」テキスト化（N-2 対応）
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="footer-decor" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <p class="footer-logo">Co-Thrive Labs</p>
+        <p class="footer-tagline">こすらぼ — AI と共に育つ</p>
+      </div>
+      <div class="footer-mission">
+        <span class="ja">AI と人間が、共に育つ場所。</span>
+        <span class="en">A place where AI and humans grow together.</span>
+      </div>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/CoThriveLabs" target="_blank" rel="noopener">GitHub</a>
+      <span class="dot" aria-hidden="true"></span>
+      <span class="footer-link-pending">
+        note
+        <span class="pending-badge">近日公開</span>
+      </span>
+      <span class="dot" aria-hidden="true"></span>
+      <span class="footer-link-pending">
+        X
+        <span class="pending-badge">近日公開</span>
+      </span>
+    </div>
+    <div class="footer-bottom">
+      <p class="copyright">© {year} Co-Thrive Labs. All rights reserved.</p>
+      <p class="footer-craft">
+        Made with <span class="coffee" aria-hidden="true">☕</span> in Tokyo
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    padding: 4.5rem 1.5rem 2.5rem;
+    background: linear-gradient(180deg, #1f2420 0%, #15191a 100%);
+    color: #d6d3cb;
+    overflow: hidden;
+  }
+  /* Phase 3.6: SVG turbulence で生成したノイズを overlay で薄く重ねる。
+     opacity 0.5 × アルファ 0.06 = 実効 3% 程度。「ある」とギリギリ感じる強度。 */
+  .footer-decor {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-repeat: repeat;
+    opacity: 0.5;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+  .footer-inner {
+    position: relative;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    text-align: center;
+  }
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2.25rem;
+  }
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .footer-logo {
+    margin: 0;
+    font-family: var(--font-en);
+    font-size: 0.9rem;
+    letter-spacing: 0.28em;
+    color: #f4f1e8;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .footer-tagline {
+    margin: 0;
+    color: #9a978f;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+  }
+  .footer-mission {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    color: #c5c2b9;
+  }
+  .footer-mission .ja {
+    font-family: var(--font-jp);
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+  .footer-mission .en {
+    font-family: var(--font-en);
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    color: #8c8a83;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .footer-links {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-bottom: 0;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    color: #d6d3cb;
+    text-decoration: none;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    transition: color 0.25s var(--ease);
+    position: relative;
+  }
+  .footer-links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease);
+  }
+  .footer-links a:hover {
+    color: var(--color-accent);
+  }
+  .footer-links a:hover::after {
+    transform: scaleX(1);
+  }
+  .footer-link-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: #7a786f;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    cursor: default;
+  }
+  .pending-badge {
+    font-family: var(--font-en);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(201, 123, 94, 0.18);
+    color: #d99a7f;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #555;
+  }
+  /* Phase 3.6: footer-bottom — copyright と Made with ☕ を左右配置 */
+  .footer-bottom {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .copyright {
+    margin: 0;
+    color: #7a786f;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+  .footer-craft {
+    margin: 0;
+    font-family: var(--font-en);
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    color: #7a786f;
+  }
+  .footer-craft .coffee {
+    display: inline-block;
+    transform: translateY(1px);
+    filter: saturate(1.1);
+  }
+
+  @media (max-width: 640px) {
+    .site-footer {
+      padding: 3.5rem 1.25rem 2rem;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.5rem;
+    }
+  }
+  @media (max-width: 480px) {
+    .footer-links {
+      gap: 0.85rem;
+    }
+    .pending-badge {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+    }
+    .footer-mission .ja {
+      font-size: 0.9rem;
+    }
+  }
+</style>

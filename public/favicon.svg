@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs favicon: 'C' を葉っぱで形作ったミニマルマーク -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <!-- 'C' の開いた葉っぱ形 -->
+  <path d="M48 22 Q40 14 30 16 Q16 18 14 32 Q14 46 28 48 Q40 50 48 42"
+        stroke="#F8F6F0" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- アクセントの小葉（テラコッタ） -->
+  <circle cx="48" cy="32" r="4" fill="#C97B5E"/>
+</svg>

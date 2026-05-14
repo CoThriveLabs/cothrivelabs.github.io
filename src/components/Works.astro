@@ -1,0 +1,321 @@
+---
+// Works セクション: 作品タイル
+// note 連載は Updates セクションへ移動済み
+const works = [
+  {
+    title: 'Sprout',
+    subtitle: '成長する TODO アプリ',
+    description:
+      'ロードマップ・タスク・ステップを管理し、進捗に応じて植物が育つ SPA。FastAPI + SQLite + Vanilla JS。',
+    tags: ['FastAPI', 'SQLite', 'SPA'],
+    link: 'https://github.com/CoThriveLabs/sprout',
+    status: '公開準備中',
+    thumb: 'sprout',
+  },
+  {
+    title: 'LE CIEL ÉTOILÉ',
+    subtitle: '架空フレンチレストランの紹介サイト',
+    description:
+      '銀座の高級モダン・フレンチをイメージした静的サイト。AI 開発チームのデザイン実力試し。',
+    tags: ['HTML', 'CSS', 'JS'],
+    link: '#',
+    status: '公開準備中',
+    thumb: 'leciel',
+  },
+];
+---
+<section class="works" id="works">
+  <div class="works-inner">
+    <div class="works-head" data-fade>
+      <h2 class="section-title">
+        <span class="section-num-bg" aria-hidden="true">03</span>
+        <span class="section-label">
+          <span class="num">03</span>
+          <span class="text">Works</span>
+        </span>
+        <span class="section-title-text">作品集</span>
+      </h2>
+      <p class="works-lead">こすらぼで作っている作品です</p>
+    </div>
+    <div class="works-grid">
+      {works.map((w, i) => (
+        <article class="work-card" data-fade style={`transition-delay:${i * 80}ms`}>
+          <div class={`work-thumb work-thumb--${w.thumb}`} aria-hidden="true">
+            {w.thumb === 'sprout' && (
+              <svg class="thumb-svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="sprout-bg" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#a8c590" />
+                    <stop offset="100%" stop-color="#6B8E5A" />
+                  </linearGradient>
+                </defs>
+                <rect width="320" height="180" fill="url(#sprout-bg)" />
+                <path d="M125 130 L195 130 L188 168 L132 168 Z" fill="#8B5E3C" />
+                <rect x="120" y="124" width="80" height="10" rx="2" fill="#A06A42" />
+                <path d="M160 130 Q158 100 160 80" stroke="#3F6B2F" stroke-width="4" stroke-linecap="round" fill="none" />
+                <path d="M160 102 Q140 92 130 100 Q138 110 160 108 Z" fill="#7BAE5A" />
+                <path d="M160 90 Q180 80 192 88 Q184 100 160 96 Z" fill="#8FC36C" />
+                <circle cx="160" cy="78" r="6" fill="#A8D77F" />
+                <circle cx="265" cy="40" r="16" fill="#F4E5A8" opacity="0.85" />
+              </svg>
+            )}
+            {w.thumb === 'leciel' && (
+              <svg class="thumb-svg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="leciel-bg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#1c2541" />
+                    <stop offset="55%" stop-color="#3a1f3d" />
+                    <stop offset="100%" stop-color="#7a2a3a" />
+                  </linearGradient>
+                </defs>
+                <rect width="320" height="180" fill="url(#leciel-bg)" />
+                <circle cx="50" cy="40" r="1.4" fill="#fff" opacity="0.9" />
+                <circle cx="90" cy="25" r="1" fill="#fff" opacity="0.7" />
+                <circle cx="140" cy="48" r="1.6" fill="#fff" opacity="0.9" />
+                <circle cx="210" cy="30" r="1.2" fill="#fff" opacity="0.8" />
+                <circle cx="265" cy="55" r="1.4" fill="#fff" opacity="0.85" />
+                <circle cx="300" cy="35" r="1" fill="#fff" opacity="0.6" />
+                <circle cx="40" cy="80" r="1" fill="#fff" opacity="0.6" />
+                <path d="M70 65 L72 70 L77 72 L72 74 L70 79 L68 74 L63 72 L68 70 Z" fill="#F4E5A8" />
+                <path d="M250 80 L251.5 84 L255.5 85.5 L251.5 87 L250 91 L248.5 87 L244.5 85.5 L248.5 84 Z" fill="#F4E5A8" opacity="0.9" />
+                <path d="M150 100 Q150 130 165 138 Q180 130 180 100 Z" fill="#D9B36A" opacity="0.92" />
+                <path d="M150 100 Q150 110 165 114 Q180 110 180 100 Z" fill="#7a2a3a" />
+                <rect x="164" y="138" width="2" height="22" fill="#D9B36A" />
+                <ellipse cx="165" cy="162" rx="14" ry="3" fill="#D9B36A" opacity="0.85" />
+              </svg>
+            )}
+          </div>
+          <div class="work-card-body">
+            <div class="work-card-head">
+              <h3>{w.title}</h3>
+              <span class={`status ${w.status === '近日公開' ? 'is-soon' : ''}`}>{w.status}</span>
+            </div>
+            <p class="subtitle">{w.subtitle}</p>
+            <p class="description">{w.description}</p>
+            <div class="tags">
+              {w.tags.map((t) => <span class="tag">{t}</span>)}
+            </div>
+            {w.link !== '#' ? (
+              <a class="work-link" href={w.link} target="_blank" rel="noopener">
+                <span>見る</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            ) : (
+              <span class="work-link is-disabled">準備中</span>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .works {
+    padding: 7rem 1.5rem;
+    background: var(--color-bg);
+    position: relative;
+  }
+  .works-inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .works-head {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+  .section-title {
+    margin: 0 0 0.85rem;
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 1.2rem;
+  }
+  .works-head .section-num-bg {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .works-head .section-label {
+    justify-content: center;
+  }
+  .section-title-text {
+    font-family: var(--font-jp);
+    font-weight: 700;
+    font-size: var(--fs-h2);
+    line-height: 1.3;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+    position: relative;
+    z-index: 1;
+  }
+  .works-lead {
+    margin: 0;
+    color: var(--color-text-mute);
+    font-size: 0.95rem;
+  }
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.75rem;
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .work-card {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+  .work-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-accent);
+  }
+  /* E-03: アイキャッチ枠 */
+  .work-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-bg-soft);
+  }
+  .thumb-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: transform 0.5s var(--ease), filter 0.5s var(--ease);
+    filter: blur(0);
+  }
+  .work-card:hover .thumb-svg {
+    transform: scale(1.06);
+  }
+  /* 初期描画時に若干ブラー、ホバーで解除（ふわっと焦点が合う演出） */
+  .work-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 65%, rgba(0, 0, 0, 0.1) 100%);
+    pointer-events: none;
+  }
+  .work-card-body {
+    padding: 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .work-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .work-card h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    font-family: var(--font-jp);
+    line-height: 1.4;
+    letter-spacing: var(--ls-tight);
+  }
+  .status {
+    flex-shrink: 0;
+    font-family: var(--font-en);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(107, 142, 90, 0.12);
+    color: var(--color-primary-dark);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .status.is-soon {
+    background: rgba(201, 123, 94, 0.12);
+    color: var(--color-accent-dark);
+  }
+  .subtitle {
+    margin: 0 0 1rem;
+    color: var(--color-primary);
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+  .description {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-sub);
+    font-size: 0.9rem;
+    line-height: 1.85;
+    flex-grow: 1;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+  .tag {
+    font-family: var(--font-en);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-mute);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .work-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .work-link:hover {
+    background: var(--color-accent-dark);
+    transform: translateY(-2px);
+  }
+  .work-link svg {
+    transition: transform 0.25s var(--ease);
+  }
+  .work-link:hover svg {
+    transform: translateX(2px);
+  }
+  .work-link.is-disabled {
+    background: transparent;
+    color: var(--color-text-mute);
+    border: 1px dashed var(--color-border);
+    cursor: default;
+  }
+  .work-link.is-disabled:hover {
+    background: transparent;
+    transform: none;
+  }
+
+  @media (max-width: 768px) {
+    .works-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .works {
+      padding: 5rem 1.25rem;
+    }
+  }
+</style>
