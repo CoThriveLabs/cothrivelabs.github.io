@@ -39,3 +39,9 @@ SPEC.md
 DESIGN_PHASE_*.md
 DEPLOY.md
 scripts/
+
+# test artifacts (社内検証物・容量大きいため除外)
+tests/screenshots/
+tests/videos/
+tests/__pycache__/
+test-screenshots/
