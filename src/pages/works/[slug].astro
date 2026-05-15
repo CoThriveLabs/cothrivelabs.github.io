@@ -1,0 +1,77 @@
+---
+// 動的ルート: /works/{slug}/
+// 仕様書: docs/plans/work_intro_template_仕様書_2026-05-14.html
+// 設計書: docs/designs/work_intro_template_設計書_2026-05-14.md
+//
+// Phase 1: Hero / What / Why / Meta / Credits までを実装。
+// Phase 2 で Hotspot、Phase 3 で DownloadSection を追加予定。
+
+import type { Work } from '../../types/work';
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import Hero from '../../components/work-intro/Hero.astro';
+import WhatSection from '../../components/work-intro/WhatSection.astro';
+import WhySection from '../../components/work-intro/WhySection.astro';
+import Hotspot from '../../components/work-intro/Hotspot.astro';
+import DownloadSection from '../../components/work-intro/DownloadSection.astro';
+import MetaSection from '../../components/work-intro/MetaSection.astro';
+import CreditsSection from '../../components/work-intro/CreditsSection.astro';
+
+export async function getStaticPaths() {
+  const works = import.meta.glob<{ default: Work }>('../../data/works/*.json', { eager: true });
+  return Object.values(works).map((mod) => {
+    const data = mod.default;
+    return { params: { slug: data.slug }, props: { data } };
+  });
+}
+
+interface Props {
+  data: Work;
+}
+const { data } = Astro.props;
+const pageTitle = `${data.title} — ${data.subtitle} | Co-Thrive Labs`;
+
+// 配布セクションが入ると Meta の番号がひとつ後ろにずれる。
+const hasDownload = data.distribution?.enabled === true;
+const metaNum = hasDownload ? '05' : '04';
+---
+<Base title={pageTitle} description={data.tagline}>
+  <main class="work-intro">
+    <Hero
+      title={data.title}
+      subtitle={data.subtitle}
+      tagline={data.tagline}
+      hero_image={data.hero_image}
+    />
+    <WhatSection paragraphs={data.what} stack={data.meta.stack} />
+    <WhySection paragraphs={data.why} />
+    {data.hotspot && (
+      <Hotspot
+        image={data.hotspot.image}
+        image_alt={data.hotspot.image_alt}
+        pins={data.hotspot.pins}
+      />
+    )}
+    {hasDownload && (
+      <DownloadSection
+        enabled={data.distribution!.enabled}
+        version={data.distribution!.version}
+        released_at={data.distribution!.released_at}
+        downloads={data.distribution!.downloads}
+        install_guide={data.distribution!.install_guide}
+        release_notes_url={data.distribution!.release_notes_url}
+        sectionNum="04"
+      />
+    )}
+    <MetaSection
+      period={data.meta.period}
+      duration_label={data.meta.duration_label}
+      stack={data.meta.stack}
+      team={data.meta.team}
+      development_style={data.meta.development_style}
+      sectionNum={metaNum}
+    />
+    <CreditsSection links={data.links ?? []} />
+  </main>
+  <Footer />
+</Base>

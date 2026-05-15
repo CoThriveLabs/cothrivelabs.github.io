@@ -1,0 +1,115 @@
+---
+// 作品紹介ヒーロー: タイトル + サブタイトル + キャッチコピー + ヒーロー画像 + 戻るリンク
+export interface Props {
+  title: string;
+  subtitle: string;
+  tagline: string;
+  hero_image: string;
+}
+const { title, subtitle, tagline, hero_image } = Astro.props;
+---
+<section class="wi-hero">
+  <a class="wi-hero__back" href="/#works">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M11 7H3M7 3L3 7l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Works に戻る</span>
+  </a>
+
+  <div class="wi-hero__inner">
+    <div class="wi-hero__text" data-fade>
+      <p class="wi-hero__eyebrow">Works / {subtitle}</p>
+      <h1 class="wi-hero__title">{title}</h1>
+      <p class="wi-hero__tagline">{tagline}</p>
+    </div>
+    <div class="wi-hero__media" data-fade>
+      <img class="wi-hero__image" src={hero_image} alt={`${title} のヒーロー画像`} loading="eager" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .wi-hero {
+    position: relative;
+    padding: calc(var(--header-h) + 3rem) 1.5rem 4rem;
+    background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+  }
+  .wi-hero__back {
+    position: absolute;
+    top: calc(var(--header-h) + 0.75rem);
+    left: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  .wi-hero__back:hover {
+    background: rgba(201, 123, 94, 0.08);
+    transform: translateX(-2px);
+  }
+  .wi-hero__inner {
+    width: 100%;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 3rem;
+    align-items: center;
+  }
+  .wi-hero__eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-en);
+    font-size: 0.78rem;
+    letter-spacing: 0.28em;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .wi-hero__title {
+    margin: 0 0 1rem;
+    font-family: var(--font-jp);
+    font-size: var(--fs-h1);
+    line-height: 1.1;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-text);
+  }
+  .wi-hero__tagline {
+    margin: 0;
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    line-height: 1.85;
+    color: var(--color-text-sub);
+  }
+  .wi-hero__media {
+    position: relative;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--color-border);
+    background: #fff;
+  }
+  .wi-hero__image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  @media (max-width: 900px) {
+    .wi-hero {
+      padding: calc(var(--header-h) + 4rem) 1.25rem 3rem;
+      min-height: auto;
+    }
+    .wi-hero__inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

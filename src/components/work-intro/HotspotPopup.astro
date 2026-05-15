@@ -1,0 +1,160 @@
+---
+// ホットスポット詳細ポップアップ（画面中央モーダル方式）。
+// 開閉制御は親 Hotspot.astro 内の <script> で実施。
+export interface Props {
+  id: string;
+  title: string;
+  body: string;
+  screenshot: string;
+  label: string;
+}
+const { id, title, body, screenshot, label } = Astro.props;
+---
+<div
+  class="wi-popup"
+  id={`wi-popup-${id}`}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={`wi-popup-title-${id}`}
+  hidden
+>
+  <div class="wi-popup__backdrop" data-close></div>
+  <div class="wi-popup__panel" tabindex="-1">
+    <button
+      class="wi-popup__close"
+      type="button"
+      data-close
+      aria-label="閉じる"
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+    <h3 id={`wi-popup-title-${id}`} class="wi-popup__title">
+      <span class="wi-popup__label" aria-hidden="true">{label}</span>
+      {title}
+    </h3>
+    <p class="wi-popup__body">{body}</p>
+    <img
+      class="wi-popup__shot"
+      src={screenshot}
+      alt={`${title} のスクリーンショット`}
+      loading="lazy"
+    />
+  </div>
+</div>
+
+<style>
+  .wi-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .wi-popup[hidden] {
+    display: none;
+  }
+  .wi-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 24, 18, 0.55);
+    backdrop-filter: blur(2px);
+    animation: wi-popup-fade 0.2s ease;
+  }
+  .wi-popup__panel {
+    position: relative;
+    background: var(--color-bg, #fbfaf5);
+    border-radius: 14px;
+    padding: 2rem 1.75rem 1.75rem;
+    max-width: 560px;
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    animation: wi-popup-pop 0.2s ease;
+    outline: none;
+  }
+  .wi-popup__close {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border, #d8d5cb);
+    background: #fff;
+    color: var(--color-text, #2a2a2a);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .wi-popup__close:hover,
+  .wi-popup__close:focus-visible {
+    background: var(--color-bg-soft, #f4f1e0);
+    transform: scale(1.05);
+    outline: none;
+  }
+  .wi-popup__label {
+    display: block;
+    font-family: var(--font-en, "Inter", sans-serif);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent, #C97B5E);
+    margin-bottom: 0.3rem;
+  }
+  .wi-popup__title {
+    margin: 0 2.5rem 0.75rem 0;
+    font-family: var(--font-jp);
+    font-size: 1.2rem;
+    color: var(--color-text);
+    line-height: 1.4;
+  }
+  .wi-popup__body {
+    margin: 0 0 1.25rem;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--color-text);
+  }
+  .wi-popup__shot {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid var(--color-border, #d8d5cb);
+    background: #fff;
+  }
+
+  @keyframes wi-popup-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes wi-popup-pop {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wi-popup__backdrop,
+    .wi-popup__panel {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .wi-popup__panel {
+      padding: 1.75rem 1.1rem 1.25rem;
+    }
+    .wi-popup__title {
+      font-size: 1.08rem;
+    }
+  }
+</style>

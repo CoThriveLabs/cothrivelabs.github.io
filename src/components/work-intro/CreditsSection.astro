@@ -1,0 +1,95 @@
+---
+import type { WorkLink } from '../../types/work';
+
+export interface Props {
+  links: WorkLink[];
+}
+const { links } = Astro.props;
+---
+<section class="wi-credits">
+  <div class="wi-credits__inner" data-fade>
+    <p class="wi-credits__logo">Co-Thrive Labs</p>
+    <p class="wi-credits__tagline">AI 4 人と作る共生型 開発カンパニー</p>
+    {links.length > 0 && (
+      <ul class="wi-credits__links">
+        {links.map((l) => (
+          <li>
+            <a href={l.url} target={l.url.startsWith('http') ? '_blank' : undefined} rel={l.url.startsWith('http') ? 'noopener' : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    <a class="wi-credits__back" href="/#works">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M11 7H3M7 3L3 7l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Works 一覧に戻る</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .wi-credits {
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem;
+    background: var(--color-bg-soft);
+    border-top: 1px solid var(--color-border);
+  }
+  .wi-credits__inner {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .wi-credits__logo {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-en);
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-primary);
+  }
+  .wi-credits__tagline {
+    margin: 0 0 2rem;
+    font-size: 0.85rem;
+    color: var(--color-text-mute);
+    letter-spacing: 0.02em;
+  }
+  .wi-credits__links {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 1.5rem;
+  }
+  .wi-credits__links a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease);
+  }
+  .wi-credits__links a:hover {
+    border-bottom-color: var(--color-accent);
+  }
+  .wi-credits__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  .wi-credits__back:hover {
+    background: var(--color-accent-dark);
+    transform: translateX(-2px);
+  }
+</style>

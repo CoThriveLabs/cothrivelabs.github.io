@@ -103,24 +103,7 @@ const ogImageURL = Astro.site
           window.addEventListener('scroll', onScroll, { passive: true });
         }
 
-        // Header: モバイルメニュー開閉
-        const toggle = document.querySelector('[data-nav-toggle]');
-        const nav = document.querySelector('[data-nav]');
-        if (toggle && nav) {
-          toggle.addEventListener('click', () => {
-            const open = nav.classList.toggle('is-open');
-            toggle.setAttribute('aria-expanded', String(open));
-            document.body.style.overflow = open ? 'hidden' : '';
-          });
-          // メニュー内リンククリックで閉じる
-          nav.querySelectorAll('a').forEach((a) => {
-            a.addEventListener('click', () => {
-              nav.classList.remove('is-open');
-              toggle.setAttribute('aria-expanded', 'false');
-              document.body.style.overflow = '';
-            });
-          });
-        }
+        // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
   </body>

@@ -8,8 +8,8 @@ const works = [
     description:
       'ロードマップ・タスク・ステップを管理し、進捗に応じて植物が育つ SPA。FastAPI + SQLite + Vanilla JS。',
     tags: ['FastAPI', 'SQLite', 'SPA'],
-    link: 'https://github.com/CoThriveLabs/sprout',
-    status: '公開準備中',
+    link: '/works/sprout/',
+    status: '公開中',
     thumb: 'sprout',
   },
   {
@@ -101,7 +101,12 @@ const works = [
               {w.tags.map((t) => <span class="tag">{t}</span>)}
             </div>
             {w.link !== '#' ? (
-              <a class="work-link" href={w.link} target="_blank" rel="noopener">
+              <a
+                class="work-link"
+                href={w.link}
+                target={w.link.startsWith('http') ? '_blank' : undefined}
+                rel={w.link.startsWith('http') ? 'noopener' : undefined}
+              >
                 <span>見る</span>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                   <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>

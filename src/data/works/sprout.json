@@ -1,0 +1,102 @@
+{
+  "slug": "sprout",
+  "title": "Sprout",
+  "subtitle": "成長する TODO アプリ",
+  "tagline": "タスクをこなすほど植物が育つ、AI 連携タスク管理 SPA。",
+  "hero_image": "/works/sprout/hero.png",
+
+  "what": [
+    "ゴール → タスク → ステップの 3 階層でロードマップを作成し、長期目標を分解管理する SPA。",
+    "進捗に応じて画面の植物が育ち、完了で開花。FastAPI + SQLite + Vanilla JS で実装。",
+    "AI エージェント「さき」が API 経由で直接タスクを投入・更新でき、あめまみれとの会話だけで運用できる。"
+  ],
+  "why": [
+    "案件・ポートフォリオを進めるうえで、ロードマップとタスクを一望できる場所が欲しかった。",
+    "AI 社員 4 人の実力を測りながら、開発フロー自体を組み立てる練習台にしたかった。",
+    "本質は「あめまみれとさきの会話だけで全タスクが自動で管理される」状態を作ること。"
+  ],
+
+  "hotspot": {
+    "image": "/works/sprout/hotspot.png",
+    "image_alt": "Sprout デスクトップ画面のスクリーンショット",
+    "pins": [
+      {
+        "id": "greenhouse",
+        "label": "温室",
+        "x_pct": 9,
+        "y_pct": 13,
+        "title": "複数ゴールを温室で管理",
+        "body": "並行する複数の長期目標を温室にまとめて、それぞれの進捗を一目で把握。",
+        "screenshot": "/works/sprout/greenhouse.png"
+      },
+      {
+        "id": "tree",
+        "label": "タスクツリー",
+        "x_pct": 48,
+        "y_pct": 40,
+        "title": "ゴール → タスク → ステップの階層",
+        "body": "親タスク + サブタスク + ステップ + メモで、抽象から具体まで階層的に詳細化できる。",
+        "screenshot": "/works/sprout/task_tree_expanded.png"
+      },
+      {
+        "id": "plant",
+        "label": "植物の成長",
+        "x_pct": 89,
+        "y_pct": 60,
+        "title": "進捗に応じて植物が育つ",
+        "body": "ゴール完了率に連動して植物が芽 → 茎 → つぼみ → 花 と成長。達成感のゲーミフィケーション。",
+        "screenshot": "/works/sprout/plant_stages.png"
+      },
+      {
+        "id": "weather",
+        "label": "天気ピッカー",
+        "x_pct": 80,
+        "y_pct": 9,
+        "title": "5 段階の空モード",
+        "body": "晴・曇・雨・夕・夜の気分で雰囲気を切替。集中時間の演出に。",
+        "screenshot": "/works/sprout/weather_evening.png"
+      },
+      {
+        "id": "import",
+        "label": "JSON 取り込み",
+        "x_pct": 93,
+        "y_pct": 4,
+        "title": "AI と連携した一括投入",
+        "body": "POST /api/import/roadmap で階層構造を一発投入。さきが PowerShell で直接叩く運用。",
+        "screenshot": "/works/sprout/json_import.png"
+      }
+    ]
+  },
+
+  "meta": {
+    "period": "2026-05-10 〜 開発中",
+    "duration_label": "約 1 週間 + 継続中",
+    "stack": ["FastAPI", "SQLite", "SQLAlchemy", "Pydantic", "Vanilla JS", "CSS Variables", "pytest"],
+    "team": [
+      { "name": "あめまみれ", "role": "Founder / 要件定義・デバッグ・最終チェック" },
+      { "name": "さき", "role": "CEO / 仕様書作成・Chrome 実機検証" },
+      { "name": "ろぴ", "role": "CTO / 設計書・コードレビュー" },
+      { "name": "みつる", "role": "開発 / 実装・自己テスト" }
+    ],
+    "development_style": "あめまみれが要件定義 → さきが仕様書 → ろぴが設計書 → みつる実装 → ろぴ二次テスト → さき Chrome 実機検証 → あめまみれ最終確認"
+  },
+
+  "distribution": {
+    "enabled": false,
+    "version": null,
+    "released_at": null,
+    "downloads": [
+      { "os": "windows", "arch": "x64", "url": "/works/sprout/downloads/Sprout-Setup-x64.exe", "size_mb": null, "label": "Windows (x64)" },
+      { "os": "macos", "arch": "arm64", "url": "/works/sprout/downloads/Sprout-arm64.dmg", "size_mb": null, "label": "macOS (Apple Silicon)" },
+      { "os": "macos", "arch": "x64", "url": "/works/sprout/downloads/Sprout-x64.dmg", "size_mb": null, "label": "macOS (Intel)" },
+      { "os": "linux", "arch": "x64", "url": "/works/sprout/downloads/Sprout-x64.AppImage", "size_mb": null, "label": "Linux (AppImage)" },
+      { "os": "source", "arch": null, "url": "#", "size_mb": null, "label": "ソースコード（Private リポ）" }
+    ],
+    "install_guide": "ダウンロード後、ダブルクリックで起動。初回はセキュリティ警告が出る場合があります。",
+    "release_notes_url": null
+  },
+
+  "links": [
+    { "label": "note: AI 4 人と作る会社のキックオフ", "url": "#" }
+  ]
+}

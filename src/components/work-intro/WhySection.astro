@@ -1,0 +1,122 @@
+---
+// なぜ作ったか: 動機をカード型リストで表示
+export interface Props {
+  paragraphs: string[];
+}
+const { paragraphs } = Astro.props;
+---
+<section class="wi-why" id="why">
+  <div class="wi-why__inner" data-fade>
+    <h2 class="wi-section-title">
+      <span class="wi-section-title__num">02</span>
+      <span class="wi-section-title__text">なぜ作ったか</span>
+    </h2>
+    <ol class="wi-why__list">
+      {paragraphs.map((p, i) => (
+        <li class="wi-why__item">
+          <span class="wi-why__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <p class="wi-why__text">{p}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .wi-why {
+    padding: clamp(3rem, 6vw, 5rem) 1.5rem;
+    background: var(--color-bg-soft);
+  }
+  .wi-why__inner {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  .wi-section-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin: 0 0 2rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .wi-section-title__num {
+    font-family: var(--font-en);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: var(--ls-tight);
+  }
+  .wi-section-title__text {
+    font-family: var(--font-jp);
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+
+  .wi-why__list {
+    list-style: none;
+    counter-reset: why;
+    padding: 0;
+    padding-left: 0;
+    margin: 0;
+    margin-left: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .wi-why__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 1.1rem;
+    padding: 1.1rem 1.3rem 1.1rem 1.1rem;
+    background: var(--color-bg, #fff);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent, #C97B5E);
+    border-radius: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .wi-why__item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  }
+  .wi-why__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 999px;
+    background: var(--color-accent, #C97B5E);
+    color: #fff;
+    font-family: var(--font-en);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .wi-why__text {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.85;
+    color: var(--color-text);
+    padding-top: 0.2rem;
+  }
+
+  @media (max-width: 480px) {
+    .wi-why__item {
+      gap: 0.8rem;
+      padding: 1rem 1rem 1rem 0.9rem;
+    }
+    .wi-why__num {
+      min-width: 1.75rem;
+      height: 1.75rem;
+      font-size: 0.72rem;
+    }
+    .wi-why__text {
+      font-size: 0.95rem;
+      line-height: 1.75;
+    }
+  }
+</style>
