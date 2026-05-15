@@ -85,7 +85,7 @@ def run() -> int:
         # ===== z-order 検査 (ABOUT 中央座標で elementsFromPoint) =====
         about_box = page.evaluate(
             """() => {
-                const a = document.querySelector(".site-nav a[href='#about']");
+                const a = document.querySelector(".site-nav a[href='/#about']");
                 if(!a) return null;
                 const r = a.getBoundingClientRect();
                 return {x: r.x + r.width/2, y: r.y + r.height/2, w: r.width, h: r.height};
@@ -177,7 +177,7 @@ def run() -> int:
         )
         record(
             "B4-header-trans-none",
-            header_trans.startswith("all 0s") or header_trans == "none 0s ease 0s" or "0s" in header_trans,
+            header_trans in ("none", "all 0s ease 0s", "none 0s ease 0s") or "0s" in header_trans,
             f"trans={header_trans}",
         )
         record(
@@ -197,7 +197,7 @@ def run() -> int:
         # ===== z-order (スクロール後) =====
         about_box2 = page.evaluate(
             """() => {
-                const a = document.querySelector(".site-nav a[href='#about']");
+                const a = document.querySelector(".site-nav a[href='/#about']");
                 if(!a) return null;
                 const r = a.getBoundingClientRect();
                 return {x: r.x + r.width/2, y: r.y + r.height/2};
@@ -252,10 +252,10 @@ def run() -> int:
 
         # 実機タップ感を出すために tap を使う (touch context)
         try:
-            page.tap(".site-nav a[href='#about']")
+            page.tap(".site-nav a[href='/#about']")
         except Exception as e:
             print(f"  tap failed: {e}, falling back to click")
-            page.click(".site-nav a[href='#about']")
+            page.click(".site-nav a[href='/#about']")
         time.sleep(0.8)
 
         c_closed = not page.evaluate(

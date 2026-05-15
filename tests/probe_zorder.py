@@ -13,7 +13,7 @@ with sync_playwright() as pw:
     info = page.evaluate(
         """
         () => {
-          const link = document.querySelector(".site-nav a[href='#about']");
+          const link = document.querySelector(".site-nav a[href='/#about']");
           const r = link.getBoundingClientRect();
           const cx = r.left + r.width / 2;
           const cy = r.top + r.height / 2;

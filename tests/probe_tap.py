@@ -13,7 +13,7 @@ with sync_playwright() as pw:
     # About リンクの中央座標
     box = page.evaluate("""
         () => {
-          const r = document.querySelector(".site-nav a[href='#about']").getBoundingClientRect();
+          const r = document.querySelector(".site-nav a[href='/#about']").getBoundingClientRect();
           return {cx: r.left + r.width/2, cy: r.top + r.height/2};
         }
     """)

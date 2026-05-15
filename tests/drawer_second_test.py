@@ -142,7 +142,7 @@ def run() -> int:
         )
         record(
             "B4-header-trans-none",
-            header_trans.startswith("all 0s") or header_trans == "none 0s ease 0s" or "0s" in header_trans,
+            header_trans in ("none", "all 0s ease 0s", "none 0s ease 0s") or "0s" in header_trans,
             f"trans={header_trans}",
         )
         record(
@@ -180,7 +180,7 @@ def run() -> int:
             ),
         )
         # About を直接クリック
-        page.click(".site-nav a[href='#about']")
+        page.click(".site-nav a[href='/#about']")
         time.sleep(0.6)  # 閉じ + アンカー遷移
         c_closed = not page.evaluate(
             "document.querySelector('[data-nav]').classList.contains('is-open')"
