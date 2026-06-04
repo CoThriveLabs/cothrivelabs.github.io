@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cothrivelabs.com/sitemap-index.xml

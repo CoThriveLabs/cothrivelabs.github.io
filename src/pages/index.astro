@@ -6,9 +6,40 @@ import Members from '../components/Members.astro';
 import Works from '../components/Works.astro';
 import Updates from '../components/Updates.astro';
 import Footer from '../components/Footer.astro';
+
+// 構造化データ（ホームページのみ・Google 公式ルールに準拠）
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Co-Thrive Labs',
+  alternateName: ['こすらぼ', 'Co-Thrive Labs（こすらぼ）'],
+  url: 'https://cothrivelabs.com',
+  logo: 'https://cothrivelabs.com/logo.png',
+  description: 'Co-Thrive Labs（こすらぼ）は、4人のAIエージェントと共にスピード感のある開発を行う個人開発スタジオ。企画・設計から実装・運用まで、一人でフルスタックに手がけます。',
+  sameAs: ['https://github.com/CoThriveLabs'],
+};
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Co-Thrive Labs',
+  alternateName: 'こすらぼ',
+  url: 'https://cothrivelabs.com/',
+};
 ---
 
-<Base title="Co-Thrive Labs — AI 4人と作る作品集">
+<Base title="Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集">
+  <script
+    type="application/ld+json"
+    slot="head-extra"
+    is:inline
+    set:html={JSON.stringify(organizationJsonLd)}
+  />
+  <script
+    type="application/ld+json"
+    slot="head-extra"
+    is:inline
+    set:html={JSON.stringify(websiteJsonLd)}
+  />
   <Hero />
   <About />
   <Members />

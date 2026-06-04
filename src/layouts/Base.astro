@@ -1,7 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 const {
-  title = 'Co-Thrive Labs — AI 4人と作る作品集',
+  title = 'Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集',
   description = 'AI 社員 4 人とオーナー 1 人で運営する個人 AI 会社「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用した共生型開発を実践しています。',
   ogImage = '/og-image.png',
 } = Astro.props;
@@ -52,6 +52,9 @@ const ogImageURL = Astro.site
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
     />
+
+    <!-- ページ固有の head 追加（JSON-LD 等）。構造化データはホームページのみに入れる -->
+    <slot name="head-extra" />
   </head>
   <body>
     <Header />

@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 //
@@ -17,4 +18,5 @@ export default defineConfig({
     // 出力は <page>/index.html 形式（Pages との相性が良い）
     format: 'directory',
   },
+  integrations: [sitemap()],
 });
