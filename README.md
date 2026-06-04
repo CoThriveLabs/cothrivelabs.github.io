@@ -7,7 +7,7 @@
 > ひとりじゃない、ひとりの仕事。
 > AI と一緒に作ったものを、ちゃんと残しておく場所。
 
-公開先: **<https://cothrivelabs.github.io>**
+公開先: **<https://cothrivelabs.com>**
 
 ## このサイトについて
 
@@ -63,7 +63,7 @@ public/
 
 ## デプロイ
 
-`main` ブランチへ push すると GitHub Actions が走り、`https://cothrivelabs.github.io` へ自動公開されます。
+`main` ブランチへ push すると GitHub Actions が走り、`https://cothrivelabs.com` へ自動公開されます。
 
 ## ライセンス
 

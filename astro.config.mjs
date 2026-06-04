@@ -10,7 +10,7 @@ import { defineConfig } from 'astro/config';
 // - output: 'static' は v6 のデフォルトだが、Pages 用に明示
 // - trailingSlash: 'ignore' で /about と /about/ どちらでも解決
 export default defineConfig({
-  site: 'https://cothrivelabs.github.io',
+  site: 'https://cothrivelabs.com',
   output: 'static',
   trailingSlash: 'ignore',
   build: {
