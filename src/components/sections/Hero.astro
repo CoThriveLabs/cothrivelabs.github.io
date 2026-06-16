@@ -9,12 +9,13 @@ import { Picture } from 'astro:assets';
 import centerImg from '../../assets/hero/center.png';
 import tomomiImg from '../../assets/hero/tomomi.png';
 import ropiImg from '../../assets/hero/ropi.png';
+import HeroLogo from './HeroLogo.astro';
 ---
 <section class="hero" id="hero" data-reveal>
   <div class="hero__inner">
-    {/* 手書きロゴ枠（task 2 で SVG ロゴに差し替え） */}
-    <div class="hero__logo-frame" aria-hidden="true">
-      <span class="hero__logo-placeholder">こすらぼ ロゴ（準備中）</span>
+    {/* 手書きロゴ（こすらぼ）：stroke-dashoffset お絵描きアニメ */}
+    <div class="hero__logo">
+      <HeroLogo />
     </div>
 
     <h1 class="hero__title">Co-Thrive Labs</h1>
@@ -85,23 +86,11 @@ import ropiImg from '../../assets/hero/ropi.png';
     flex-direction: column;
     align-items: center;
   }
-  /* ロゴ枠（準備中プレースホルダ） */
-  .hero__logo-frame {
-    width: min(280px, 70vw);
-    aspect-ratio: 16 / 5;
+  /* 手書きロゴ */
+  .hero__logo {
     display: flex;
-    align-items: center;
     justify-content: center;
     margin-bottom: 2rem;
-    border: 1px dashed var(--c-border);
-    border-radius: var(--radius);
-    background: color-mix(in srgb, var(--c-paper-deep) 50%, transparent);
-  }
-  .hero__logo-placeholder {
-    font-family: var(--font-accent);
-    font-size: 0.8rem;
-    letter-spacing: 0.1em;
-    color: var(--c-main-mute);
   }
   .hero__title {
     margin: 0;

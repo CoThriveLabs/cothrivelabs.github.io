@@ -17,5 +17,8 @@
     "@fontsource/shippori-mincho": "^5.2.8",
     "@fontsource/zen-kaku-gothic-new": "^5.2.7",
     "astro": "^6.3.2"
+  },
+  "devDependencies": {
+    "potrace": "^2.1.8"
   }
 }

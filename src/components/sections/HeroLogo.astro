@@ -1,0 +1,59 @@
+---
+// 手書きロゴ「こすらぼ」（設計書 §4.2 S1 / §5.2・task 2）。
+// hero-rogofont.png を potrace トレース → svgo 最適化した fill path をインライン SVG 化。
+// お絵描きアニメ：塗りロゴを「太い横帯ストロークの mask」で覆い、mask path の
+// stroke-dashoffset を 1→0 にして左から描かれていく演出（stroke-dashoffset 方式）。
+// fill を保つため描画完了後も手書きの塗りが残る（中空縁取りにならない）。
+// あめさん明示：このアニメは PF 全体の手書き感の核 → reduced-motion でも無効化しない。
+import { heroLogoPath, heroLogoViewBox } from './heroLogoPath';
+
+const W = 1794;
+const H = 877;
+// 上下 2 本の太い横帯で全面を覆い、左→右へ dashoffset で出す
+const bandWidth = Math.round(H * 0.6);
+const topY = Math.round(H * 0.3);
+const botY = Math.round(H * 0.72);
+const wipeD = `M0 ${topY}H${W}M0 ${botY}H${W}`;
+const maskId = 'hero-logo-wipe';
+---
+<svg
+  class="hero-logo"
+  viewBox={heroLogoViewBox}
+  role="img"
+  aria-label="こすらぼ（Co-Thrive Labs）"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+      <path
+        class="hero-logo__wipe"
+        d={wipeD}
+        stroke="#fff"
+        stroke-width={bandWidth}
+        fill="none"
+        pathLength="1"
+      />
+    </mask>
+  </defs>
+  <path d={heroLogoPath} fill="var(--c-accent)" fill-rule="evenodd" mask={`url(#${maskId})`} />
+</svg>
+
+<style>
+  .hero-logo {
+    width: min(320px, 72vw);
+    height: auto;
+    display: block;
+  }
+  .hero-logo__wipe {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: hero-logo-draw 2.4s var(--ease) 0.3s forwards;
+  }
+  @keyframes hero-logo-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  /* あめさん明示：手書き感の核のため reduced-motion でも止めない（他演出は §5 で即時表示だがこれは例外）。
+     ただし配慮として完了状態は確実に表示されるよう forwards で固定済み。 */
+</style>
