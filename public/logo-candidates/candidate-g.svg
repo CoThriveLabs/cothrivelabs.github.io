@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate G: 元デザイン(C+テラコッタ〇1つ)。Cは真円弧、〇を円周上に乗せ一体化 -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <!-- C: 真円弧(中心31,32 R19.72 stroke6 開口右側80度)。元の弧位置・太さ・開口を踏襲しガタガタだけ解消 -->
+  <path d="M46.54 19.86 A19.72 19.72 0 1 0 46.54 44.14"
+        stroke="#F8F6F0" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- アクセントの〇: Cストローク中心円(R19.72)の開口中央に乗せ、Cの一部に見せる -->
+  <circle cx="49.5" cy="32" r="4" fill="#C97B5E"/>
+</svg>

@@ -1,9 +1,26 @@
 ---
-import Header from '../components/Header.astro';
+// フォント: Fontsource self-host（設計書 §3・Astro 6 Fonts API は 6.3.2 で experimental のため不採用）。
+// 見出し=しっぽり明朝 600/800 / 本文=Zen Kaku Gothic New 400/500/700 / アクセント=Klee One 600。
+import '@fontsource/shippori-mincho/600.css';
+import '@fontsource/shippori-mincho/800.css';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+import '@fontsource/klee-one/600.css';
+
+// LCP テキスト用 preload（本文 Zen Kaku Gothic New 400・日本語/ラテン）。
+// ?url で Vite のハッシュ済みパスを取得し、本番ビルドでも整合する形で <link preload> する。
+import zenJa400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-japanese-400-normal.woff2?url';
+import zenLatin400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-latin-400-normal.woff2?url';
+
+import Header from '../components/sections/Header.astro';
 const {
-  title = 'Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集',
-  description = 'AI 社員 4 人とオーナー 1 人で運営する個人 AI 会社「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用した共生型開発を実践しています。',
+  title = 'Co-Thrive Labs（こすらぼ）— AIエージェント4体と作る作品集',
+  description = 'AIエージェント4体とオーナーで運営する個人 AI スタジオ「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用し、AI と人間が共に育つ開発を実践しています。',
   ogImage = '/og-image.png',
+  // トップ（index.astro）は自前で <Header /> を置くため Base 既定の Header を抑止する。
+  // works 詳細など他ページは hideHeader 未指定 → Base 既定の新 Header（ルート相対アンカー）を表示。
+  hideHeader = false,
 } = Astro.props;
 // canonical URL（Astro.site が未設定の場合は pathname のみ）
 const canonicalURL = Astro.site
@@ -28,7 +45,7 @@ const ogImageURL = Astro.site
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    <meta name="theme-color" content="#6B8E5A" />
+    <meta name="theme-color" content="#f9f2e6" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -45,19 +62,16 @@ const ogImageURL = Astro.site
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
 
-    <!-- フォント -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
-    />
+    <!-- フォント: self-host（Fontsource を frontmatter で CSS import）。
+         LCP テキスト用に本文 Zen Kaku Gothic New 400 を preload。FOIT は font-display: swap で回避。 -->
+    <link rel="preload" as="font" type="font/woff2" href={zenJa400} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={zenLatin400} crossorigin />
 
     <!-- ページ固有の head 追加（JSON-LD 等）。構造化データはホームページのみに入れる -->
     <slot name="head-extra" />
   </head>
   <body>
-    <Header />
+    {!hideHeader && <Header />}
     <slot />
     <script is:inline>
       // scroll で要素が見えたら fade-in
@@ -114,30 +128,46 @@ const ogImageURL = Astro.site
 
 <style is:global>
   :root {
-    --color-primary: #6B8E5A;
-    --color-primary-dark: #547046;
-    --color-accent: #C97B5E;
-    --color-accent-dark: #B0664B;
-    --color-text: #2a2a2a;
-    --color-text-sub: #555;
-    --color-text-mute: #888;
-    --color-bg: #ffffff;
-    --color-bg-soft: #f8f6f0;
-    --color-border: #e8e4dc;
-    --font-jp: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
-    --font-en: 'Inter', system-ui, -apple-system, sans-serif;
-    --radius: 14px;
-    --shadow-sm: 0 2px 8px rgba(42, 42, 42, 0.04);
-    --shadow-md: 0 8px 24px rgba(42, 42, 42, 0.08);
-    --shadow-lg: 0 16px 40px rgba(42, 42, 42, 0.12);
-    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    /* === v2 配色（COLOR-6 確定・設計書 §2） === */
+    --c-paper:        #f9f2e6;               /* ベース紙 C2（背景 70%） */
+    --c-paper-deep:   #ece1c8;               /* C-DEEP（S2/S6/S7/S10 帯・演出 B 濃色側） */
+    --c-main:         #3A3230;               /* ココアブラウン（文字・枠線 70-80%） */
+    --c-main-soft:    rgba(58, 50, 48, 0.7); /* 本文 */
+    --c-main-mute:    rgba(58, 50, 48, 0.6); /* 補助テキスト */
+    --c-border:       rgba(58, 50, 48, 0.18);/* 枠線 */
+    --c-accent:       #C06C5D;               /* テラコッタ（リンク・CTA 5-10%） */
+    --c-accent-dark:  #A85847;               /* hover（仮値・WCAG AA は Phase 4-5 で確定） */
 
-    /* Phase 3.5 追加トークン */
+    /* === メンバーカラー（S3 のキャラ装飾のみ・本文/CTA に使わない・設計書 §2） === */
+    --m-ame:    #D87FA0;  /* あめまみれ ピンク */
+    --m-saki:   #6B8E5A;  /* さき みどり（旧 v1 primary と同値だが個性色として残置） */
+    --m-ropi:   #8A6FBF;  /* ろぴ むらさき */
+    --m-mitsuru:#5B89C2;  /* みつる あお */
+    --m-tomomi: #E0A867;  /* ともみ オレンジ */
+
+    /* === フォント（設計書 §2 / §3） === */
+    --font-head:   'Shippori Mincho', 'Hiragino Mincho ProN', serif;
+    --font-body:   'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+    --font-accent: 'Klee One', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+    /* === レイアウト（設計書 §2） === */
+    --max-w: 1120px;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    --bg-transition: 800ms;
+
+    /* === 余白トークン（設計書 §2「意図的に不揃いな余白」） === */
+    --space-loose: clamp(6rem, 12vh, 10rem);
+    --space-base:  clamp(4rem, 8vh, 6.5rem);
+    --space-snug:  clamp(2.5rem, 5vh, 4rem);
+
+    /* === 実用トークン（v2 配色から導出・shadow は brown 基調へ） === */
+    --radius: 14px;
+    --shadow-sm: 0 2px 8px rgba(58, 50, 48, 0.05);
+    --shadow-md: 0 8px 24px rgba(58, 50, 48, 0.09);
+    --shadow-lg: 0 16px 40px rgba(58, 50, 48, 0.13);
     --fs-h1: clamp(2.4rem, 6vw, 4.2rem);
     --fs-h2: clamp(1.8rem, 4vw, 2.8rem);
-    --fs-section-num: clamp(3rem, 10vw, 7rem);
     --ls-tight: -0.02em;
-    --max-w: 1120px;
     --header-h: 72px;
     --header-h-scrolled: 56px;
   }
@@ -155,18 +185,17 @@ const ogImageURL = Astro.site
 
   body {
     margin: 0;
-    font-family: var(--font-jp);
-    color: var(--color-text);
-    background: var(--color-bg);
+    font-family: var(--font-body);
+    color: var(--c-main);
+    background: var(--c-paper);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 和文見出しは Noto Sans JP を優先（L-1 対応）。
-     英字のみのクラス（.section-num / .footer-logo 等）は個別に Inter を当てる。 */
+  /* 見出しはしっぽり明朝（設計書 §3）。本文は Zen Kaku Gothic New。 */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-jp);
+    font-family: var(--font-head);
     font-weight: 700;
     letter-spacing: 0.01em;
   }
@@ -193,64 +222,13 @@ const ogImageURL = Astro.site
     transform: translateY(0);
   }
 
-  /* L-2: .eyebrow / .section-label / .section-num の DRY 化 */
-  .eyebrow {
-    margin: 0 0 1rem;
-    font-family: var(--font-en);
-    font-size: 0.78rem;
-    letter-spacing: 0.32em;
-    color: var(--color-primary);
-    font-weight: 600;
-    text-transform: uppercase;
-  }
+  /* 旧 v1 の番号振り・英語添字ユーティリティ（巨大背面番号 / "01 About" 風ラベル / eyebrow）は
+     v2 で全撤去（設計書 §6 Phase 1 / 仕様書 D4「番号振り NG・英語小添字 NG・見出しは日本語のみ」）。 */
 
-  /* E-05: セクション番号ラベル（"01 About" 等） */
-  .section-label {
-    position: relative;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.85rem;
-    margin: 0 0 1rem;
-    line-height: 1;
-  }
-  .section-label .num {
-    font-family: var(--font-en);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: var(--ls-tight);
-    color: var(--color-accent);
-    font-feature-settings: "tnum" 1;
-  }
-  .section-label .text {
-    font-family: var(--font-en);
-    font-size: 0.78rem;
-    letter-spacing: 0.32em;
-    color: var(--color-primary);
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  /* セクションタイトル背面に置く巨大番号（opacity 0.08） */
-  .section-num-bg {
-    position: absolute;
-    top: -0.15em;
-    left: -0.05em;
-    font-family: var(--font-en);
-    font-weight: 800;
-    font-size: var(--fs-section-num);
-    line-height: 1;
-    letter-spacing: var(--ls-tight);
-    color: var(--color-primary);
-    opacity: 0.08;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-    font-feature-settings: "tnum" 1;
-  }
-
-  /* E-12: フォーカス可視（キーボード操作時のみ） */
+  /* フォーカス可視（キーボード操作時のみ） */
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--c-accent);
     outline-offset: 3px;
     border-radius: 4px;
   }

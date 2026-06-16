@@ -1,0 +1,270 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// 配色比較 sandbox（非公開）。あめさん「色の組み合わせも sandbox で見たい」+ Gemini 配色 5 案を受けて作成。
+// ベースは全案共通で C2 紙テクスチャ（#f9f2e6 + C 値 noise）。各案でメイン色（文字・枠線・80%）と
+// アクセント色（ボタン・リンク・20%）を実際に使って組み、Q9 配色判断の実機比較に使う。
+// フォントは Task #8 fonts.astro と同じ Fontsource（ともみ推し A 案）。
+
+import '@fontsource/shippori-mincho/600.css';
+import '@fontsource/shippori-mincho/800.css';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+import '@fontsource/klee-one/600.css';
+
+// C2 紙テクスチャ noise（paper-bg-v2.astro と同一値で統一）
+const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
+function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
+  const [r, g, b] = rgb;
+  const matrix = `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  0 0 0 ${alpha} 0`;
+  return (
+    "data:image/svg+xml;utf8," +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<filter id='n'>" +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${numOctaves}' seed='${seed}'/>` +
+    `<feColorMatrix values='${matrix}'/>` +
+    "</filter>" +
+    "<rect width='100%25' height='100%25' filter='url(%23n)'/>" +
+    "</svg>"
+  ).replaceAll("#", "%23");
+}
+const noiseUrl = makeNoiseSvg(NOISE);
+const C2_BG = "#f9f2e6";
+
+// hex → rgba（不透明度を当てる用）
+function rgba(hex, alpha) {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+const palettes = [
+  { id: "COLOR-1", name: "モダンミニマル", main: "#1A1A1A", accent: "#4A4A4A", mainLabel: "マットブラック", accentLabel: "チャコールグレー" },
+  { id: "COLOR-2", name: "ナチュラル・オーガニック", main: "#3E2723", accent: "#6E8B75", mainLabel: "ディープブラウン", accentLabel: "セージグリーン" },
+  { id: "COLOR-3", name: "大人可愛い", main: "#5A4D4A", accent: "#C87A68", mainLabel: "グレージュ", accentLabel: "テラコッタ" },
+  { id: "COLOR-4", name: "洗練ビジネス", main: "#1B2A47", accent: "#C5A059", mainLabel: "ディープネイビー", accentLabel: "キャメル" },
+  { id: "COLOR-5", name: "温かみクリエイティブ", main: "#3A3230", accent: "#5F7D6B", mainLabel: "ココアブラウン", accentLabel: "セージグリーン" },
+  { id: "COLOR-6", name: "素焼きクラフト", main: "#3A3230", accent: "#C06C5D", mainLabel: "ココアブラウン", accentLabel: "テラコッタ" },
+];
+---
+
+<Base title="配色比較 — 配色 6 案 × C2 紙テクスチャ（Sandbox・非公開）">
+  <Fragment slot="head-extra">
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="color-sandbox">
+    {
+      palettes.map((p) => (
+        <section
+          class="color-block"
+          style={{
+            backgroundColor: C2_BG,
+            backgroundImage: `url("${noiseUrl}")`,
+          }}
+        >
+          <div class="block-inner">
+            <header class="block-head">
+              <span class="color-id" style={{ color: p.accent }}>{p.id}</span>
+              <span class="color-name" style={{ color: p.main }}>{p.name}</span>
+              <p class="color-meta" style={{ color: rgba(p.main, 0.7) }}>
+                <span class="swatch" style={{ backgroundColor: p.main }} />
+                メイン {p.main}（{p.mainLabel}）
+                <span class="swatch" style={{ backgroundColor: p.accent }} />
+                アクセント {p.accent}（{p.accentLabel}）
+              </p>
+            </header>
+
+            <div class="specimen">
+              <h1 class="sample-h1" style={{ color: p.main }}>こすらぼ</h1>
+              <p class="sample-en" style={{ color: rgba(p.main, 0.8) }}>Co-Thrive Labs</p>
+
+              <p class="sample-h2" style={{ color: p.main }}>
+                AI 4 人と運営する個人開発スタジオ
+              </p>
+
+              <p class="sample-body" style={{ color: rgba(p.main, 0.7) }}>
+                私たちは少人数で、ひとつひとつの作品にじっくり向き合う開発スタジオです。<br />
+                技術とデザインの両面から、使う人の暮らしにそっと馴染むものづくりを大切にしています。
+              </p>
+
+              <div class="actions">
+                <a class="sample-link" href="#" style={{ color: p.accent }}>
+                  制作実績を見る →
+                </a>
+                <a class="sample-cta" href="#" style={{ backgroundColor: p.accent }}>
+                  お声がけする
+                </a>
+              </div>
+
+              <div class="sample-card" style={{ borderColor: rgba(p.main, 0.3) }}>
+                <p class="card-title" style={{ color: p.main }}>カード枠サンプル</p>
+                <p class="card-text" style={{ color: rgba(p.main, 0.7) }}>
+                  枠線はメイン色 30% 不透明度。紙テクスチャ越しの見え方を確認できます。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <footer class="sandbox-foot">
+      <p>
+        ベース: 全案共通で <strong>C2 紙テクスチャ（#f9f2e6 + feTurbulence noise baseFreq 0.35 / α 0.14）</strong>。
+        各案メイン色（文字・枠線）/ アクセント色（リンク・CTA）を実色で適用。
+        フォントは <strong>Fontsource</strong>（しっぽり明朝 / Zen Kaku Gothic New / Klee One）。
+        Gemini 提案 5 案 + あめさん追加 COLOR-6（素焼きクラフト・テラコッタ）の計 6 案。COLOR-5（セージグリーン）と COLOR-6（テラコッタ）はメイン色 #3A3230 が共通で、アクセントだけ違うので直接比較できます。v1 の緑（#6B8E5A）は本ページには含めていません（あめさん指示どおり）。
+      </p>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .color-sandbox {
+    width: 100%;
+    overflow-x: hidden;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+  }
+  .color-block {
+    width: 100vw;
+    min-height: 70vh;
+    background-repeat: repeat;
+    display: flex;
+    align-items: center;
+    padding: 4rem 1.5rem;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(42, 42, 42, 0.08);
+  }
+  .block-inner {
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .block-head {
+    margin-bottom: 2rem;
+  }
+  .color-id {
+    font-family: var(--font-en);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+  .color-name {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+    margin-left: 0.75rem;
+  }
+  .color-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.6rem;
+    margin: 0.8rem 0 0;
+    font-family: var(--font-en);
+    font-size: 0.82rem;
+  }
+  .swatch {
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .specimen {
+    border-top: 1px dashed rgba(42, 42, 42, 0.18);
+    padding-top: 1.75rem;
+  }
+  .sample-h1 {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 800;
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.1;
+  }
+  .sample-en {
+    font-family: 'Shippori Mincho', serif;
+    font-weight: 600;
+    margin: 0.2rem 0 1.5rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    letter-spacing: 0.02em;
+  }
+  .sample-h2 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    line-height: 1.4;
+  }
+  .sample-body {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 400;
+    margin: 0 0 1.75rem;
+    font-size: 1rem;
+    line-height: 1.95;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .sample-link {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+  }
+  .sample-cta {
+    display: inline-block;
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+    text-decoration: none;
+    padding: 0.75em 1.6em;
+    border-radius: 999px;
+  }
+  .sample-card {
+    border: 1px solid;
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    background: rgba(255, 255, 255, 0.25);
+    max-width: 460px;
+  }
+  .card-title {
+    font-family: 'Klee One', cursive;
+    font-weight: 600;
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+  }
+  .card-text {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-weight: 400;
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  .sandbox-foot {
+    background: #2a2a2a;
+    color: #e8e4dc;
+    padding: 2rem 1.5rem;
+  }
+  .sandbox-foot p {
+    max-width: 880px;
+    margin: 0 auto;
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .sandbox-foot strong {
+    color: #fff;
+  }
+</style>

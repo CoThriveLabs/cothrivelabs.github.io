@@ -1,0 +1,245 @@
+---
+// 制作物カード（設計書 §4.1）。課題/作ったもの/技術/工夫の 4 項目を見出し付きで構造化。
+// status='準備中' の場合は原稿待ちプレースホルダとして淡色表示（リンク無効）。
+export interface Props {
+  title: string;
+  subtitle: string;
+  challenge?: string;
+  built?: string;
+  tags?: string[];
+  craft?: string;
+  url?: string;
+  detailUrl?: string;
+  status?: '公開中' | '準備中';
+}
+const {
+  title,
+  subtitle,
+  challenge,
+  built,
+  tags = [],
+  craft,
+  url,
+  detailUrl,
+  status = '公開中',
+} = Astro.props;
+const isPending = status === '準備中';
+const mainHref = detailUrl ?? url;
+const hasLink = !isPending && mainHref && mainHref !== '#';
+---
+<article class:list={['work-card', { 'is-pending': isPending }]} data-reveal>
+  <div class="work-card__head">
+    <div class="work-card__titles">
+      <h3 class="work-card__title">{title}</h3>
+      <p class="work-card__subtitle">{subtitle}</p>
+    </div>
+    <span class:list={['work-card__status', { 'is-pending': isPending }]}>{status}</span>
+  </div>
+
+  {isPending ? (
+    <p class="work-card__pending-note">制作物データを準備中です。近日公開します。</p>
+  ) : (
+    <dl class="work-card__items">
+      {challenge && (<><dt>課題</dt><dd>{challenge}</dd></>)}
+      {built && (<><dt>作ったもの</dt><dd>{built}</dd></>)}
+      {tags.length > 0 && (
+        <><dt>使った技術</dt>
+        <dd>
+          <ul class="work-card__tags">
+            {tags.map((t) => <li class="work-card__tag">{t}</li>)}
+          </ul>
+        </dd></>
+      )}
+      {craft && (<><dt>工夫したこと</dt><dd>{craft}</dd></>)}
+    </dl>
+  )}
+
+  {hasLink && (
+    <div class="work-card__links">
+      <a
+        class="work-card__link"
+        href={mainHref}
+        target={mainHref.startsWith('http') ? '_blank' : undefined}
+        rel={mainHref.startsWith('http') ? 'noopener' : undefined}
+      >
+        <span>見る</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  )}
+</article>
+
+<style>
+  .work-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+  .work-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--c-accent);
+  }
+  .work-card.is-pending {
+    background: var(--c-paper);
+    border-style: dashed;
+  }
+  .work-card.is-pending:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--c-border);
+  }
+  .work-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .work-card__title {
+    margin: 0 0 0.25rem;
+    font-family: var(--font-head);
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--c-main);
+    letter-spacing: var(--ls-tight);
+  }
+  .work-card__subtitle {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--c-accent);
+    font-weight: 500;
+  }
+  .work-card__status {
+    flex-shrink: 0;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(58, 50, 48, 0.08);
+    color: var(--c-main-soft);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .work-card__status.is-pending {
+    background: rgba(192, 108, 93, 0.12);
+    color: var(--c-accent-dark);
+  }
+  .work-card__pending-note {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--c-main-mute);
+  }
+  /* 4 項目: dt を小ラベル、dd を本文に */
+  .work-card__items {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.55rem 1rem;
+    margin: 0;
+  }
+  .work-card__items dt {
+    font-family: var(--font-accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--c-main-mute);
+    letter-spacing: 0.04em;
+    padding-top: 0.1rem;
+    white-space: nowrap;
+  }
+  .work-card__items dd {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--c-main-soft);
+  }
+  .work-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .work-card__tag {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--c-paper-deep);
+    border: 1px solid var(--c-border);
+    color: var(--c-main-mute);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .work-card__links {
+    margin-top: auto;
+  }
+  .work-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    background: var(--c-accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  /* stretched-link: メインリンクをカード全体に拡張 */
+  .work-card__link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .work-card:has(.work-card__link) {
+    cursor: pointer;
+  }
+  .work-card__link > * {
+    position: relative;
+    z-index: 2;
+  }
+  .work-card__link:hover {
+    background: var(--c-accent-dark);
+  }
+  .work-card:hover .work-card__link {
+    background: var(--c-accent-dark);
+  }
+  .work-card__link svg {
+    transition: transform 0.25s var(--ease);
+  }
+  .work-card__link:hover svg {
+    transform: translateX(2px);
+  }
+  .work-card:focus-within {
+    box-shadow: var(--shadow-md);
+    border-color: var(--c-accent);
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+  .work-card__link:focus-visible {
+    outline: none;
+  }
+
+  @media (max-width: 480px) {
+    .work-card__items {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .work-card__items dt {
+      padding-top: 0.5rem;
+    }
+  }
+</style>

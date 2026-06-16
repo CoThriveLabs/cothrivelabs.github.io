@@ -1,0 +1,73 @@
+---
+// 紙 C2 noise 背景（設計書 §4.1 / §5.1）。sandbox paper-bg-v2 の noise 値を昇格。
+//   mode="fixed"  : 領域 A（sticky ラッパ内）。inset:0 で領域全体をカバーし、背景色は
+//                   --bg-current（演出 B グラデ切替が差し替える最背面レイヤ。Phase 1 では
+//                   未実装のため --c-paper にフォールバック）。
+//   mode="normal" : 領域 B の各セクション通常背景。color で実背景色を指定。
+// noise は HTTP リクエスト 0 の inline data URI。演出 A（Hero 奥入り込み）は Hero 上層の
+// 別レイヤで行うため、この背景とは z-index で分離する（§5.4）。
+interface Props {
+  mode: 'fixed' | 'normal';
+  color?: 'paper' | 'paper-deep';
+}
+const { mode, color = 'paper' } = Astro.props;
+
+// sandbox paper-bg-v2.astro と同一の C 値 noise（あめさん FB 反映済みの粒感）
+const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
+function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
+  const [r, g, b] = rgb;
+  const matrix = `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  0 0 0 ${alpha} 0`;
+  return (
+    "data:image/svg+xml;utf8," +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<filter id='n'>" +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${numOctaves}' seed='${seed}'/>` +
+    `<feColorMatrix values='${matrix}'/>` +
+    "</filter>" +
+    "<rect width='100%25' height='100%25' filter='url(%23n)'/>" +
+    "</svg>"
+  ).replaceAll("#", "%23");
+}
+const noiseUrl = makeNoiseSvg(NOISE);
+
+// mode="fixed" は --bg-current（演出 B が動的に差し替える）を使い、未設定時は color に応じた紙色。
+// mode="normal" は color 指定の実背景色を直に使う。
+const baseColorVar = color === 'paper-deep' ? 'var(--c-paper-deep)' : 'var(--c-paper)';
+const bgColor = mode === 'fixed' ? `var(--bg-current, ${baseColorVar})` : baseColorVar;
+---
+<div
+  class:list={['paper-bg', `paper-bg--${mode}`]}
+  aria-hidden="true"
+  style={`--paper-noise: url("${noiseUrl}"); --paper-color: ${bgColor};`}
+>
+</div>
+
+<style>
+  .paper-bg {
+    background-color: var(--paper-color);
+    background-image: var(--paper-noise);
+    background-repeat: repeat;
+    pointer-events: none;
+    user-select: none;
+  }
+  /* 領域 A: sticky ラッパ内に絶対配置で領域全体をカバー（最背面）。
+     背景色は --bg-current を演出 B が transition で差し替える（§5.3）。 */
+  .paper-bg--fixed {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transition: background-color var(--bg-transition, 800ms) var(--ease);
+  }
+  /* 領域 B: 各セクションの通常背景として全面に敷く。 */
+  .paper-bg--normal {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .paper-bg--fixed {
+      transition: none;
+    }
+  }
+</style>

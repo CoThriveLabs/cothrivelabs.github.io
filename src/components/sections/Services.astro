@@ -1,0 +1,73 @@
+---
+// S4 受けられる案件（設計書 §4.2）。6 カテゴリ・「対応可」止め・誇張 NG・価格は出さない。
+import SectionHeading from '../SectionHeading.astro';
+
+const services = [
+  { title: 'Web サイト制作', body: 'コーポレート・ポートフォリオなどの静的サイト。設計から公開まで。' },
+  { title: 'LP 制作', body: '営業・キャンペーン向けランディングページ。JukuMate で一式作った経験があります。' },
+  { title: '業務効率化', body: '手作業の自動化や社内ツールづくり。小さな困りごとから相談できます。' },
+  { title: 'AI 活用支援', body: 'Claude API などを使った機能の組み込み。何ができるかの整理から。' },
+  { title: 'プロトタイプ制作', body: 'アイデアを動く形にして検証する試作。Sprout のような小さな実験から。' },
+  { title: 'WordPress 対応', body: '既存 WordPress サイトの制作・調整にも対応できます。' },
+];
+---
+<section class="services" id="services">
+  <div class="services__inner">
+    <SectionHeading
+      title="受けられる案件"
+      lead="いま対応できることです。気になるものがあれば、まずはお声がけください。"
+    />
+    <ul class="services__grid">
+      {services.map((s) => (
+        <li class="services__item" data-reveal>
+          <h3 class="services__title">{s.title}</h3>
+          <p class="services__body">{s.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: var(--space-base) 1.5rem;
+  }
+  .services__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .services__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  .services__item {
+    padding: 1.75rem;
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .services__item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  .services__title {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--c-main);
+  }
+  .services__body {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.85;
+    color: var(--c-main-soft);
+  }
+</style>

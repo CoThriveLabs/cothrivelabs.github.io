@@ -18,5 +18,11 @@ export default defineConfig({
     // 出力は <page>/index.html 形式（Pages との相性が良い）
     format: 'directory',
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // 作業用ルート（/index-v2）と実験用（/sandbox/*）は noindex 扱い → sitemap からも除外。
+      // ※ /index-v2 は Phase 2-C で index.astro へ移植され消滅する一時ルート。
+      filter: (page) => !page.includes('/index-v2') && !page.includes('/sandbox'),
+    }),
+  ],
 });

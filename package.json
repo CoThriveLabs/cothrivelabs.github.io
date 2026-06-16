@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
+    "@fontsource/klee-one": "^5.2.8",
+    "@fontsource/shippori-mincho": "^5.2.8",
+    "@fontsource/zen-kaku-gothic-new": "^5.2.7",
     "astro": "^6.3.2"
   }
 }

@@ -1,0 +1,129 @@
+---
+// S1 ファーストビュー（設計書 §4.2）。
+// CTA なし・h1=サイト名・集合イラスト/手書きロゴは Phase 3 素材待ちのためプレースホルダ枠。
+// 背景は紙 C2（領域 A 先頭）。スクロール誘導のみ。
+---
+<section class="hero" id="hero" data-reveal>
+  <div class="hero__inner">
+    {/* 手書きロゴ枠（Phase 3 で SVG ロゴに差し替え） */}
+    <div class="hero__logo-frame" aria-hidden="true">
+      <span class="hero__logo-placeholder">こすらぼ ロゴ（準備中）</span>
+    </div>
+
+    <h1 class="hero__title">Co-Thrive Labs</h1>
+    <p class="hero__reading">こすらぼ</p>
+
+    {/* 集合イラスト枠（Phase 3 で透過イラストに差し替え） */}
+    <div class="hero__art-frame" aria-hidden="true">
+      <span class="hero__art-placeholder">集合イラスト（準備中）</span>
+    </div>
+  </div>
+
+  <div class="hero__scroll" aria-hidden="true">
+    <span class="hero__scroll-dot"></span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: var(--space-loose) 1.5rem var(--space-base);
+    text-align: center;
+  }
+  .hero__inner {
+    position: relative;
+    max-width: 760px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* ロゴ枠（準備中プレースホルダ） */
+  .hero__logo-frame {
+    width: min(280px, 70vw);
+    aspect-ratio: 16 / 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    border: 1px dashed var(--c-border);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--c-paper-deep) 50%, transparent);
+  }
+  .hero__logo-placeholder,
+  .hero__art-placeholder {
+    font-family: var(--font-accent);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--c-main-mute);
+  }
+  .hero__title {
+    margin: 0;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: var(--fs-h1);
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    color: var(--c-main);
+  }
+  .hero__reading {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-accent);
+    font-size: 1rem;
+    letter-spacing: 0.3em;
+    color: var(--c-accent);
+  }
+  /* 集合イラスト枠（準備中プレースホルダ） */
+  .hero__art-frame {
+    width: min(520px, 88vw);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2.5rem;
+    border: 1px dashed var(--c-border);
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--c-paper-deep) 50%, transparent);
+  }
+  /* スクロール誘導 */
+  .hero__scroll {
+    position: absolute;
+    bottom: 1.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 36px;
+    border: 1.5px solid var(--c-main-mute);
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    padding-top: 7px;
+  }
+  .hero__scroll-dot {
+    width: 3px;
+    height: 8px;
+    background: var(--c-main-soft);
+    border-radius: 999px;
+    animation: hero-scroll 1.8s var(--ease) infinite;
+  }
+  @keyframes hero-scroll {
+    0%   { transform: translateY(0);    opacity: 1; }
+    70%  { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(10px); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll-dot { animation: none; }
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      min-height: 84vh;
+      padding: var(--space-base) 1.25rem;
+    }
+  }
+</style>

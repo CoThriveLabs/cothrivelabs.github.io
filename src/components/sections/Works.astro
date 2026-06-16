@@ -1,0 +1,71 @@
+---
+// S5 制作物一覧（設計書 §4.2）。WorkCard で 4 件縦積み（横スクは Phase 4）。
+// sprout は実データ、残り 3 件（LE CIEL / JukuMate / gizirotto）は原稿待ちのため「準備中」。
+import SectionHeading from '../SectionHeading.astro';
+import WorkCard from '../WorkCard.astro';
+
+const works = [
+  {
+    title: 'Sprout',
+    subtitle: '成長する TODO アプリ',
+    challenge: 'ロードマップとタスクを一望できる場所がなく、長期目標の分解管理に困っていた。',
+    built: 'ゴール→タスク→ステップの3階層で管理し、進捗に応じて植物が育つ SPA。',
+    tags: ['FastAPI', 'SQLite', 'Vanilla JS'],
+    craft: 'AIエージェントが API 経由で直接タスクを投入でき、会話だけで運用できるようにした。',
+    detailUrl: '/works/sprout/',
+    status: '公開中' as const,
+  },
+  {
+    title: 'LE CIEL ÉTOILÉ',
+    subtitle: '架空フレンチレストランの紹介サイト',
+    status: '準備中' as const,
+  },
+  {
+    title: 'JukuMate',
+    subtitle: '個人塾向け業務自動化 SaaS の営業 LP',
+    status: '準備中' as const,
+  },
+  {
+    title: 'gizirotto',
+    subtitle: '議事録 AI',
+    status: '準備中' as const,
+  },
+];
+---
+<section class="works" id="works">
+  <div class="works__inner">
+    <SectionHeading
+      title="制作物一覧"
+      lead="こすらぼで作ってきたものです。うまくいかなかった過程も含めて残しています。"
+    />
+    <div class="works__list">
+      {works.map((w) => (
+        <WorkCard
+          title={w.title}
+          subtitle={w.subtitle}
+          challenge={w.challenge}
+          built={w.built}
+          tags={w.tags}
+          craft={w.craft}
+          detailUrl={w.detailUrl}
+          status={w.status}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .works {
+    padding: var(--space-snug) 1.5rem var(--space-base);
+  }
+  .works__inner {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .works__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+</style>

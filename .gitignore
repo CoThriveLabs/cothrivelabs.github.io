@@ -45,3 +45,11 @@ tests/screenshots/
 tests/videos/
 tests/__pycache__/
 test-screenshots/
+
+# Internal docs (not for public site repo)
+docs/
+spec.html
+
+# Backup files
+*.bak
+public/*.bak

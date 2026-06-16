@@ -13,7 +13,7 @@ export const updates = [
   {
     date: '2026-05-14',
     category: 'note 連載',
-    title: 'Claude Code で AI 社員 4 人を雇って、フリーランス独立を始めた話',
+    title: 'Claude Code で AIエージェント4体を雇って、フリーランス独立を始めた話',
     excerpt: 'こすらぼの運営記録・開発フロー・失敗談を毎週更新予定。第 1 回は近日公開。',
     link: '#',
     status: '近日公開',

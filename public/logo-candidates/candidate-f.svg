@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate F: 斜めのC+開口2丸で円を閉じ、逆側2丸が支える -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <!-- 斜めに傾けた「閉じた円」: 太い真円弧C(開口60度) + 開口を補完する2丸 -->
+  <g transform="rotate(15 31 32)">
+    <path d="M48.08 22.14 A19.72 19.72 0 1 0 48.08 41.86"
+          stroke="#F8F6F0" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <circle cx="50.21" cy="27.56" r="3.8" fill="#C97B5E"/>
+    <circle cx="50.21" cy="36.44" r="3.8" fill="#C97B5E"/>
+  </g>
+  <!-- その円を逆側(左)から支える2丸 -->
+  <circle cx="9.25" cy="21.86" r="3.4" fill="#C97B5E"/>
+  <circle cx="9.25" cy="42.14" r="3.4" fill="#C97B5E"/>
+</svg>

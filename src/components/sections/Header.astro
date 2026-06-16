@@ -1,0 +1,221 @@
+---
+// 共通ヘッダー（v2 新規）。日本語ラベルのみ（英語小添字 NG・仕様書 D4）+ セクションアンカー。
+// ロゴは Co-Thrive Labs テキスト（Phase 3 で手書きロゴに差し替え）。連絡先は CTA 風に右寄せ。
+// アンカーはルート相対（/#xxx）: トップ内ではページ内ジャンプ、works 詳細ページからはトップへ遷移して着地。
+const navItems = [
+  { label: 'スタジオ概要', href: '/#studio-about' },
+  { label: 'メンバー紹介', href: '/#members' },
+  { label: '受けられる案件', href: '/#services' },
+  { label: '制作物', href: '/#works' },
+  { label: '開発フロー', href: '/#devflow' },
+];
+---
+<header class="site-header" id="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__logo" href="/#hero" aria-label="Co-Thrive Labs トップへ">
+      <svg class="site-header__leaf" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M5 19 Q5 8 17 6 Q19 15 9 18 Q6 19 5 19 Z" fill="currentColor" opacity="0.85"/>
+        <path d="M7 17 Q11 12 16 9" stroke="var(--c-paper)" stroke-width="1" fill="none" opacity="0.5"/>
+      </svg>
+      <span class="site-header__logo-text">Co-Thrive Labs</span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="メインナビゲーション">
+      <ul class="site-header__list">
+        {navItems.map((item) => (
+          <li><a class="site-header__link" href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+      <a class="site-header__cta" href="/#contact">連絡先</a>
+    </nav>
+
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-label="メニューを開く"
+      aria-expanded="false"
+      aria-controls="site-header"
+    >
+      <span class="site-header__bar" aria-hidden="true"></span>
+      <span class="site-header__bar" aria-hidden="true"></span>
+      <span class="site-header__bar" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<script>
+  // モバイル: ハンバーガーで nav の開閉。reduced-motion 配慮は CSS 側で。
+  const header = document.getElementById('site-header');
+  const toggle = header?.querySelector('.site-header__toggle');
+  toggle?.addEventListener('click', () => {
+    const open = header!.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+  });
+  // リンククリックでメニューを閉じる
+  header?.querySelectorAll('.site-header__link, .site-header__cta').forEach((a) =>
+    a.addEventListener('click', () => {
+      header.classList.remove('is-open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    })
+  );
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--c-paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .site-header__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    height: var(--header-h);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .site-header__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--c-main);
+    flex-shrink: 0;
+  }
+  .site-header__leaf {
+    color: var(--c-accent);
+  }
+  .site-header__logo-text {
+    font-family: var(--font-accent);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+  .site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .site-header__list {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .site-header__link {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--c-main-soft);
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+    white-space: nowrap;
+  }
+  .site-header__link:hover {
+    color: var(--c-accent);
+  }
+  .site-header__cta {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--c-accent);
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  .site-header__cta:hover {
+    background: var(--c-accent-dark);
+    transform: translateY(-1px);
+  }
+  /* ハンバーガー（モバイルのみ表示） */
+  .site-header__toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .site-header__bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--c-main);
+    border-radius: 2px;
+    transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+  }
+
+  @media (max-width: 820px) {
+    .site-header__toggle {
+      display: inline-flex;
+    }
+    .site-header__nav {
+      position: absolute;
+      top: var(--header-h);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      background: var(--c-paper);
+      border-bottom: 1px solid var(--c-border);
+      padding: 0.5rem 1.5rem 1.25rem;
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+    }
+    .site-header.is-open .site-header__nav {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .site-header__list {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+    .site-header__link {
+      display: block;
+      padding: 0.85rem 0;
+      font-size: 0.95rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .site-header__cta {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    /* 開いたときのバツ印 */
+    .site-header.is-open .site-header__bar:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .site-header.is-open .site-header__bar:nth-child(2) {
+      opacity: 0;
+    }
+    .site-header.is-open .site-header__bar:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header__nav,
+    .site-header__bar,
+    .site-header__cta {
+      transition: none;
+    }
+  }
+</style>

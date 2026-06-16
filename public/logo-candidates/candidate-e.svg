@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate E: 太いC(真円弧)を角丸四角4粒が取り囲んで支え合う -->
+  <!-- C: 中心(31,32) 半径19.72 真円弧、開口右側、stroke-width 8 -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <path d="M46.54 19.86 A19.72 19.72 0 1 0 46.54 44.14"
+        stroke="#F8F6F0" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- 開口側(右)に2粒: Cの中・上下 -->
+  <rect x="42.78" y="21.05" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <rect x="42.78" y="35.95" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <!-- 背中側(左)に2粒: Cの外から支える -->
+  <rect x="6.83" y="18.42" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <rect x="6.83" y="38.58" width="7" height="7" rx="2" fill="#C97B5E"/>
+</svg>

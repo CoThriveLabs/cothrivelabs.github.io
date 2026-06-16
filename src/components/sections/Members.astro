@@ -1,0 +1,89 @@
+---
+// S3 メンバー紹介（設計書 §4.2）。MemberCard × 5。役割明示優先・メンバーカラーは装飾のみ。
+// テキストは D7 適合・W1 統一（メンバー表記、人数は文言化しない）。
+import SectionHeading from '../SectionHeading.astro';
+import MemberCard from '../MemberCard.astro';
+
+const members = [
+  {
+    name: 'あめまみれ',
+    role: 'Founder',
+    tagline: '要件定義から最終チェックまで。何を作るか決めて、最後にデバッグする人間です。',
+    color: 'var(--m-ame)',
+    image: '/members/amemamire.png',
+  },
+  {
+    name: 'さき',
+    role: 'CEO',
+    tagline: '仕様書づくりと方針決め。メンバー間の橋渡しと Chrome 実機チェックを担当します。',
+    color: 'var(--m-saki)',
+    image: '/members/saki.png',
+  },
+  {
+    name: 'ろぴ',
+    role: 'CTO',
+    tagline: '設計書とコードレビュー。実装前の段取りと、上がってきたコードの二次テスト役です。',
+    color: 'var(--m-ropi)',
+    image: '/members/ropi.png',
+  },
+  {
+    name: 'みつる',
+    role: '開発',
+    tagline: '実装担当。設計書を受け取って、まず動くものを作って自己テストまで回します。',
+    color: 'var(--m-mitsuru)',
+    image: '/members/mituru.png',
+  },
+  {
+    name: 'ともみ',
+    role: 'リサーチャー',
+    tagline: '市場調査と技術調べ物。仕様を固める前の下調べと、無料で済む手段の探索が得意です。',
+    color: 'var(--m-tomomi)',
+    image: '/members/tomomi.png',
+  },
+];
+---
+<section class="members" id="members">
+  <div class="members__inner">
+    <SectionHeading
+      title="メンバー紹介"
+      lead="5 人それぞれに役割があります。"
+    />
+    <div class="members__grid">
+      {members.map((m) => (
+        <MemberCard
+          name={m.name}
+          role={m.role}
+          tagline={m.tagline}
+          color={m.color}
+          image={m.image}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .members {
+    padding: var(--space-base) 1.5rem;
+  }
+  .members__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .members__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+  /* 5 枚を意図的に均等割りしすぎない: 広い画面では最後の 2 枚が少し詰まる自然な配置 */
+  @media (min-width: 960px) {
+    .members__grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .members__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

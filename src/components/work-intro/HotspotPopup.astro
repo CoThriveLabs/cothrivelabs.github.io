@@ -64,7 +64,7 @@ const { id, title, body, screenshot, label } = Astro.props;
   }
   .wi-popup__panel {
     position: relative;
-    background: var(--color-bg, #fbfaf5);
+    background: var(--c-paper);
     border-radius: 14px;
     padding: 2rem 1.75rem 1.75rem;
     max-width: 560px;
@@ -82,9 +82,9 @@ const { id, title, body, screenshot, label } = Astro.props;
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: 1px solid var(--color-border, #d8d5cb);
+    border: 1px solid var(--c-border);
     background: #fff;
-    color: var(--color-text, #2a2a2a);
+    color: var(--c-main);
     font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
@@ -95,32 +95,32 @@ const { id, title, body, screenshot, label } = Astro.props;
   }
   .wi-popup__close:hover,
   .wi-popup__close:focus-visible {
-    background: var(--color-bg-soft, #f4f1e0);
+    background: var(--c-paper-deep);
     transform: scale(1.05);
     outline: none;
   }
   .wi-popup__label {
     display: block;
-    font-family: var(--font-en, "Inter", sans-serif);
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-accent, #C97B5E);
+    color: var(--c-accent);
     margin-bottom: 0.3rem;
   }
   .wi-popup__title {
     margin: 0 2.5rem 0.75rem 0;
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: 1.2rem;
-    color: var(--color-text);
+    color: var(--c-main);
     line-height: 1.4;
   }
   .wi-popup__body {
     margin: 0 0 1.25rem;
     font-size: 0.95rem;
     line-height: 1.8;
-    color: var(--color-text);
+    color: var(--c-main);
   }
   .wi-popup__shot {
     width: 100%;
@@ -129,7 +129,7 @@ const { id, title, body, screenshot, label } = Astro.props;
     object-fit: contain;
     display: block;
     border-radius: 8px;
-    border: 1px solid var(--color-border, #d8d5cb);
+    border: 1px solid var(--c-border);
     background: #fff;
   }
 

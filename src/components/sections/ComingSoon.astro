@@ -1,0 +1,144 @@
+---
+// S8 案件受託案内（設計書 §4.3）。CTA 6 要素を構造として実装（フォーム挙動は Phase 5）。
+// 領域 B・C-DEEP 実背景。価格は「応相談」のみ・根拠なき「先着 N 名」NG・断定保証 NG。
+// ⑥邪魔排除: この section 内に他リンク・ナビ・ボタンを置かない。
+---
+<section class="coming-soon" id="coming-soon" data-reveal>
+  <div class="coming-soon__inner">
+    {/* ① outcome-driven ヘッドライン */}
+    <h2 class="coming-soon__headline">
+      Web 制作・LP・業務効率化のご相談、はじめませんか
+    </h2>
+    <p class="coming-soon__sub">現在準備中・先行のお声がけを受付中です。</p>
+
+    {/* ③ 具体的な social proof（実数のみ・誇張なし・S5 の 4 件と整合） */}
+    <p class="coming-soon__proof">
+      制作実績を公開中です（Sprout / LE CIEL / JukuMate / gizirotto の 4 件）。
+    </p>
+
+    {/* ⑤ 期間明示（具体時期はあめさん判断 TODO・未確定なので範囲表現） */}
+    <p class="coming-soon__period">
+      準備が整い次第、正式に受付を開始します。
+    </p>
+
+    {/* ② ファーストビューに 1 つだけの CTA（フォーム挙動は Phase 5） */}
+    <form class="coming-soon__form" data-phase5-pending>
+      <label class="coming-soon__label" for="cs-email">メールアドレス</label>
+      <div class="coming-soon__row">
+        <input
+          class="coming-soon__input"
+          id="cs-email"
+          type="email"
+          name="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        />
+        <button class="coming-soon__button" type="submit">
+          お声がけリストに登録
+        </button>
+      </div>
+      {/* ④ 紹介インセンティブは送信後の確認画面 / 自動返信で明示（Phase 5） */}
+      <p class="coming-soon__note">
+        登録後、受付開始のご案内を優先してお送りします。価格は応相談です。
+      </p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .coming-soon {
+    padding: var(--space-loose) 1.5rem;
+    background: var(--c-paper-deep);
+  }
+  .coming-soon__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .coming-soon__headline {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.4;
+    color: var(--c-main);
+  }
+  .coming-soon__sub {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--c-main-soft);
+  }
+  .coming-soon__proof,
+  .coming-soon__period {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    color: var(--c-main-mute);
+  }
+  .coming-soon__form {
+    margin-top: 2rem;
+    text-align: left;
+  }
+  .coming-soon__label {
+    display: block;
+    font-family: var(--font-accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--c-main-mute);
+    margin-bottom: 0.5rem;
+  }
+  .coming-soon__row {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .coming-soon__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.8rem 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--c-main);
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+  }
+  .coming-soon__input:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 1px;
+  }
+  .coming-soon__button {
+    flex-shrink: 0;
+    padding: 0.8rem 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--c-accent);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .coming-soon__button:hover {
+    background: var(--c-accent-dark);
+    transform: translateY(-1px);
+  }
+  .coming-soon__note {
+    margin: 0.85rem 0 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    line-height: 1.7;
+    color: var(--c-main-mute);
+  }
+
+  @media (max-width: 520px) {
+    .coming-soon__row {
+      flex-direction: column;
+    }
+    .coming-soon__button {
+      width: 100%;
+    }
+  }
+</style>

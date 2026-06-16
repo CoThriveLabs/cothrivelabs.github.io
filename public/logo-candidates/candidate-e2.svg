@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate E2: 太いC(真円弧)、開口側2粒はCの内部に・背中側2粒は外から支える -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <path d="M46.54 19.86 A19.72 19.72 0 1 0 46.54 44.14"
+        stroke="#F8F6F0" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- 開口側(右): Cの中に入り込む2粒・上下 -->
+  <rect x="39.19" y="21.75" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <rect x="39.19" y="35.25" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <!-- 背中側(左): Cの外から支える2粒 -->
+  <rect x="7.63" y="17.94" width="7" height="7" rx="2" fill="#C97B5E"/>
+  <rect x="7.63" y="39.06" width="7" height="7" rx="2" fill="#C97B5E"/>
+</svg>

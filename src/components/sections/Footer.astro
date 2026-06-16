@@ -1,0 +1,168 @@
+---
+// S10 Footer（設計書 §4.2）。絵文字撤去・法的書面 4 件リンク・note/X「準備中」。
+// 領域 B・C-DEEP 実背景（濃色フッタ）。法的書面ページは Phase 5 作成のため現状「準備中」。
+const year = new Date().getFullYear();
+const legal = [
+  { label: 'プライバシーポリシー', soon: true },
+  { label: '利用規約', soon: true },
+  { label: '特定商取引法に基づく表記', soon: true },
+  { label: 'セキュリティポリシー', soon: true },
+];
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <p class="site-footer__logo">Co-Thrive Labs</p>
+        <p class="site-footer__tagline">こすらぼ — AI と共に育つスタジオ</p>
+      </div>
+      <nav class="site-footer__links" aria-label="外部リンク">
+        <a href="https://github.com/CoThriveLabs" target="_blank" rel="noopener">GitHub</a>
+        <span class="site-footer__pending">note<span class="site-footer__badge">準備中</span></span>
+        <span class="site-footer__pending">X<span class="site-footer__badge">準備中</span></span>
+      </nav>
+    </div>
+
+    <nav class="site-footer__legal" aria-label="法的書面">
+      {legal.map((l) => (
+        l.soon
+          ? <span class="site-footer__legal-item is-soon">{l.label}<span class="site-footer__badge">準備中</span></span>
+          : <a class="site-footer__legal-item" href="#">{l.label}</a>
+      ))}
+    </nav>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">© {year} Co-Thrive Labs. All rights reserved.</p>
+      <p class="site-footer__craft">
+        Made with
+        <svg class="site-footer__craft-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2.5 5.5 H11 V9 a3 3 0 0 1 -3 3 H5.5 a3 3 0 0 1 -3 -3 Z" stroke="currentColor" stroke-width="1.1" fill="none"/>
+          <path d="M11 6.5 H12.5 a1.5 1.5 0 0 1 0 3 H11" stroke="currentColor" stroke-width="1.1" fill="none"/>
+          <path d="M4.5 2.2 Q4 3 4.5 3.8 M7 2.2 Q6.5 3 7 3.8" stroke="currentColor" stroke-width="1" fill="none" opacity="0.7"/>
+        </svg>
+        in Tokyo
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding: var(--space-base) 1.5rem 2.5rem;
+    background: linear-gradient(180deg, #2a2320 0%, #1f1a18 100%);
+    color: #d6d3cb;
+  }
+  .site-footer__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .site-footer__logo {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-accent);
+    font-size: 0.95rem;
+    letter-spacing: 0.2em;
+    color: #f4f1e8;
+    font-weight: 600;
+  }
+  .site-footer__tagline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: #9a978f;
+  }
+  .site-footer__links {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .site-footer__links a {
+    color: #d6d3cb;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.25s var(--ease);
+  }
+  .site-footer__links a:hover {
+    color: var(--c-accent);
+  }
+  .site-footer__pending,
+  .site-footer__legal-item.is-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #7a786f;
+    font-size: 0.88rem;
+    cursor: default;
+  }
+  .site-footer__badge {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(192, 108, 93, 0.22);
+    color: #e0a08c;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 1.5rem 0;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .site-footer__legal-item {
+    font-size: 0.82rem;
+    color: #b8b5ad;
+    text-decoration: none;
+  }
+  a.site-footer__legal-item:hover {
+    color: var(--c-accent);
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .site-footer__copyright {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #7a786f;
+  }
+  .site-footer__craft {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+    color: #7a786f;
+  }
+  .site-footer__craft-icon {
+    display: block;
+    transform: translateY(0.5px);
+    opacity: 0.85;
+  }
+
+  @media (max-width: 600px) {
+    .site-footer__bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

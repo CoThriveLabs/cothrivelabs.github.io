@@ -1,13 +1,20 @@
 ---
+// 公式 HP v2 トップ。領域 A（S1-S7・Phase 4 で背景固定 sticky 予定）/ 領域 B（S8-S10・通常スクロール）。
+// Header は自前の sections/Header を使うため Base 既定の Header は hideHeader で抑止。
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import About from '../components/About.astro';
-import Members from '../components/Members.astro';
-import Works from '../components/Works.astro';
-import Updates from '../components/Updates.astro';
-import Footer from '../components/Footer.astro';
+import Header from '../components/sections/Header.astro';
+import Hero from '../components/sections/Hero.astro';
+import StudioAbout from '../components/sections/StudioAbout.astro';
+import Members from '../components/sections/Members.astro';
+import Services from '../components/sections/Services.astro';
+import Works from '../components/sections/Works.astro';
+import DevFlow from '../components/sections/DevFlow.astro';
+import TechStack from '../components/sections/TechStack.astro';
+import ComingSoon from '../components/sections/ComingSoon.astro';
+import Contact from '../components/sections/Contact.astro';
+import Footer from '../components/sections/Footer.astro';
 
-// 構造化データ（ホームページのみ・Google 公式ルールに準拠）
+// 構造化データ（ホームページのみ・Google 公式ルールに準拠・W1 統一表記）
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -15,7 +22,8 @@ const organizationJsonLd = {
   alternateName: ['こすらぼ', 'Co-Thrive Labs（こすらぼ）'],
   url: 'https://cothrivelabs.com',
   logo: 'https://cothrivelabs.com/logo.png',
-  description: 'Co-Thrive Labs（こすらぼ）は、4人のAIエージェントと共にスピード感のある開発を行う個人開発スタジオ。企画・設計から実装・運用まで、一人でフルスタックに手がけます。',
+  description:
+    'Co-Thrive Labs（こすらぼ）は、AIエージェント4体と共にスピード感のある開発を行う個人開発スタジオ。企画・設計から実装・運用まで、一人でフルスタックに手がけます。',
   sameAs: ['https://github.com/CoThriveLabs'],
 };
 const websiteJsonLd = {
@@ -26,8 +34,7 @@ const websiteJsonLd = {
   url: 'https://cothrivelabs.com/',
 };
 ---
-
-<Base title="Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集">
+<Base title="Co-Thrive Labs（こすらぼ）— AIエージェント4体と作る作品集" hideHeader={true}>
   <script
     type="application/ld+json"
     slot="head-extra"
@@ -40,10 +47,41 @@ const websiteJsonLd = {
     is:inline
     set:html={JSON.stringify(websiteJsonLd)}
   />
-  <Hero />
-  <About />
-  <Members />
-  <Works />
-  <Updates />
+
+  <Header />
+  <main class="home">
+    {/* 領域 A: S1-S7（Phase 4 で背景固定 sticky・現状は通常フロー） */}
+    <div class="region-a">
+      <Hero />
+      <StudioAbout />
+      <Members />
+      <Services />
+      <Works />
+      <DevFlow />
+      <TechStack />
+    </div>
+
+    {/* 領域 B: S8-S10（通常スクロール・実背景色） */}
+    <div class="region-b">
+      <ComingSoon />
+      <Contact />
+    </div>
+  </main>
   <Footer />
 </Base>
+
+<style>
+  .home {
+    display: block;
+  }
+  /* 領域 A: 背景は紙 C2。Phase 4 で sticky 背景レイヤを内包する */
+  .region-a {
+    position: relative;
+    background: var(--c-paper);
+  }
+  /* 領域 B: 通常スクロール・実背景色（S8/S10 は C-DEEP / S9 は C2） */
+  .region-b {
+    position: relative;
+    background: var(--c-paper-deep);
+  }
+</style>

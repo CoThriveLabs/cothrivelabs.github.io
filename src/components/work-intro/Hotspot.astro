@@ -176,7 +176,7 @@ const { image, image_alt, pins } = Astro.props;
 <style>
   .wi-hotspot {
     padding: clamp(3rem, 6vw, 5rem) 1.5rem;
-    background: var(--color-bg-soft, #f4f1e0);
+    background: var(--c-paper-deep);
   }
   .wi-hotspot__inner {
     max-width: 880px;
@@ -188,25 +188,25 @@ const { image, image_alt, pins } = Astro.props;
     gap: 0.9rem;
     margin: 0 0 1.25rem;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--c-border);
   }
   .wi-section-title__num {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--color-accent);
+    color: var(--c-accent);
     letter-spacing: var(--ls-tight);
   }
   .wi-section-title__text {
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: clamp(1.4rem, 3vw, 1.85rem);
-    color: var(--color-text);
+    color: var(--c-main);
     line-height: 1.3;
   }
   .wi-hotspot__lead {
     margin: 0 0 1.75rem;
     font-size: 0.95rem;
-    color: var(--color-text-sub, #555);
+    color: var(--c-main-soft);
     line-height: 1.7;
   }
   .wi-hotspot__viewport {
@@ -214,7 +214,7 @@ const { image, image_alt, pins } = Astro.props;
     border-radius: 10px;
     overflow: hidden;
     background: #fff;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--c-border);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   }
   .wi-hotspot__image {
@@ -239,16 +239,16 @@ const { image, image_alt, pins } = Astro.props;
     gap: 0.65rem;
     padding: 0.6rem 0.8rem;
     background: #fff;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--c-border);
     border-radius: 8px;
     cursor: pointer;
-    color: var(--color-text);
+    color: var(--c-main);
     transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
     font: inherit;
   }
   .wi-hotspot__legend-item:hover,
   .wi-hotspot__legend-item:focus-visible {
-    border-color: var(--color-accent, #C97B5E);
+    border-color: var(--c-accent);
     transform: translateY(-1px);
     outline: none;
   }
@@ -259,9 +259,9 @@ const { image, image_alt, pins } = Astro.props;
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--color-accent, #C97B5E);
+    background: var(--c-accent);
     color: #fff;
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.75rem;
     font-weight: 700;
     flex-shrink: 0;

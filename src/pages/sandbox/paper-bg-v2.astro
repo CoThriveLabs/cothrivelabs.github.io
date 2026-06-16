@@ -1,0 +1,177 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// 紙テクスチャ背景 v2。あめさん FB:「C くらいの粒感じゃないと素材感が見て分からない」
+// → noise は全パターン C 値（baseFreq 0.35 / octaves 3 / seed 11 / α 0.14 / rgb 0.32,0.24,0.14）で固定。
+// 背景色だけ B1/B2/B3 と C 原色で振り、白系背景に C 粒感を乗せた質感を比較する。
+
+// 全パターン共通の C 値 noise
+const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
+
+function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
+  const [r, g, b] = rgb;
+  const matrix = `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  0 0 0 ${alpha} 0`;
+  return (
+    "data:image/svg+xml;utf8," +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<filter id='n'>" +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${numOctaves}' seed='${seed}'/>` +
+    `<feColorMatrix values='${matrix}'/>` +
+    "</filter>" +
+    "<rect width='100%25' height='100%25' filter='url(%23n)'/>" +
+    "</svg>"
+  ).replaceAll("#", "%23");
+}
+
+const noiseUrl = makeNoiseSvg(NOISE);
+const noiseSummary = "noise 統一: baseFreq 0.35 / α 0.14 / rgb(0.32,0.24,0.14) ／ 背景色のみ変化";
+
+const patterns = [
+  { id: "C1", bg: "#f5ecdd", note: "やや白め + C 粒感", recommended: false },
+  { id: "C2", bg: "#f9f2e6", note: "白め中間 + C 粒感", recommended: true },
+  { id: "C3", bg: "#fcf7ec", note: "かなり白 + C 粒感", recommended: false },
+  { id: "C-DEEP", bg: "#ece1c8", note: "濃色アクセント用（たまに使う想定）", recommended: false },
+];
+---
+
+<Base title="紙テクスチャ背景 v2（C 粒感統一）— Sandbox（非公開）">
+  <Fragment slot="head-extra">
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="paper-sandbox">
+    {
+      patterns.map((p) => (
+        <section
+          class="panel"
+          style={{
+            backgroundColor: p.bg,
+            backgroundImage: `url("${noiseUrl}")`,
+          }}
+        >
+          <div class="panel-inner">
+            <p class="noise-summary">{noiseSummary}</p>
+            <div class="label-row">
+              <span class="pid">PATTERN {p.id}</span>
+              {p.recommended && <span class="badge">採用候補</span>}
+            </div>
+            <p class="meta">
+              <span class="bg-chip" style={{ backgroundColor: p.bg }} />
+              背景色 {p.bg}　/　{p.note}
+            </p>
+
+            <div class="sample">
+              <h2 class="sample-h1">Co-Thrive Labs</h2>
+              <p class="sample-h2">AI 社員 4 人で運営する個人開発スタジオ</p>
+              <p class="sample-body">
+                私たちは少人数で、ひとつひとつの作品にじっくり向き合う開発スタジオです。
+                <br />
+                技術とデザインの両面から、使う人の暮らしにそっと馴染むものづくりを大切にしています。
+                <br />
+                小さなチームだからこそ届けられる、丁寧で温かい体験を目指しています。
+              </p>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+  </main>
+</Base>
+
+<style>
+  .paper-sandbox {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .panel {
+    width: 100vw;
+    min-height: 70vh;
+    background-repeat: repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    box-sizing: border-box;
+  }
+  .panel-inner {
+    max-width: var(--max-w);
+    width: 100%;
+    margin: 0 auto;
+  }
+  .noise-summary {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-en);
+    font-size: 0.82rem;
+    letter-spacing: 0.02em;
+    color: var(--color-text-mute);
+    border-left: 3px solid var(--color-primary);
+    padding-left: 0.7rem;
+  }
+  .label-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+  .pid {
+    font-family: var(--font-en);
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: var(--ls-tight);
+    color: #2a2a2a;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--color-accent);
+    color: #fff;
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(201, 123, 94, 0.45);
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 2.5rem;
+    font-family: var(--font-jp);
+    font-size: 0.95rem;
+    color: var(--color-text-sub);
+  }
+  .bg-chip {
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .sample {
+    max-width: 720px;
+  }
+  .sample-h1 {
+    font-family: var(--font-en);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+    line-height: 1.05;
+  }
+  .sample-h2 {
+    font-family: var(--font-jp);
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 1.5rem;
+  }
+  .sample-body {
+    font-family: var(--font-jp);
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--color-text-sub);
+    margin: 0;
+  }
+</style>

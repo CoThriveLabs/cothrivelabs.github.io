@@ -2,7 +2,7 @@
 
 [![Deploy to GitHub Pages](https://github.com/CoThriveLabs/cothrivelabs.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/CoThriveLabs/cothrivelabs.github.io/actions/workflows/deploy.yml)
 
-オーナー 1 人と AI 社員 4 人で運営している個人 AI 会社 **Co-Thrive Labs（こすらぼ）** のポートフォリオサイトです。
+オーナー 1 人と AIエージェント4体で運営している個人 AI スタジオ **Co-Thrive Labs（こすらぼ）** のポートフォリオサイトです。
 
 > ひとりじゃない、ひとりの仕事。
 > AI と一緒に作ったものを、ちゃんと残しておく場所。

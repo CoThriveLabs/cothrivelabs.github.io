@@ -1,0 +1,65 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+
+<Base title="Sandbox — Co-Thrive Labs（非公開）">
+  <Fragment slot="head-extra">
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="sandbox-index">
+    <h1>Sandbox</h1>
+    <p class="note">公開対象外の試作置き場。検索エンジンには登録されません。</p>
+    <ul class="list">
+      <li>
+        <a href="/sandbox/paper-bg">紙テクスチャ背景 7 パターン比較（paper-bg）</a>
+      </li>
+      <li>
+        <a href="/sandbox/paper-bg-v2">紙テクスチャ背景 v2 — C 粒感統一 4 パターン（paper-bg-v2）</a>
+      </li>
+      <li>
+        <a href="/sandbox/fonts">フォント比較 — しっぽり明朝 / Zen Kaku Gothic New / Klee One（fonts）</a>
+      </li>
+      <li>
+        <a href="/sandbox/colors">配色比較 — Gemini 5 案 × C2 紙テクスチャ（colors）</a>
+      </li>
+    </ul>
+  </main>
+</Base>
+
+<style>
+  .sandbox-index {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: calc(var(--header-h) + 3rem) 1.5rem 5rem;
+    font-family: var(--font-jp);
+  }
+  .sandbox-index h1 {
+    font-family: var(--font-en);
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin: 0 0 0.75rem;
+  }
+  .note {
+    color: var(--color-text-mute);
+    margin: 0 0 2rem;
+  }
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .list a {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s var(--ease);
+  }
+  .list a:hover {
+    border-bottom-color: var(--color-primary);
+  }
+</style>

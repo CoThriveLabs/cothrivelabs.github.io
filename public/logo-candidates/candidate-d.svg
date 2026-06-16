@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate D (BtoB推し): 同心円上に4つを明確に分離・端整な円環 -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <path d="M48 22 Q40 14 30 16 Q16 18 14 32 Q14 46 28 48 Q40 50 48 42"
+        stroke="#F8F6F0" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <circle cx="48.57" cy="23.05" r="2.9" fill="#C97B5E"/>
+  <circle cx="50.48" cy="28.92" r="2.9" fill="#C97B5E"/>
+  <circle cx="50.48" cy="35.08" r="2.9" fill="#C97B5E"/>
+  <circle cx="48.57" cy="40.95" r="2.9" fill="#C97B5E"/>
+</svg>

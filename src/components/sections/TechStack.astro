@@ -1,0 +1,108 @@
+---
+// S7 技術スタック（設計書 §4.2）。カテゴリ別 3 段グリッド・用途一言。領域 A 最終。
+// C-DEEP 背景。ロゴ SVG は素材収集後に追加（現状は名前 + 用途のテキスト骨格）。
+import SectionHeading from '../SectionHeading.astro';
+
+const categories = [
+  {
+    name: 'フロントエンド',
+    items: [
+      { name: 'Astro', use: 'サイト・LP の土台。このサイトも Astro 製。' },
+      { name: 'HTML / CSS / JS', use: '素の Web 標準で軽く堅く作る。' },
+    ],
+  },
+  {
+    name: 'バックエンド・インフラ',
+    items: [
+      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。' },
+      { name: 'FastAPI / SQLite', use: 'Sprout のような小さな API + DB。' },
+    ],
+  },
+  {
+    name: 'AI・その他',
+    items: [
+      { name: 'Claude API', use: 'AI 機能の組み込み。JukuMate で本番投入。' },
+      { name: 'WordPress', use: '既存 WordPress サイトの制作・調整。' },
+    ],
+  },
+];
+---
+<section class="techstack" id="techstack">
+  <div class="techstack__inner">
+    <SectionHeading
+      title="技術スタック"
+      lead="案件に合わせて、無料枠で堅く作れる組み合わせを選んでいます。"
+    />
+    <div class="techstack__grid">
+      {categories.map((cat) => (
+        <div class="techstack__cat" data-reveal>
+          <h3 class="techstack__cat-name">{cat.name}</h3>
+          <ul class="techstack__items">
+            {cat.items.map((it) => (
+              <li class="techstack__item">
+                <span class="techstack__item-name">{it.name}</span>
+                <span class="techstack__item-use">{it.use}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .techstack {
+    padding: var(--space-base) 1.5rem;
+    background: var(--c-paper-deep);
+  }
+  .techstack__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  .techstack__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .techstack__cat {
+    padding: 1.75rem;
+    background: color-mix(in srgb, var(--c-paper) 70%, transparent);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+  }
+  .techstack__cat-name {
+    margin: 0 0 1rem;
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--c-main);
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .techstack__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .techstack__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .techstack__item-name {
+    font-family: var(--font-accent);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--c-accent);
+  }
+  .techstack__item-use {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--c-main-soft);
+  }
+</style>
