@@ -19,6 +19,7 @@
     "astro": "^6.3.2"
   },
   "devDependencies": {
-    "potrace": "^2.1.8"
+    "potrace": "^2.1.8",
+    "simple-icons": "^16.23.0"
   }
 }

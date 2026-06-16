@@ -1,28 +1,35 @@
 ---
-// S7 技術スタック（設計書 §4.2）。カテゴリ別 3 段グリッド・用途一言。領域 A 最終。
-// C-DEEP 背景。ロゴ SVG は素材収集後に追加（現状は名前 + 用途のテキスト骨格）。
+// S7 技術スタック（設計書 §4.2 / §6 task5）。カテゴリ別 3 段グリッド・用途一言。領域 A 最終。
+// C-DEEP 背景。各技術の公式配布ロゴ（simple-icons・CC0）をインライン SVG で表示。
+// SVG は currentColor 塗りで、item ごとのブランドカラーを CSS color で当てる。
 import SectionHeading from '../SectionHeading.astro';
+import astroLogo from '../../assets/tech-logos/astro.svg?raw';
+import html5Logo from '../../assets/tech-logos/html5.svg?raw';
+import cfWorkersLogo from '../../assets/tech-logos/cloudflareworkers.svg?raw';
+import fastapiLogo from '../../assets/tech-logos/fastapi.svg?raw';
+import claudeLogo from '../../assets/tech-logos/claude.svg?raw';
+import wordpressLogo from '../../assets/tech-logos/wordpress.svg?raw';
 
 const categories = [
   {
     name: 'フロントエンド',
     items: [
-      { name: 'Astro', use: 'サイト・LP の土台。このサイトも Astro 製。' },
-      { name: 'HTML / CSS / JS', use: '素の Web 標準で軽く堅く作る。' },
+      { name: 'Astro', use: 'サイト・LP の土台。このサイトも Astro 製。', logo: astroLogo, color: '#BC52EE' },
+      { name: 'HTML / CSS / JS', use: '素の Web 標準で軽く堅く作る。', logo: html5Logo, color: '#E34F26' },
     ],
   },
   {
     name: 'バックエンド・インフラ',
     items: [
-      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。' },
-      { name: 'FastAPI / SQLite', use: 'Sprout のような小さな API + DB。' },
+      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。', logo: cfWorkersLogo, color: '#F38020' },
+      { name: 'FastAPI / SQLite', use: 'Sprout のような小さな API + DB。', logo: fastapiLogo, color: '#009688' },
     ],
   },
   {
     name: 'AI・その他',
     items: [
-      { name: 'Claude API', use: 'AI 機能の組み込み。JukuMate で本番投入。' },
-      { name: 'WordPress', use: '既存 WordPress サイトの制作・調整。' },
+      { name: 'Claude API', use: 'AI 機能の組み込み。JukuMate で本番投入。', logo: claudeLogo, color: '#D97757' },
+      { name: 'WordPress', use: '既存 WordPress サイトの制作・調整。', logo: wordpressLogo, color: '#21759B' },
     ],
   },
 ];
@@ -40,8 +47,11 @@ const categories = [
           <ul class="techstack__items">
             {cat.items.map((it) => (
               <li class="techstack__item">
-                <span class="techstack__item-name">{it.name}</span>
-                <span class="techstack__item-use">{it.use}</span>
+                <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
+                <span class="techstack__item-body">
+                  <span class="techstack__item-name">{it.name}</span>
+                  <span class="techstack__item-use">{it.use}</span>
+                </span>
               </li>
             ))}
           </ul>
@@ -89,6 +99,22 @@ const categories = [
     gap: 0.9rem;
   }
   .techstack__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  .techstack__item-logo {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: 1.5rem;
+    margin-top: 0.15rem;
+  }
+  .techstack__item-logo :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .techstack__item-body {
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
