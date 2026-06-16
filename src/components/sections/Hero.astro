@@ -1,11 +1,18 @@
 ---
-// S1 ファーストビュー（設計書 §4.2）。
-// CTA なし・h1=サイト名・集合イラスト/手書きロゴは Phase 3 素材待ちのためプレースホルダ枠。
+// S1 ファーストビュー（設計書 §4.2 / §5.2）。
+// CTA なし・h1=サイト名・手書きロゴは Phase 3 素材待ちのためプレースホルダ枠。
+// 集合イラストは Phase 3 で実体化：メンバーを個別 DOM レイヤー（L1/L2）に分割し、
+// data-hero-layer 属性 + will-change 予約で Phase 4 演出 A（Hero 奥入り込み）が乗れる形にする。
+// 演出（scale/translate/blur）は Phase 4。Phase 3 は静的レイヤー構造まで。
 // 背景は紙 C2（領域 A 先頭）。スクロール誘導のみ。
+import { Picture } from 'astro:assets';
+import centerImg from '../../assets/hero/center.png';
+import tomomiImg from '../../assets/hero/tomomi.png';
+import ropiImg from '../../assets/hero/ropi.png';
 ---
 <section class="hero" id="hero" data-reveal>
   <div class="hero__inner">
-    {/* 手書きロゴ枠（Phase 3 で SVG ロゴに差し替え） */}
+    {/* 手書きロゴ枠（task 2 で SVG ロゴに差し替え） */}
     <div class="hero__logo-frame" aria-hidden="true">
       <span class="hero__logo-placeholder">こすらぼ ロゴ（準備中）</span>
     </div>
@@ -13,9 +20,44 @@
     <h1 class="hero__title">Co-Thrive Labs</h1>
     <p class="hero__reading">こすらぼ</p>
 
-    {/* 集合イラスト枠（Phase 3 で透過イラストに差し替え） */}
-    <div class="hero__art-frame" aria-hidden="true">
-      <span class="hero__art-placeholder">集合イラスト（準備中）</span>
+    {/* 集合イラスト：メンバーを個別レイヤーに分割（Phase 4 演出 A の前提構造） */}
+    <div class="hero__art" role="img" aria-label="Co-Thrive Labs のメンバー 5 人の集合イラスト">
+      {/* L2 中央・ゆっくり：みつる + さき + あめまみれ */}
+      <div class="hero__layer hero__layer--l2" data-hero-layer="l2" aria-hidden="true">
+        <Picture
+          src={centerImg}
+          formats={['avif', 'webp']}
+          alt=""
+          width={1536}
+          height={1024}
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+      {/* L1 手前・速い：ともみ + ろぴ */}
+      <div class="hero__layer hero__layer--l1" data-hero-layer="l1" aria-hidden="true">
+        <Picture
+          src={tomomiImg}
+          formats={['avif', 'webp']}
+          alt=""
+          width={1536}
+          height={1024}
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+        />
+        <Picture
+          src={ropiImg}
+          formats={['avif', 'webp']}
+          alt=""
+          width={1536}
+          height={1024}
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
     </div>
   </div>
 
@@ -55,8 +97,7 @@
     border-radius: var(--radius);
     background: color-mix(in srgb, var(--c-paper-deep) 50%, transparent);
   }
-  .hero__logo-placeholder,
-  .hero__art-placeholder {
+  .hero__logo-placeholder {
     font-family: var(--font-accent);
     font-size: 0.8rem;
     letter-spacing: 0.1em;
@@ -78,17 +119,35 @@
     letter-spacing: 0.3em;
     color: var(--c-accent);
   }
-  /* 集合イラスト枠（準備中プレースホルダ） */
-  .hero__art-frame {
-    width: min(520px, 88vw);
-    aspect-ratio: 16 / 9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* 集合イラスト（メンバー個別レイヤー・Phase 4 演出 A の前提構造） */
+  .hero__art {
+    position: relative;
+    width: min(560px, 90vw);
+    aspect-ratio: 1536 / 1024;
     margin-top: 2.5rem;
-    border: 1px dashed var(--c-border);
-    border-radius: var(--radius);
-    background: color-mix(in srgb, var(--c-paper-deep) 50%, transparent);
+  }
+  /* 各レイヤーは枠全体に重ねる（3 枚が同一構図の透過 PNG で合わさり 1 枚絵になる） */
+  .hero__layer {
+    position: absolute;
+    inset: 0;
+  }
+  .hero__layer :global(picture),
+  .hero__layer :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  /* L2 中央・ゆっくり：その場でゆっくり拡大（Phase 4） */
+  .hero__layer--l2 {
+    z-index: 1;
+    will-change: transform;
+  }
+  /* L1 手前・速い：外側へ大きく速く（Phase 4） */
+  .hero__layer--l1 {
+    z-index: 2;
+    will-change: transform;
   }
   /* スクロール誘導 */
   .hero__scroll {
