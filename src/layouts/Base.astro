@@ -123,6 +123,8 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
+    {/* ポンポン出現（設計書 §5.6・F4-b）。Astro が GSAP 込みでバンドル・defer 読込。 */}
+    <script>import '../scripts/reveal.ts';</script>
   </body>
 </html>
 
@@ -222,6 +224,14 @@ const ogImageURL = Astro.site
     transform: translateY(0);
   }
 
+  /* ポンポン出現の初期状態（設計書 §5.6・実体は scripts/reveal.ts）。
+     入域前のチラ見え防止。reveal.ts が GSAP で opacity/translateY を 0→可視へ。 */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    will-change: opacity, transform;
+  }
+
   /* 旧 v1 の番号振り・英語添字ユーティリティ（巨大背面番号 / "01 About" 風ラベル / eyebrow）は
      v2 で全撤去（設計書 §6 Phase 1 / 仕様書 D4「番号振り NG・英語小添字 NG・見出しは日本語のみ」）。 */
 
@@ -239,6 +249,10 @@ const ogImageURL = Astro.site
     }
     [data-fade] {
       transition: none;
+      opacity: 1;
+      transform: none;
+    }
+    [data-reveal] {
       opacity: 1;
       transform: none;
     }

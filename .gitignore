@@ -38,7 +38,7 @@ Thumbs.db
 SPEC.md
 DESIGN_PHASE_*.md
 DEPLOY.md
-scripts/
+/scripts/
 
 # test artifacts (社内検証物・容量大きいため除外)
 tests/screenshots/
