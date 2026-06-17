@@ -127,6 +127,9 @@ const ogImageURL = Astro.site
     <script>import '../scripts/reveal.ts';</script>
     {/* 演出 B グラデ背景切替（設計書 §5.3・F4-c）。reveal.ts と別ファイル・別 IO instance（§5.4.1）。 */}
     <script>import '../scripts/bgGradient.ts';</script>
+    {/* 横スク 2 ゾーン（設計書 §5.5・F3）。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
+        768px+ かつ非 reduced-motion のみ pin 発動。SP/reduce は CSS 既定の縦積み。 */}
+    <script>import '../scripts/horizontalZones.ts';</script>
   </body>
 </html>
 

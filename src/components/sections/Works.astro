@@ -84,4 +84,37 @@ const works = [
     flex-direction: column;
     gap: 1.5rem;
   }
+
+  /* 768px+ かつ非 reduced-motion: ステップ送り横スク用に横並び化
+     （実際の pin / translateX は horizontalZones.ts が担当・設計書 §5.5 / タスク D） */
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .works {
+      /* pin される section。inner の max-width を超えてフルブリードで使う */
+      padding-left: 0;
+      padding-right: 0;
+      overflow: hidden;
+    }
+    .works__inner {
+      max-width: none;
+      margin: 0;
+      padding: 0 1.5rem;
+    }
+    .works__list {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 2rem;
+      will-change: transform;
+    }
+    /* Astro scoped CSS は別 component (WorkCard.astro) の DOM 要素には
+       data-astro-cid を継承しないため、子セレクタ `.works__list > *` が WorkCard の
+       <article class="work-card"> に当たらない。:global() で scope を抜けて直接当てる。
+       三次差し戻し原因: width 指定が当たらず flex item が default で縮み、
+       scrollWidth ≈ clientWidth で totalScroll ≈ 0 → pin の意味なし状態だった。 */
+    .works__list > :global(.work-card) {
+      flex: 0 0 auto;
+      width: min(560px, 80vw);
+      /* flex shrink 防止の念押し（flex 指定だけで効くが Safari 等で稀に override される保険） */
+      min-width: min(560px, 80vw);
+    }
+  }
 </style>

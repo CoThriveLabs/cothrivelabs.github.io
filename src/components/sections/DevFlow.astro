@@ -99,4 +99,34 @@ const steps = [
       font-size: 1.25rem;
     }
   }
+
+  /* 768px+ かつ非 reduced-motion: scrub 連続横スク用に横並び化
+     （実際の pin / translateX は horizontalZones.ts が担当・設計書 §5.5 / タスク D） */
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .devflow {
+      padding-left: 0;
+      padding-right: 0;
+      overflow: hidden;
+    }
+    .devflow__inner {
+      max-width: none;
+      margin: 0;
+      padding: 0 1.5rem;
+    }
+    .devflow__list {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 2rem;
+      align-items: stretch;
+      will-change: transform;
+    }
+    .devflow__step {
+      flex: 0 0 auto;
+      width: min(320px, 40vw);
+      /* flex shrink 防止の念押し（Works と同方針・三次差し戻し対策） */
+      min-width: min(320px, 40vw);
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 </style>
