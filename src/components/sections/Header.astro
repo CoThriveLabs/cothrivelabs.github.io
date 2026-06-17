@@ -1,7 +1,8 @@
 ---
 // 共通ヘッダー（v2 新規）。日本語ラベルのみ（英語小添字 NG・仕様書 D4）+ セクションアンカー。
-// ロゴは Co-Thrive Labs テキスト（Phase 3 で手書きロゴに差し替え）。連絡先は CTA 風に右寄せ。
+// ロゴは手書きロゴ SVG（heroLogoPath 使用）。連絡先は CTA 風に右寄せ。
 // アンカーはルート相対（/#xxx）: トップ内ではページ内ジャンプ、works 詳細ページからはトップへ遷移して着地。
+import { heroLogoPath, heroLogoViewBox } from './heroLogoPath';
 const navItems = [
   { label: 'スタジオ概要', href: '/#studio-about' },
   { label: 'メンバー紹介', href: '/#members' },
@@ -13,11 +14,14 @@ const navItems = [
 <header class="site-header" id="site-header">
   <div class="site-header__inner">
     <a class="site-header__logo" href="/#hero" aria-label="Co-Thrive Labs トップへ">
-      <svg class="site-header__leaf" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-        <path d="M5 19 Q5 8 17 6 Q19 15 9 18 Q6 19 5 19 Z" fill="currentColor" opacity="0.85"/>
-        <path d="M7 17 Q11 12 16 9" stroke="var(--c-paper)" stroke-width="1" fill="none" opacity="0.5"/>
+      <svg
+        class="site-header__logo-svg"
+        viewBox={heroLogoViewBox}
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path d={heroLogoPath} fill="var(--c-accent)" fill-rule="evenodd" />
       </svg>
-      <span class="site-header__logo-text">Co-Thrive Labs</span>
     </a>
 
     <nav class="site-header__nav" aria-label="メインナビゲーション">
@@ -88,14 +92,10 @@ const navItems = [
     color: var(--c-main);
     flex-shrink: 0;
   }
-  .site-header__leaf {
-    color: var(--c-accent);
-  }
-  .site-header__logo-text {
-    font-family: var(--font-accent);
-    font-size: 0.95rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+  .site-header__logo-svg {
+    width: auto;
+    height: 28px;
+    display: block;
   }
   .site-header__nav {
     display: flex;

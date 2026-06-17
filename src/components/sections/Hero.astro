@@ -18,8 +18,7 @@ import HeroLogo from './HeroLogo.astro';
       <HeroLogo />
     </div>
 
-    <h1 class="hero__title">Co-Thrive Labs</h1>
-    <p class="hero__reading">こすらぼ</p>
+    <h1 class="sr-only">Co-Thrive Labs（こすらぼ）</h1>
 
     {/* 集合イラスト：メンバーを個別レイヤーに分割（Phase 4 演出 A の前提構造） */}
     <div class="hero__art" role="img" aria-label="Co-Thrive Labs のメンバー 5 人の集合イラスト">
@@ -81,7 +80,7 @@ import HeroLogo from './HeroLogo.astro';
   }
   .hero__inner {
     position: relative;
-    max-width: 760px;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -90,28 +89,24 @@ import HeroLogo from './HeroLogo.astro';
   .hero__logo {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
   }
-  .hero__title {
-    margin: 0;
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: var(--fs-h1);
-    line-height: 1.2;
-    letter-spacing: 0.02em;
-    color: var(--c-main);
-  }
-  .hero__reading {
-    margin: 0.5rem 0 0;
-    font-family: var(--font-accent);
-    font-size: 1rem;
-    letter-spacing: 0.3em;
-    color: var(--c-accent);
+  /* SEO 用非表示 h1 */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
   }
   /* 集合イラスト（メンバー個別レイヤー・Phase 4 演出 A の前提構造） */
   .hero__art {
     position: relative;
-    width: min(560px, 90vw);
+    width: min(700px, 92vw);
     aspect-ratio: 1536 / 1024;
     margin-top: 2.5rem;
   }
