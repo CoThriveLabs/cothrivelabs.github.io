@@ -125,6 +125,8 @@ const ogImageURL = Astro.site
     </script>
     {/* ポンポン出現（設計書 §5.6・F4-b）。Astro が GSAP 込みでバンドル・defer 読込。 */}
     <script>import '../scripts/reveal.ts';</script>
+    {/* 演出 B グラデ背景切替（設計書 §5.3・F4-c）。reveal.ts と別ファイル・別 IO instance（§5.4.1）。 */}
+    <script>import '../scripts/bgGradient.ts';</script>
   </body>
 </html>
 
@@ -156,6 +158,9 @@ const ogImageURL = Astro.site
     --max-w: 1120px;
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
     --bg-transition: 800ms;
+    /* 演出 B グラデ背景切替が書き換える唯一の変数（設計書 §5.3.1）。
+       初期値 C2 で JS 未実行でも表示が崩れない（プログレッシブ）。 */
+    --bg-current: var(--c-paper);
 
     /* === 余白トークン（設計書 §2「意図的に不揃いな余白」） === */
     --space-loose: clamp(6rem, 12vh, 10rem);
