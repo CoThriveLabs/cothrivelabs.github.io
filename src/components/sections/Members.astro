@@ -3,6 +3,7 @@
 // テキストは D7 適合・W1 統一（メンバー表記、人数は文言化しない）。
 import SectionHeading from '../SectionHeading.astro';
 import MemberCard from '../MemberCard.astro';
+import Decor from '../Decor.astro';
 
 const members = [
   {
@@ -43,6 +44,8 @@ const members = [
 ];
 ---
 <section class="members" id="members" data-bg="paper">
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G） */}
+  <Decor char="mituru" depth="front" corner="top-right" />
   <div class="members__inner">
     <SectionHeading
       title="メンバー紹介"
@@ -65,10 +68,15 @@ const members = [
 <style>
   .members {
     padding: var(--space-base) 1.5rem;
+    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    position: relative;
+    overflow: hidden;
   }
   .members__inner {
     max-width: var(--max-w);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
   .members__grid {
     display: grid;

@@ -3,6 +3,7 @@
 // C-DEEP 背景。各技術の公式配布ロゴ（simple-icons・CC0）をインライン SVG で表示。
 // SVG は currentColor 塗りで、item ごとのブランドカラーを CSS color で当てる。
 import SectionHeading from '../SectionHeading.astro';
+import Decor from '../Decor.astro';
 import astroLogo from '../../assets/tech-logos/astro.svg?raw';
 import html5Logo from '../../assets/tech-logos/html5.svg?raw';
 import cfWorkersLogo from '../../assets/tech-logos/cloudflareworkers.svg?raw';
@@ -35,6 +36,8 @@ const categories = [
 ];
 ---
 <section class="techstack" id="techstack" data-bg="paper">
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。領域 A 最終に奥行き感残す */}
+  <Decor char="saki" depth="back" corner="bottom-right" />
   <div class="techstack__inner">
     <SectionHeading
       title="技術スタック"
@@ -64,10 +67,15 @@ const categories = [
 <style>
   .techstack {
     padding: var(--space-base) 1.5rem;
+    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    position: relative;
+    overflow: hidden;
   }
   .techstack__inner {
     max-width: var(--max-w);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
   .techstack__grid {
     display: grid;

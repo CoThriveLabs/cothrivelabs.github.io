@@ -2,6 +2,7 @@
 // S2 スタジオ概要（設計書 §4.2）。C-DEEP 背景・--space-loose。未登記のため「スタジオ」表記で統一。
 // リード文はあめさん確定原文（PF エピソード混入版は破棄）。
 import SectionHeading from '../SectionHeading.astro';
+import Decor from '../Decor.astro';
 
 const facts = [
   { label: '屋号', value: 'Co-Thrive Labs（こすらぼ）' },
@@ -11,6 +12,9 @@ const facts = [
 ];
 ---
 <section class="studio-about" id="studio-about">
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層 */}
+  <Decor char="ropi" depth="back" corner="top-left" />
+  <Decor char="tomomi" depth="mid" corner="bottom-right" />
   <div class="studio-about__inner">
     <SectionHeading title="こすらぼ（Co-Thrive Labs）とは" align="left" />
 
@@ -37,10 +41,16 @@ const facts = [
   .studio-about {
     padding: var(--space-loose) 1.5rem;
     background: var(--c-paper-deep);
+    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    position: relative;
+    overflow: hidden;
   }
   .studio-about__inner {
     max-width: var(--max-w);
     margin: 0 auto;
+    /* 装飾(z-index:0)より上に乗せる */
+    position: relative;
+    z-index: 1;
   }
   .studio-about__body {
     display: grid;

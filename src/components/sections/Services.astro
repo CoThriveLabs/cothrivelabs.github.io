@@ -1,6 +1,7 @@
 ---
 // S4 受けられる案件（設計書 §4.2）。6 カテゴリ・「対応可」止め・誇張 NG・価格は出さない。
 import SectionHeading from '../SectionHeading.astro';
+import Decor from '../Decor.astro';
 
 const services = [
   { title: 'Web サイト制作', body: 'コーポレート・ポートフォリオなどの静的サイト。設計から公開まで。' },
@@ -12,6 +13,8 @@ const services = [
 ];
 ---
 <section class="services" id="services">
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G） */}
+  <Decor char="saki" depth="mid" corner="bottom-left" />
   <div class="services__inner">
     <SectionHeading
       title="受けられる案件"
@@ -31,10 +34,15 @@ const services = [
 <style>
   .services {
     padding: var(--space-base) 1.5rem;
+    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    position: relative;
+    overflow: hidden;
   }
   .services__inner {
     max-width: var(--max-w);
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
   .services__grid {
     list-style: none;

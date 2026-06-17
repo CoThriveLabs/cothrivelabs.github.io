@@ -130,6 +130,9 @@ const ogImageURL = Astro.site
     {/* 横スク 2 ゾーン（設計書 §5.5・F3）。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
         768px+ かつ非 reduced-motion のみ pin 発動。SP/reduce は CSS 既定の縦積み。 */}
     <script>import '../scripts/horizontalZones.ts';</script>
+    {/* F4-e ちらほら視差装飾（設計書 §5.8・タスク G）。`[data-parallax][data-depth]` を
+        scrub 視差。blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止 blur 維持。 */}
+    <script>import '../scripts/parallax.ts';</script>
   </body>
 </html>
 
