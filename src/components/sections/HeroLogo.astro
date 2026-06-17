@@ -8,13 +8,12 @@
 // あめさん明示：このアニメは PF 全体の手書き感の核 → reduced-motion でも無効化しない。
 import { heroLogoPathKosurabo, heroLogoPathCoThrive, heroLogoViewBox } from './heroLogoPath';
 
-const W = 1794;
-const H = 877;
+const VBX = 74, VBY = 88, W = 1653, H = 723;
 // 上下 2 本の太い横帯で全面を覆い、左→右へ dashoffset で出す
 const bandWidth = Math.round(H * 0.6);
-const topY = Math.round(H * 0.3);
-const botY = Math.round(H * 0.72);
-const wipeD = `M0 ${topY}H${W}M0 ${botY}H${W}`;
+const topY = VBY + Math.round(H * 0.3);
+const botY = VBY + Math.round(H * 0.72);
+const wipeD = `M${VBX} ${topY}H${VBX + W}M${VBX} ${botY}H${VBX + W}`;
 const maskId = 'hero-logo-wipe';
 ---
 <svg
@@ -25,7 +24,7 @@ const maskId = 'hero-logo-wipe';
   xmlns="http://www.w3.org/2000/svg"
 >
   <defs>
-    <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
+    <mask id={maskId} maskUnits="userSpaceOnUse" x={VBX} y={VBY} width={W} height={H}>
       <path
         class="hero-logo__wipe"
         d={wipeD}
@@ -42,7 +41,7 @@ const maskId = 'hero-logo-wipe';
 
 <style>
   .hero-logo {
-    width: min(320px, 72vw);
+    width: min(480px, 50vw);
     height: auto;
     display: block;
   }

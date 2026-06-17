@@ -11,7 +11,7 @@ import tomomiImg from '../../assets/hero/tomomi.png';
 import ropiImg from '../../assets/hero/ropi.png';
 import HeroLogo from './HeroLogo.astro';
 ---
-<section class="hero" id="hero" data-reveal>
+<section class="hero" id="hero">
   <div class="hero__inner">
     {/* 手書きロゴ（こすらぼ）：stroke-dashoffset お絵描きアニメ */}
     <div class="hero__logo">
@@ -75,7 +75,7 @@ import HeroLogo from './HeroLogo.astro';
     align-items: center;
     justify-content: center;
     gap: 0;
-    padding: var(--space-loose) 1.5rem var(--space-base);
+    padding: var(--space-loose) -0.5rem var(--space-base);
     text-align: center;
   }
   .hero__inner {
@@ -89,7 +89,7 @@ import HeroLogo from './HeroLogo.astro';
   .hero__logo {
     display: flex;
     justify-content: center;
-    margin-bottom: 3rem;
+    margin-bottom: 0rem;
   }
   /* SEO 用非表示 h1 */
   .sr-only {
@@ -106,9 +106,9 @@ import HeroLogo from './HeroLogo.astro';
   /* 集合イラスト（メンバー個別レイヤー・Phase 4 演出 A の前提構造） */
   .hero__art {
     position: relative;
-    width: min(700px, 92vw);
+    width: min(920px, 96vw);
     aspect-ratio: 1536 / 1024;
-    margin-top: 2.5rem;
+    margin-top: -5.0rem;
   }
   /* 各レイヤーは枠全体に重ねる（3 枚が同一構図の透過 PNG で合わさり 1 枚絵になる） */
   .hero__layer {
@@ -162,11 +162,23 @@ import HeroLogo from './HeroLogo.astro';
   @media (prefers-reduced-motion: reduce) {
     .hero__scroll-dot { animation: none; }
   }
-
-  @media (max-width: 640px) {
+  @media (min-width: 640px) {
     .hero {
       min-height: 84vh;
-      padding: var(--space-base) 1.25rem;
+      padding: var(--space-base) 1rem;
+    }
+    .hero__logo {
+      margin-bottom: 1.0rem;
+    }
+    
+  }
+  @media (max-width: 640px) {
+    
+    .hero__logo {
+      margin-bottom: 0rem;
+    }
+    .hero__art {
+      margin-top: 0rem;
     }
   }
 </style>
