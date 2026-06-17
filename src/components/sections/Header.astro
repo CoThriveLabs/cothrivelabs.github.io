@@ -1,8 +1,7 @@
 ---
 // 共通ヘッダー（v2 新規）。日本語ラベルのみ（英語小添字 NG・仕様書 D4）+ セクションアンカー。
-// ロゴは手書きロゴ SVG（heroLogoPath 使用）。連絡先は CTA 風に右寄せ。
+// ロゴは favicon.svg アイコン + Co-Thrive Labs テキスト。連絡先は CTA 風に右寄せ。
 // アンカーはルート相対（/#xxx）: トップ内ではページ内ジャンプ、works 詳細ページからはトップへ遷移して着地。
-import { heroLogoPath, heroLogoViewBox } from './heroLogoPath';
 const navItems = [
   { label: 'スタジオ概要', href: '/#studio-about' },
   { label: 'メンバー紹介', href: '/#members' },
@@ -14,14 +13,17 @@ const navItems = [
 <header class="site-header" id="site-header">
   <div class="site-header__inner">
     <a class="site-header__logo" href="/#hero" aria-label="Co-Thrive Labs トップへ">
-      <svg
-        class="site-header__logo-svg"
-        viewBox={heroLogoViewBox}
+      <img
+        class="site-header__logo-icon"
+        src="/favicon.svg"
+        width="28"
+        height="28"
+        alt=""
         aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d={heroLogoPath} fill="var(--c-accent)" fill-rule="evenodd" />
-      </svg>
+        loading="eager"
+        decoding="async"
+      />
+      <span class="site-header__logo-text">Co-Thrive Labs</span>
     </a>
 
     <nav class="site-header__nav" aria-label="メインナビゲーション">
@@ -92,10 +94,19 @@ const navItems = [
     color: var(--c-main);
     flex-shrink: 0;
   }
-  .site-header__logo-svg {
-    width: auto;
+  .site-header__logo-icon {
+    width: 28px;
     height: 28px;
     display: block;
+    flex-shrink: 0;
+  }
+  .site-header__logo-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--c-main);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
   }
   .site-header__nav {
     display: flex;
