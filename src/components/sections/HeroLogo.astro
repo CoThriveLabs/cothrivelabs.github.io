@@ -5,7 +5,7 @@
 // stroke-dashoffset を 1→0 にして左から描かれていく演出（stroke-dashoffset 方式）。
 // fill を保つため描画完了後も手書きの塗りが残る（中空縁取りにならない）。
 // あめさん明示：このアニメは PF 全体の手書き感の核 → reduced-motion でも無効化しない。
-import { heroLogoPath, heroLogoViewBox } from './heroLogoPath';
+import { heroLogoPathKosurabo, heroLogoPathCoThrive, heroLogoViewBox } from './heroLogoPath';
 
 const W = 1794;
 const H = 877;
@@ -35,7 +35,8 @@ const maskId = 'hero-logo-wipe';
       />
     </mask>
   </defs>
-  <path d={heroLogoPath} fill="var(--c-accent)" fill-rule="evenodd" mask={`url(#${maskId})`} />
+  <path d={heroLogoPathKosurabo} fill="var(--c-accent)" fill-rule="evenodd" mask={`url(#${maskId})`} />
+  <path d={heroLogoPathCoThrive} fill="#3A3230" fill-rule="evenodd" mask={`url(#${maskId})`} />
 </svg>
 
 <style>
