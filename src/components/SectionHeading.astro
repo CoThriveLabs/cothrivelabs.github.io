@@ -9,15 +9,21 @@ export interface Props {
 }
 const { title, lead, align = 'center', underline = true } = Astro.props;
 ---
-<div class:list={['section-heading', `is-${align}`]} data-reveal>
-  <h2 class="section-heading__title">{title}</h2>
-  {underline && (
-    <svg class="section-heading__underline" viewBox="0 0 120 10" preserveAspectRatio="none" aria-hidden="true">
-      {/* 手書き風に少し波打つ下線（補助装飾・主役にしない） */}
-      <path d="M2 6.5 C 22 3.5, 42 8, 62 5 S 102 3, 118 6" stroke="var(--c-accent)" stroke-width="2.2" stroke-linecap="round" fill="none" />
-    </svg>
-  )}
-  {lead && <p class="section-heading__lead">{lead}</p>}
+{/* heading と lead を別々に [data-reveal] とする（設計書 §5.6 / 2026-06-18 四次 FB）。
+    pin + scrub 順次出現で「見出し → リード → 各カード」と 1 つずつ出すため、
+    SectionHeading 内も heading と lead で data-reveal を分離する。
+    ラッパ div には data-reveal を付けない（要素単位の発火制御を阻害しないため）。 */}
+<div class:list={['section-heading', `is-${align}`]}>
+  <div class="section-heading__head" data-reveal>
+    <h2 class="section-heading__title">{title}</h2>
+    {underline && (
+      <svg class="section-heading__underline" viewBox="0 0 120 10" preserveAspectRatio="none" aria-hidden="true">
+        {/* 手書き風に少し波打つ下線（補助装飾・主役にしない） */}
+        <path d="M2 6.5 C 22 3.5, 42 8, 62 5 S 102 3, 118 6" stroke="var(--c-accent)" stroke-width="2.2" stroke-linecap="round" fill="none" />
+      </svg>
+    )}
+  </div>
+  {lead && <p class="section-heading__lead" data-reveal>{lead}</p>}
 </div>
 
 <style>

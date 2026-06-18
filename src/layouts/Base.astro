@@ -123,7 +123,9 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
-    {/* ポンポン出現（設計書 §5.6・F4-b）。Astro が GSAP 込みでバンドル・defer 読込。 */}
+    {/* 出現アニメ（設計書 §5.6・F4-b・2026-06-18 四次 FB リワーク）。Astro が GSAP 込みで
+        バンドル・defer 読込。pin + scrub 順次出現モード（[data-step-section] 持つ section）
+        と IO ベース単発出現モードの二系統。 */}
     <script>import '../scripts/reveal.ts';</script>
     {/* 演出 B グラデ背景切替（設計書 §5.3・F4-c）。reveal.ts と別ファイル・別 IO instance（§5.4.1）。 */}
     <script>import '../scripts/bgGradient.ts';</script>
@@ -235,12 +237,18 @@ const ogImageURL = Astro.site
     transform: translateY(0);
   }
 
-  /* ポンポン出現の初期状態（設計書 §5.6・実体は scripts/reveal.ts）。
-     入域前のチラ見え防止。reveal.ts が GSAP で opacity/translateY を 0→可視へ。 */
+  /* 出現アニメの初期状態（設計書 §5.6・実体は scripts/reveal.ts・2026-06-18 三次 FB）。
+     入域前のチラ見え防止。デフォルト（テキスト等）はフェード（translateY(20px)）。
+     `.member-card[data-reveal]` は斜め飛び込み + 反動の初期値を CSS でも分岐させて
+     チラ見えを完全に防ぐ（reveal.ts の gsap.set より早い画面初期描画段階で適用）。 */
   [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
     will-change: opacity, transform;
+  }
+  /* メンバーカード = ポップ初期: 画面下 + 左 + 左回転 + 縮小 */
+  .member-card[data-reveal] {
+    transform: translateY(200px) translateX(-80px) rotate(-15deg) scale(0.8);
   }
 
   /* 旧 v1 の番号振り・英語添字ユーティリティ（巨大背面番号 / "01 About" 風ラベル / eyebrow）は
@@ -265,6 +273,10 @@ const ogImageURL = Astro.site
     }
     [data-reveal] {
       opacity: 1;
+      transform: none;
+    }
+    /* card 側の specificity が高いので reduce 時に明示的に打ち消す */
+    .member-card[data-reveal] {
       transform: none;
     }
   }

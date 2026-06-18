@@ -35,9 +35,9 @@ const categories = [
   },
 ];
 ---
-<section class="techstack" id="techstack" data-bg="paper">
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。領域 A 最終に奥行き感残す */}
-  <Decor char="saki" depth="back" corner="bottom-right" />
+<section class="techstack" id="techstack" data-bg="paper" data-step-section>
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。pin セクション内は noReveal。 */}
+  <Decor char="saki" depth="back" corner="bottom-right" noReveal />
   <div class="techstack__inner">
     <SectionHeading
       title="技術スタック"

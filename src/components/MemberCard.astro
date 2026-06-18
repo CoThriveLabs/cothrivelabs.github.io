@@ -10,7 +10,7 @@ export interface Props {
 }
 const { name, role, tagline, color, image } = Astro.props;
 ---
-<article class="member-card" style={`--card-accent:${color}`} data-reveal>
+<article class="member-card" style={`--card-accent:${color}`} data-reveal="card">
   <span class="member-card__bar" aria-hidden="true"></span>
   <div class="member-card__avatar">
     <img src={image} alt={`${name}のアイコン`} loading="lazy" width="80" height="80" />

@@ -11,21 +11,23 @@ const facts = [
   { label: '体制', value: 'あめまみれ + AIエージェント4体（さき・ろぴ・みつる・ともみ）' },
 ];
 ---
-<section class="studio-about" id="studio-about">
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層 */}
-  <Decor char="ropi" depth="back" corner="top-left" />
-  <Decor char="tomomi" depth="mid" corner="bottom-right" />
+<section class="studio-about" id="studio-about" data-step-section>
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層
+      Decor は装飾なので data-reveal は外しておく（pin scrub 進行カウントに混ぜると意図と
+      ズレるため・§5.6 四次 FB）。視差は parallax.ts で別途。 */}
+  <Decor char="ropi" depth="back" corner="top-left" noReveal />
+  <Decor char="tomomi" depth="mid" corner="bottom-right" noReveal />
   <div class="studio-about__inner">
     <SectionHeading title="こすらぼ（Co-Thrive Labs）とは" align="left" />
 
     <div class="studio-about__body">
-      <div class="studio-about__lead">
+      <div class="studio-about__lead" data-reveal>
         <p>
           こすらぼ（Co-Thrive Labs）は、あめまみれ（人間）と AIエージェント4体で動かしている小さなスタジオです。ひとりでは抱えきれなかった「企画・設計・実装・テスト」を 5 人で役割分担し、フルスタックで開発をしていきます。
         </p>
       </div>
 
-      <dl class="studio-about__facts">
+      <dl class="studio-about__facts" data-reveal>
         {facts.map((f) => (
           <div class="studio-about__fact">
             <dt>{f.label}</dt>

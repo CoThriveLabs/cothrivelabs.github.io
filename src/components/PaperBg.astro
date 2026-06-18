@@ -50,10 +50,13 @@ const bgColor = mode === 'fixed' ? `var(--bg-current, ${baseColorVar})` : baseCo
     pointer-events: none;
     user-select: none;
   }
-  /* 領域 A: sticky ラッパ内に絶対配置で領域全体をカバー（最背面）。
+  /* 領域 A: viewport fixed（A 案・2026-06-18 あめさん確定）。
+     設計書 §5.0「スクロール進行感を強調しない」原則を達成するため、
+     背景レイヤを viewport に固定してスクロールしてもズレないようにする
+     （旧 position: absolute は region-a 全体を覆うが scroll で一緒に動いてしまった）。
      背景色は --bg-current を演出 B が transition で差し替える（§5.3）。 */
   .paper-bg--fixed {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: -1;
     transition: background-color var(--bg-transition, 800ms) var(--ease);

@@ -12,9 +12,9 @@ const services = [
   { title: 'WordPress 対応', body: '既存 WordPress サイトの制作・調整にも対応できます。' },
 ];
 ---
-<section class="services" id="services">
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G） */}
-  <Decor char="saki" depth="mid" corner="bottom-left" />
+<section class="services" id="services" data-step-section>
+  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。pin セクション内は noReveal。 */}
+  <Decor char="saki" depth="mid" corner="bottom-left" noReveal />
   <div class="services__inner">
     <SectionHeading
       title="受けられる案件"

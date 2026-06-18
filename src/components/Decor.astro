@@ -24,9 +24,12 @@ export interface Props {
   offsetY?: string;
   // サイズ（デフォルトは depth で変動）
   size?: string;
+  // pin + scrub セクション内（[data-step-section]）に置くときは true。
+  // reveal.ts の順次出現カウントに装飾が混ざるのを防ぐ（§5.6 / 2026-06-18 四次 FB）。
+  noReveal?: boolean;
 }
 
-const { char, depth, corner, offsetX, offsetY, size } = Astro.props;
+const { char, depth, corner, offsetX, offsetY, size, noReveal = false } = Astro.props;
 
 const IMAGES: Record<Char, ImageMetadata> = { ropi, mituru, saki, tomomi };
 const img = IMAGES[char];
@@ -65,10 +68,10 @@ const styleStr = styleParts.join('; ');
   height={240}
   loading="lazy"
   decoding="async"
-  class="decor"
+  class:list={['decor', { 'decor--no-reveal': noReveal }]}
   data-parallax
   data-depth={depth}
-  data-reveal
+  data-reveal={noReveal ? undefined : ''}
   aria-hidden="true"
   style={styleStr}
 />
@@ -82,15 +85,22 @@ const styleStr = styleParts.join('; ');
     z-index: 0;
     pointer-events: none;
     user-select: none;
-    /* 出現前はチラ見え防止（reveal.ts が opacity を立ち上げる） */
-    opacity: 0;
     /* GPU 合成（parallax.ts の yPercent と reveal.ts の opacity を高速合成） */
     will-change: transform, opacity;
+  }
+  /* data-reveal を持つ装飾は reveal.ts が opacity を立ち上げる前のチラ見えを防ぐため
+     初期 opacity:0（Base.astro :global [data-reveal] でも担保されるが念のため）。 */
+  .decor[data-reveal] {
+    opacity: 0;
   }
   /* blur 静的・CSS のみ（reduce 時も維持・仕様書 F4-e）。 */
   .decor[data-depth='front'] { filter: none; opacity: 0.85; }
   .decor[data-depth='mid']   { filter: blur(3px);  opacity: 0.55; }
   .decor[data-depth='back']  { filter: blur(10px); opacity: 0.35; }
+
+  /* noReveal 指定時（pin セクション内に置かれる装飾・data-reveal なし）は
+     reveal.ts 管理外。depth 別の opacity 指定が直接生きる（上の .decor[data-reveal] が
+     当たらないため初期 opacity:0 にならず、depth 別の最終値で常時表示）。 */
 
   /* reduce 時の opacity 立ち上げ（reveal.ts が transform: none の上書きで即可視化するが、
      reveal が動かないケースの保険として CSS でも opacity を立ち上げる）。
