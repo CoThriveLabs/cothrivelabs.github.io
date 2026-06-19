@@ -138,4 +138,23 @@ const categories = [
     line-height: 1.7;
     color: var(--c-main-soft);
   }
+
+  /* fb7 §8（要件6＋add1）: 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
+     §11: 全幅 no-preference ガード（SP でも ON・reduce のみ除外）。§4.4: 常時 z:10000（シミ超え）。
+     既存の position:relative / overflow:hidden（装飾基点）はそのまま活かす。
+     R13: color-mix 非対応向けに background-color ベタ値を前置きフォールバック。
+     fb7 rev4.3 §2.1: rev4.2 の sticky 覆い被さりは reveal pin（JS）と同一要素競合し実機破綻
+       （techstack 区間で scrollTo がロック・ComingSoon が Contact に到達不可）したため撤去。
+       技スタ→ComingSoon は通常スクロールに確定（案c・あめさん合意）。position は relative に戻す
+       （base と同値＝§8 で position を上書きしない状態）。z-index:10000・背景・noise は維持。 */
+  @media (prefers-reduced-motion: no-preference) {
+    .techstack {
+      position: relative;
+      z-index: 10000;
+      background-color: var(--c-coffee-stain);
+      background-color: var(--c-coffee-stain-soft);
+      background-image: var(--paper-noise-url);
+      background-repeat: repeat;
+    }
+  }
 </style>

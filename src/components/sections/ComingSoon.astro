@@ -50,6 +50,12 @@
   .coming-soon {
     padding: var(--space-loose) 1.5rem;
     background: var(--c-paper-deep);
+    /* fb7 §10.2: 技スタ→ComingSoon 覆い被さりの土台。coverTransition.ts が transform:translateY を
+       100vh→0（window.innerHeight 実測）で駆動して下からせり上げる。
+       z:10000 = 技スタ同等・ヘッダー(10001) の下を通す（ヘッダーは常に最前面・覆わない）。
+       初期 translateY は JS が set。reduce/SP（非対象）では set しない＝通常表示。 */
+    position: relative;
+    z-index: 10000;
   }
   .coming-soon__inner {
     max-width: 640px;

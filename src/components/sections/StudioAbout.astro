@@ -11,7 +11,7 @@ const facts = [
   { label: '体制', value: 'あめまみれ + AIエージェント4体（さき・ろぴ・みつる・ともみ）' },
 ];
 ---
-<section class="studio-about" id="studio-about" data-step-section>
+<section class="studio-about" id="studio-about" data-bg="paper-deep" data-step-section>
   {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層
       Decor は装飾なので data-reveal は外しておく（pin scrub 進行カウントに混ぜると意図と
       ズレるため・§5.6 四次 FB）。視差は parallax.ts で別途。 */}
@@ -42,7 +42,6 @@ const facts = [
 <style>
   .studio-about {
     padding: var(--space-loose) 1.5rem;
-    background: var(--c-paper-deep);
     /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
     position: relative;
     overflow: hidden;

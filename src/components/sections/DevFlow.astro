@@ -100,6 +100,20 @@ const steps = [
     }
   }
 
+  /* fb7 §8（要件6＋add1）: 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
+     §11: 全幅 no-preference ガード（SP でも ON・reduce のみ除外）。§4.4: 常時 z:10000（シミ超え）。
+     R13: color-mix 非対応向けに background-color ベタ値を前置きフォールバック。 */
+  @media (prefers-reduced-motion: no-preference) {
+    .devflow {
+      position: relative;
+      z-index: 10000;
+      background-color: var(--c-coffee-stain);
+      background-color: var(--c-coffee-stain-soft);
+      background-image: var(--paper-noise-url);
+      background-repeat: repeat;
+    }
+  }
+
   /* 768px+ かつ非 reduced-motion: scrub 連続横スク用に横並び化
      （実際の pin / translateX は horizontalZones.ts が担当・設計書 §5.5 / タスク D） */
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
@@ -107,6 +121,12 @@ const steps = [
       padding-left: 0;
       padding-right: 0;
       overflow: hidden;
+      /* fb7 rev7 §3.4: pin spacer の素地（region-a の紙色）露出を防ぐ。
+         画面高さを確保し flex 縦中央寄せで中身を中央に置き、spacer の上下余白を消す。 */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .devflow__inner {
       max-width: none;

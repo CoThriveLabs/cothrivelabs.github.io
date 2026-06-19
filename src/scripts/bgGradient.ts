@@ -4,11 +4,12 @@
 // transition: background-color が担当（§5.3.1）。GSAP 不使用＝依存ゼロ。
 //
 // reveal.ts とは IO instance / ファイルを完全分離（§5.4.1）。観測パラメータ
-// （中央帯 -45%/-45%）・unobserve 戦略（往復のため観測継続）が逆なため。
+// （中央帯 -30%/-30% = 5 次 FB で広げた）・unobserve 戦略（往復のため観測継続）が逆なため。
 
-type BgColor = 'paper' | 'paper-deep';
+type BgColor = 'paper' | 'paper-warm' | 'paper-deep';
 const VAR: Record<BgColor, string> = {
   'paper': 'var(--c-paper)',
+  'paper-warm': 'var(--c-paper-warm)',
   'paper-deep': 'var(--c-paper-deep)',
 };
 
@@ -53,8 +54,9 @@ if (triggers.length) {
       if (last) setBg((last.dataset.bg as BgColor) ?? 'paper');
     },
     {
-      // viewport 中央帯（高さ 10%）に入った瞬間に切替（§5.3.3）。
-      rootMargin: '-45% 0px -45% 0px',
+      // viewport 中央帯（高さ 40%）に入った瞬間に切替（§5.3.3・§5.10.3 5 次 FB で 10% → 40% へ拡幅、
+      // 「やわらかフェード」狙い。intersecting Set + DOM 順最下採用ロジックで複数同時交差にも対応済）。
+      rootMargin: '-30% 0px -30% 0px',
       threshold: 0,
     }
   );
