@@ -1,0 +1,112 @@
+---
+// F4-e ちらほら装飾「葉っぱそよ風アニメ」（設計書 §5.8 / あめさん FB 2026-06-21）。
+// showdot 風ノイズ摂動で「控えめに風が流れる」感を出す装飾レイヤ。
+//
+// 構成:
+//   - 葉っぱ 8 枚（near 2 / mid 3 / far 3）の 3 段視差層。
+//   - wrapper は position:fixed・inset:0・z-index:0・pointer-events:none。
+//     PaperBg(--fixed, z-index:-1) より上、コンテンツ（z-index 既定 = auto）より下相当。
+//   - aria-hidden="true" / 装飾扱い（読み上げ対象外）。
+//
+// 動きは src/scripts/leafBreeze.ts（GSAP timeline・各葉独立ループ・sin 摂動）。
+// reduce 時はスクリプト側で no-op → 葉は静止表示（CSS の初期 left/top/opacity のまま）。
+//
+// data-leaf 属性は leafBreeze.ts の querySelectorAll セレクタ。
+// data-leaf-depth で 3 段視差層を分け、CSS/JS 両方で参照。
+//
+// parallax.ts は `[data-parallax]` を query するので干渉ゼロ。
+import LeafIcon from './LeafIcon.astro';
+
+type LeafCfg = {
+  depth: 'near' | 'mid' | 'far';
+  size: number;          // px
+  left: number;          // %
+  top: number;           // %
+  rot: number;           // 初期 deg
+  speedSec: number;      // 画面横断にかける秒数（遠いほど遅い）
+  delaySec: number;      // 初期 delay（ループ感解消用）
+};
+
+// 初期配置は意図的に重なりを避けつつ画面全体に散らす。
+// near=2 / mid=3 / far=3 = 計 8 枚（タスク指定範囲内）。
+// size は near 28-32 / mid 20-24 / far 14-18 に収める。
+const LEAVES: LeafCfg[] = [
+  // ── near（前景・大きく・くっきり）
+  { depth: 'near', size: 30, left:  8, top: 22, rot:  -18, speedSec: 28, delaySec:  0 },
+  { depth: 'near', size: 32, left: 72, top: 68, rot:   24, speedSec: 32, delaySec: 14 },
+  // ── mid（中景・中くらい・blur(1px)）
+  { depth: 'mid',  size: 22, left: 35, top: 12, rot:    8, speedSec: 42, delaySec:  6 },
+  { depth: 'mid',  size: 24, left: 58, top: 40, rot:  -32, speedSec: 46, delaySec: 22 },
+  { depth: 'mid',  size: 20, left: 18, top: 78, rot:   12, speedSec: 44, delaySec: 30 },
+  // ── far（遠景・小さく・blur(2px)・色も muted）
+  { depth: 'far',  size: 16, left: 50, top: 26, rot:  -40, speedSec: 60, delaySec:  4 },
+  { depth: 'far',  size: 14, left: 86, top: 18, rot:   20, speedSec: 64, delaySec: 28 },
+  { depth: 'far',  size: 18, left: 26, top: 58, rot:  -10, speedSec: 58, delaySec: 42 },
+];
+---
+
+<div class="leaf-breeze" aria-hidden="true">
+  {LEAVES.map((leaf, i) => (
+    <span
+      class:list={['leaf-breeze__leaf', `leaf-breeze__leaf--${leaf.depth}`]}
+      data-leaf
+      data-leaf-depth={leaf.depth}
+      data-leaf-index={i}
+      data-speed-sec={leaf.speedSec}
+      data-delay-sec={leaf.delaySec}
+      style={`left:${leaf.left}%; top:${leaf.top}%; transform: rotate(${leaf.rot}deg);`}
+    >
+      <LeafIcon width={leaf.size} height={leaf.size} />
+    </span>
+  ))}
+</div>
+
+<style>
+  /* wrapper: viewport 固定・最背面寄り。コンテンツ操作の邪魔をしない。
+     z-index: 0 → PaperBg(-1) より上、index.astro の通常コンテンツ（z-index 既定 auto）と
+     同レベル。同レベル時は DOM 順で後勝ち = region-a 内で LeafBreeze を最初寄りに置けば
+     他セクション要素の背後に回り込む（実体は fixed なので親 z-index に依存しない）。 */
+  .leaf-breeze {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* 葉 1 枚。位置は frontmatter の inline style で散らす。
+     transform は inline rotate(初期 deg)。leafBreeze.ts が x/y/rotation を上書きする。 */
+  .leaf-breeze__leaf {
+    position: absolute;
+    display: inline-block;
+    line-height: 0;
+    will-change: transform;
+  }
+
+  /* near: 前景・くっきり・main 色（ココアブラウン）の濃いめ。 */
+  .leaf-breeze__leaf--near {
+    color: var(--c-main);
+    opacity: 0.4;
+    filter: none;
+  }
+  /* mid: 中景・main 色・薄め・ほんのり blur。 */
+  .leaf-breeze__leaf--mid {
+    color: var(--c-main);
+    opacity: 0.3;
+    filter: blur(1px);
+  }
+  /* far: 遠景・mute 色・更に薄め・blur 強め。 */
+  .leaf-breeze__leaf--far {
+    color: var(--c-main-mute);
+    opacity: 0.25;
+    filter: blur(2px);
+  }
+
+  /* reduce 時: 静止表示（透明度はそのまま・filter も維持）。
+     leafBreeze.ts 側で gsap timeline を作らないので、初期配置のまま固まる。 */
+  @media (prefers-reduced-motion: reduce) {
+    .leaf-breeze__leaf {
+      will-change: auto;
+    }
+  }
+</style>

@@ -149,6 +149,10 @@ const ogImageURL = Astro.site
     {/* F4-e ちらほら視差装飾（設計書 §5.8・タスク G）。`[data-parallax][data-depth]` を
         scrub 視差。blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止 blur 維持。 */}
     <script>import '../scripts/parallax.ts';</script>
+    {/* F4-e ちらほら装飾「葉っぱそよ風アニメ」（あめさん FB 2026-06-21）。
+        `[data-leaf]` を GSAP timeline で独立ループ・sin 摂動で showdot 風そよ風。
+        reduce 時は no-op（静止表示）。parallax.ts と属性別なので干渉なし。 */}
+    <script>import '../scripts/leafBreeze.ts';</script>
     {/* 技スタ→ComingSoon「下から覆い被さる」単発演出（fb7 §10・coverTransition.ts 新規）。
         coffeeStain.ts より前に登録 → coffeeStain の最終 refresh（rAF×2）で ST-cover も測られる（§10.4）。 */}
     <script>import '../scripts/coverTransition.ts';</script>

@@ -3,6 +3,7 @@
 // Header は自前の sections/Header を使うため Base 既定の Header は hideHeader で抑止。
 import Base from '../layouts/Base.astro';
 import PaperBg from '../components/PaperBg.astro';
+import LeafBreeze from '../components/LeafBreeze.astro';
 import Header from '../components/sections/Header.astro';
 import Hero from '../components/sections/Hero.astro';
 import StudioAbout from '../components/sections/StudioAbout.astro';
@@ -54,6 +55,10 @@ const websiteJsonLd = {
     {/* 領域 A: S1-S7（Phase 4 で背景固定 sticky・現状は通常フロー） */}
     <div class="region-a">
       <PaperBg mode="fixed" />
+      {/* F4-e ちらほら装飾「葉っぱそよ風アニメ」（あめさん FB 2026-06-21）。
+          fixed・z:0・最背面寄り。領域 A 限定（領域 B では非表示にする方針）。
+          実体は src/scripts/leafBreeze.ts（GSAP・ノイズ摂動・reduce で no-op）。 */}
+      <LeafBreeze />
       <Hero />
       <StudioAbout />
       <Members />
