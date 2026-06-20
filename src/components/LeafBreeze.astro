@@ -83,21 +83,24 @@ const LEAVES: LeafCfg[] = [
     will-change: transform;
   }
 
-  /* near: 前景・くっきり・main 色（ココアブラウン）の濃いめ。 */
+  /* あめさん FB 2026-06-21 二次: 「緑感じられない」→ 各 depth の --m-saki 比率を倍化。
+     近景 40% / 中景 55% / 遠景 70% に強化し、葉らしい緑感をはっきり出す。
+     ベースのココアブラウンは残しつつ、far ほど緑寄りの遠近感は維持。 */
+  /* near: 前景・くっきり・main + 緑 40%。 */
   .leaf-breeze__leaf--near {
-    color: var(--c-main);
+    color: color-mix(in srgb, var(--c-main) 60%, var(--m-saki) 40%);
     opacity: 0.4;
     filter: none;
   }
-  /* mid: 中景・main 色・薄め・ほんのり blur。 */
+  /* mid: 中景・main + 緑 55%・薄め・ほんのり blur。 */
   .leaf-breeze__leaf--mid {
-    color: var(--c-main);
+    color: color-mix(in srgb, var(--c-main) 45%, var(--m-saki) 55%);
     opacity: 0.3;
     filter: blur(1px);
   }
-  /* far: 遠景・mute 色・更に薄め・blur 強め。 */
+  /* far: 遠景・mute 色 + 緑 70%・更に薄め・blur 強め。 */
   .leaf-breeze__leaf--far {
-    color: var(--c-main-mute);
+    color: color-mix(in srgb, var(--c-main-mute) 30%, var(--m-saki) 70%);
     opacity: 0.25;
     filter: blur(2px);
   }

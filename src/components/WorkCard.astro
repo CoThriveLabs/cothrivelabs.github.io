@@ -160,7 +160,8 @@ const hasLink = !isPending && mainHref && mainHref !== '#';
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.8;
-    color: var(--c-main-soft);
+    /* あめさん FB 2026-06-21: 説明文の色を濃く。--c-main-soft (α=0.7) → α=0.85。 */
+    color: rgba(58, 50, 48, 0.85);
   }
   .work-card__tags {
     display: flex;

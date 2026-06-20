@@ -87,6 +87,11 @@ const categories = [
     position: relative;
     z-index: 1;
   }
+  /* あめさん FB 2026-06-21: 説明文の色を濃く。共通 SectionHeading の lead (--c-main-mute α=0.6)
+     を S7 限定で α=0.85 に override（S2-S4 共通コンポは変えない）。 */
+  .techstack :global(.section-heading__lead) {
+    color: rgba(58, 50, 48, 0.85);
+  }
   /* M5（2026-06-21 みつる調査→さき三次→みつる実装）: auto-fit→段階明示で BP 揃え。
      ~639: 1列 / 640+: 2列 / 960+: 3列。 */
   .techstack__grid {
@@ -158,7 +163,8 @@ const categories = [
     font-family: var(--font-body);
     font-size: 0.85rem;
     line-height: 1.7;
-    color: var(--c-main-soft);
+    /* あめさん FB 2026-06-21: 説明文の色を濃く。--c-main-soft (α=0.7) → α=0.85。 */
+    color: rgba(58, 50, 48, 0.85);
   }
 
   /* fb7 §8（要件6＋add1）: 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。

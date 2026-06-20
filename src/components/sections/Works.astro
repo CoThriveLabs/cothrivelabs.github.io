@@ -48,7 +48,7 @@ const works = [
   },
 ];
 ---
-<section class="works" id="works">
+<section class="works" id="works" data-bg="paper-warm">
   {/* ブロック1: 見出し+説明文。rev9: works 全体 1pin 統合のため data-step-section を撤去
       （reveal.ts (1) pin 対象から外し、horizontalZones.ts の timeline tween で駆動を一元化）。 */}
   <div class="works__intro" id="works-intro">
@@ -94,6 +94,11 @@ const works = [
   .works__inner {
     max-width: 820px;
     margin: 0 auto;
+  }
+  /* あめさん FB 2026-06-21: 説明文の色を濃く。共通 SectionHeading の lead (--c-main-mute α=0.6)
+     を S5 限定で α=0.85 に override（S2-S4 共通コンポは変えない）。 */
+  .works :global(.section-heading__lead) {
+    color: rgba(58, 50, 48, 0.85);
   }
   /* 見出しブロックは z を持てる土台（制作物 section が §8 で z:10000 化済み）。 */
   .works__intro {
