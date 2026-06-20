@@ -202,7 +202,8 @@ import HeroLogo from './HeroLogo.astro';
     }
   }
   /* あめさん FB 3: SP（< 768px）はロゴ scale 据え置き、集合イラストは 92vw に抑え max-height は 56vh に。 */
-  @media (max-width: 767.98px) {
+  /* M7（2026-06-21 みつる調査→さき三次→みつる実装）: BP 値統一 767.98 → 767。 */
+  @media (max-width: 767px) {
     .hero__logo {
       transform: scale(1);
     }

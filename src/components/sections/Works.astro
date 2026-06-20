@@ -181,11 +181,13 @@ const works = [
        <article class="work-card"> に当たらない。:global() で scope を抜けて直接当てる。
        三次差し戻し原因: width 指定が当たらず flex item が default で縮み、
        scrollWidth ≈ clientWidth で totalScroll ≈ 0 → pin の意味なし状態だった。 */
+    /* M4（2026-06-21 みつる調査→さき三次→みつる実装）: clamp 化で中域もカード幅を滑らかに。
+       下限 280 / 中域 60vw / 上限 560。768-933px 帯のカード狭さを段階的に解消。 */
     .works__list > :global(.work-card) {
       flex: 0 0 auto;
-      width: min(560px, 80vw);
+      width: clamp(280px, 60vw, 560px);
       /* flex shrink 防止の念押し（flex 指定だけで効くが Safari 等で稀に override される保険） */
-      min-width: min(560px, 80vw);
+      min-width: clamp(280px, 60vw, 560px);
     }
   }
 </style>

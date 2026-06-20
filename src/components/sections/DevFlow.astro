@@ -140,11 +140,13 @@ const steps = [
       align-items: stretch;
       will-change: transform;
     }
+    /* M4（2026-06-21 みつる調査→さき三次→みつる実装）: clamp 化で中域もステップ幅を滑らかに。
+       下限 220 / 中域 32vw / 上限 320。 */
     .devflow__step {
       flex: 0 0 auto;
-      width: min(320px, 40vw);
+      width: clamp(220px, 32vw, 320px);
       /* flex shrink 防止の念押し（Works と同方針・三次差し戻し対策） */
-      min-width: min(320px, 40vw);
+      min-width: clamp(220px, 32vw, 320px);
       flex-direction: column;
       align-items: flex-start;
     }

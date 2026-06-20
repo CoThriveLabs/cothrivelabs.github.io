@@ -90,24 +90,36 @@ const members = [
     position: relative;
     z-index: 1;
   }
-  /* カード 1.5倍化に伴い minmax / gap を見直し（2026-06-20）。
-     1500px 拡張に合わせ minmax 240→280px, gap 1→1.5rem（2026-06-21）。 */
+  /* M1（2026-06-21 みつる調査→さき三次→みつる実装）: 中域段階追加でカード潰れ回避。
+     ~479: 1列 / 480+: 2列 / 768+: 3列(3+2段) / 1024+: 4列(4+1段) / 1280+: 5列横並び。
+     1024px で 5 列だとカード 172px で窮屈、1280 から 5 列にする（さき判断）。 */
   .members__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
-  /* 5 枚を意図的に均等割りしすぎない: 広い画面では最後の 2 枚が少し詰まる自然な配置 */
-  @media (min-width: 960px) {
+  @media (min-width: 480px) {
     .members__grid {
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  @media (min-width: 768px) {
+    .members__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .members__grid {
+      grid-template-columns: repeat(4, 1fr);
       gap: 1.5rem;
     }
   }
-  @media (max-width: 520px) {
+  @media (min-width: 1280px) {
     .members__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
     }
   }
 </style>

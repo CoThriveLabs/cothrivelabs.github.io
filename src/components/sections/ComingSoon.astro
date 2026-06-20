@@ -146,7 +146,9 @@
     color: var(--c-main-mute);
   }
 
-  @media (max-width: 520px) {
+  /* M6（2026-06-21 みつる調査→さき三次→みつる実装）: 520→640px に拡大、
+     520-640 帯のボタン文字「お声がけリストに登録」はみ出しを回避。 */
+  @media (max-width: 640px) {
     .coming-soon__row {
       flex-direction: column;
     }

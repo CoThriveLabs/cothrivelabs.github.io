@@ -87,10 +87,22 @@ const categories = [
     position: relative;
     z-index: 1;
   }
+  /* M5（2026-06-21 みつる調査→さき三次→みつる実装）: auto-fit→段階明示で BP 揃え。
+     ~639: 1列 / 640+: 2列 / 960+: 3列。 */
   .techstack__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .techstack__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .techstack__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
   .techstack__cat {
     padding: 1.75rem;
