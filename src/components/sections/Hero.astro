@@ -20,6 +20,12 @@ import HeroLogo from './HeroLogo.astro';
 
     <h1 class="sr-only">Co-Thrive Labs（こすらぼ）</h1>
 
+    {/* v1.4 S1 一行コピー（仕様書 v1.4 / 設計書 §4.5）。
+        data-reveal は付けない（LCP/CLS 安定優先・ろぴ推奨）。
+        演出 A heroImmersion.ts の transform 対象は既存 logo/art/L1/L2 のままで
+        tagline は独立（演出に巻き込まない）。 */}
+    <p class="hero__tagline">人と AI で、確かなものを作る Web 開発スタジオ</p>
+
     {/* 集合イラスト：メンバーを個別レイヤーに分割（Phase 4 演出 A の前提構造） */}
     <div class="hero__art" role="img" aria-label="Co-Thrive Labs のメンバー 5 人の集合イラスト">
       {/* L2 中央・ゆっくり：みつる + さき + あめまみれ */}
@@ -101,6 +107,15 @@ import HeroLogo from './HeroLogo.astro';
     /* SP 既定: scale なし（はみ出し回避） */
     transform: scale(1);
     max-width: 100%;
+  }
+  /* v1.4 S1 一行コピー（設計書 §4.5） */
+  .hero__tagline {
+    font-family: var(--font-accent); /* Klee One */
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    color: var(--c-main-soft);
+    text-align: center;
+    margin: 1rem 0 1.5rem;
+    line-height: 1.5;
   }
   /* SEO 用非表示 h1 */
   .sr-only {

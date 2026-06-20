@@ -11,6 +11,14 @@ const legal = [
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
+    {/* v1.4 S10 納品基準ブロック（設計書 §4.7 / 仕様書 v1.4）。
+        Footer 最上段・法的書面より上に配置。半透明カード + border + 角丸。
+        Q-α16: PC 縦 1 列で先行実装（あめさん戻り後に 3 列グリッド変更可否確認）。 */}
+    <section class="site-footer__pledge" aria-labelledby="site-footer-pledge-heading">
+      <h3 id="site-footer-pledge-heading">納品基準</h3>
+      <p>動かなくなったときに直せること、半年後に他人が触れること、鍵や顧客データを守れること。この三つを満たさないコードは納品しません。</p>
+    </section>
+
     <div class="site-footer__top">
       <div class="site-footer__brand">
         <p class="site-footer__logo">Co-Thrive Labs</p>
@@ -55,6 +63,38 @@ const legal = [
   .site-footer__inner {
     max-width: var(--max-w);
     margin: 0 auto;
+  }
+  /* v1.4 S10 納品基準ブロック（設計書 §4.7）。
+     Footer C-DEEP 実背景の上で var(--c-paper) 系で 11:1 余裕クリア。 */
+  .site-footer__pledge {
+    margin: 0 0 2rem;
+    padding: 1.5rem 1.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+  }
+  .site-footer__pledge h3 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--c-paper);
+  }
+  .site-footer__pledge p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    line-height: 1.85;
+    color: #d6d3cb;
+  }
+  @media (max-width: 640px) {
+    .site-footer__pledge {
+      padding: 1.25rem 1.25rem;
+    }
+    .site-footer__pledge p {
+      font-size: 0.88rem;
+    }
   }
   .site-footer__top {
     display: flex;

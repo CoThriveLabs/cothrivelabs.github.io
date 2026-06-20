@@ -1,17 +1,12 @@
 ---
-// S2 スタジオ概要（設計書 §4.2）。C-DEEP 背景・--space-loose。未登記のため「スタジオ」表記で統一。
+// S2 スタジオ概要（設計書 §4.2）。--space-loose。未登記のため「スタジオ」表記で統一。
 // リード文はあめさん確定原文（PF エピソード混入版は破棄）。
+// あめさん FB 2026-06-21: facts カード削除（ともみが後で対抗文を追加するためのプレースホルダ）。
+//                        併せて data-bg paper-deep → paper-warm に変更。
 import SectionHeading from '../SectionHeading.astro';
 import Decor from '../Decor.astro';
-
-const facts = [
-  { label: '屋号', value: 'Co-Thrive Labs（こすらぼ）' },
-  { label: '拠点', value: '東京' },
-  { label: 'やっていること', value: 'Web サイト・LP 制作 / 業務効率化 / AI 活用支援' },
-  { label: '体制', value: 'あめまみれ + AIエージェント4体（さき・ろぴ・みつる・ともみ）' },
-];
 ---
-<section class="studio-about" id="studio-about" data-bg="paper-deep" data-step-section>
+<section class="studio-about" id="studio-about" data-bg="paper-warm" data-step-section>
   {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層
       Decor は装飾なので data-reveal は外しておく（pin scrub 進行カウントに混ぜると意図と
       ズレるため・§5.6 四次 FB）。視差は parallax.ts で別途。 */}
@@ -22,19 +17,17 @@ const facts = [
 
     <div class="studio-about__body">
       <div class="studio-about__lead" data-reveal>
+        {/* v1.4 リード文（ともみ敬体ドラフト v3 §4 反映・3 段落構造） */}
         <p>
-          こすらぼ（Co-Thrive Labs）は、あめまみれ（人間）と AIエージェント4体で動かしている小さなスタジオです。ひとりでは抱えきれなかった「企画・設計・実装・テスト」を 5 人で役割分担し、フルスタックで開発をしていきます。
+          こすらぼ（Co-Thrive Labs）は、あめまみれ（人間）と AIエージェント4体で動かしている小さなスタジオです。ひとりでは抱えきれなかった「企画・設計・実装・テスト」を 5 人で役割分担し、フルスタックで開発を進めていきます。
+        </p>
+        <p>
+          AI を使うからこそ、信頼できるものをつくる。それがこすらぼのスタンスです。
+        </p>
+        <p>
+          具体的な開発の進め方は「開発フロー」へ、納品基準は「Footer」までスクロールしてご覧ください。
         </p>
       </div>
-
-      <dl class="studio-about__facts" data-reveal>
-        {facts.map((f) => (
-          <div class="studio-about__fact">
-            <dt>{f.label}</dt>
-            <dd>{f.value}</dd>
-          </div>
-        ))}
-      </dl>
     </div>
   </div>
 </section>
@@ -57,11 +50,9 @@ const facts = [
     position: relative;
     z-index: 1;
   }
+  /* あめさん FB 2026-06-21: facts カード削除に伴い 2 列 grid → 単列化（lead だけ残す）。 */
   .studio-about__body {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 3rem;
-    align-items: start;
+    display: block;
   }
   .studio-about__lead p {
     margin: 0 0 1.25rem;
@@ -73,36 +64,8 @@ const facts = [
   .studio-about__lead p:last-child {
     margin-bottom: 0;
   }
-  .studio-about__facts {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.1rem;
-    padding: 1.75rem;
-    background: color-mix(in srgb, var(--c-paper) 65%, transparent);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius);
-  }
-  .studio-about__fact dt {
-    font-family: var(--font-accent);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    color: var(--c-main-mute);
-    margin-bottom: 0.25rem;
-  }
-  .studio-about__fact dd {
-    margin: 0;
-    font-family: var(--font-body);
-    font-size: 0.92rem;
-    line-height: 1.7;
-    color: var(--c-main);
-  }
 
   @media (max-width: 768px) {
-    .studio-about__body {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
     /* 案A SP: 画面崩れ抑制のため半量にとどめる。
        倍化 (2026-06-20 二回目 FB): -25vh → -50vh。 */
     .studio-about {
