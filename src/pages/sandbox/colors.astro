@@ -1,10 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
 
-// 配色比較 sandbox（非公開）。あめさん「色の組み合わせも sandbox で見たい」+ Gemini 配色 5 案を受けて作成。
-// ベースは全案共通で C2 紙テクスチャ（#f9f2e6 + C 値 noise）。各案でメイン色（文字・枠線・80%）と
-// アクセント色（ボタン・リンク・20%）を実際に使って組み、Q9 配色判断の実機比較に使う。
-// フォントは Task #8 fonts.astro と同じ Fontsource（ともみ推し A 案）。
+// 配色比較 sandbox（noindex）。共通の紙テクスチャ背景の上に、複数の配色案を実 UI に乗せて視覚比較する。
+// 各案でメイン色（文字・枠線・80%）とアクセント色（ボタン・リンク・20%）を実際に適用して見比べる。
+// フォントは fonts.astro と揃えて Fontsource（しっぽり明朝 / Zen Kaku Gothic New / Klee One）。
 
 import '@fontsource/shippori-mincho/600.css';
 import '@fontsource/shippori-mincho/800.css';
@@ -13,7 +12,7 @@ import '@fontsource/zen-kaku-gothic-new/500.css';
 import '@fontsource/zen-kaku-gothic-new/700.css';
 import '@fontsource/klee-one/600.css';
 
-// C2 紙テクスチャ noise（paper-bg-v2.astro と同一値で統一）
+// 紙テクスチャ noise（paper-bg-v2.astro と同一値で統一）
 const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
 function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
   const [r, g, b] = rgb;
@@ -114,10 +113,10 @@ const palettes = [
 
     <footer class="sandbox-foot">
       <p>
-        ベース: 全案共通で <strong>C2 紙テクスチャ（#f9f2e6 + feTurbulence noise baseFreq 0.35 / α 0.14）</strong>。
+        ベース: 全案共通の <strong>紙テクスチャ背景（#f9f2e6 + feTurbulence noise baseFreq 0.35 / α 0.14）</strong>。
         各案メイン色（文字・枠線）/ アクセント色（リンク・CTA）を実色で適用。
         フォントは <strong>Fontsource</strong>（しっぽり明朝 / Zen Kaku Gothic New / Klee One）。
-        Gemini 提案 5 案 + あめさん追加 COLOR-6（素焼きクラフト・テラコッタ）の計 6 案。COLOR-5（セージグリーン）と COLOR-6（テラコッタ）はメイン色 #3A3230 が共通で、アクセントだけ違うので直接比較できます。v1 の緑（#6B8E5A）は本ページには含めていません（あめさん指示どおり）。
+        計 6 配色案。COLOR-5（セージグリーン）と COLOR-6（テラコッタ）はメイン色 #3A3230 が共通で、アクセントだけ違うので直接比較できます。
       </p>
     </footer>
   </main>

@@ -1,6 +1,5 @@
 ---
-// 共通ヘッダー（v2 §5.10.1 再設計）。
-// 左ロゴ + 右ハンバーガー → 全画面オーバーレイ展開（PC/SP 共通）。
+// 共通ヘッダー。左ロゴ + 右ハンバーガー → 全画面オーバーレイ展開（PC/SP 共通）。
 // アンカーはルート相対（/#xxx）: トップ内ではページ内ジャンプ、works 詳細ページからはトップへ遷移して着地。
 const navItems = [
   { label: 'スタジオ概要', href: '/#studio-about' },
@@ -63,7 +62,7 @@ const navItems = [
 </div>
 
 <script>
-  // §5.10.1: 左ロゴ + 右ハンバーガー → 全画面オーバーレイ。focus trap / ESC / スクロールロック対応。
+  // 左ロゴ + 右ハンバーガー → 全画面オーバーレイ。focus trap / ESC / スクロールロック対応。
   const header = document.getElementById('site-header');
   const toggle = header?.querySelector<HTMLButtonElement>('.site-header__toggle');
   const overlay = document.getElementById('site-nav-overlay');
@@ -116,7 +115,8 @@ const navItems = [
 </script>
 
 <style is:global>
-  /* §5.10.1: オーバーレイ展開時の背景スクロールロック。<style is:global> でないと body セレクタが効かない。 */
+  /* オーバーレイ展開時の背景スクロールロック。
+     Gotcha: <style is:global> でないと scoped CSS の壁で body セレクタが効かない。 */
   body.is-nav-open {
     overflow: hidden;
   }
@@ -128,9 +128,8 @@ const navItems = [
     top: 0;
     left: 0;
     right: 0;
-    /* fb7 §3: シミ(9999)・コンテンツレイヤー(10000) 超えで常時最前面化（要件1）。
-       案 P フェーズ2（2026-06-20）: TechStack overlay(10001)・ComingSoon overlay(10002) より
-       上に置くため 10001 → 10004 へ引き上げ。Header は常に最前面・覆わない。 */
+    /* シミ(9999)・コンテンツ各層・各種 overlay より常時最前面で表示するため
+       TechStack overlay(10001) / ComingSoon overlay(10002) / nav-overlay(10003) より上に置く。 */
     z-index: 10004;
     height: 64px;
   }
@@ -208,16 +207,15 @@ const navItems = [
   .site-nav-overlay {
     position: fixed;
     inset: 0;
-    /* fb7 §3: シミ超え・ヘッダーボタンより下（要件1）。z:99 → 10000。
-       案 P フェーズ2（2026-06-20）: ComingSoon overlay(10002) より上で開けるよう 10000 → 10003。
-       Header(10004) は引き続き最前面・nav-overlay の閉じボタンと一体で動かす。 */
+    /* シミ超え・各種 overlay より上で開く。Header(10004) のハンバーガーは
+       最前面のまま閉じボタンと一体で動かす。 */
     z-index: 10003;
     background: var(--c-paper);
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  /* hidden 属性が付いている間は非表示。 display:none で transition は走らない潔さを優先（仕様書 §5.10.1 は opacity transition の指定なし） */
+  /* hidden 属性が付いている間は非表示。display:none で transition は走らない潔さを優先する。 */
   .site-nav-overlay[hidden] {
     display: none;
   }

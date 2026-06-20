@@ -1,13 +1,11 @@
 ---
-// 紙 C2 noise 背景（設計書 §4.1 / §5.1）。sandbox paper-bg-v2 の noise 値を昇格。
+// 紙 C2 noise 背景。
 //   mode="fixed"  : 領域 A（sticky ラッパ内）。inset:0 で領域全体をカバーし、背景色は
-//                   --bg-current（演出 B グラデ切替が差し替える最背面レイヤ。Phase 1 では
-//                   未実装のため --c-paper にフォールバック）。
+//                   --bg-current（グラデ背景切替が差し替える最背面レイヤ）。
 //   mode="normal" : 領域 B の各セクション通常背景。color で実背景色を指定。
-// noise は HTTP リクエスト 0 の inline data URI。演出 A（Hero 奥入り込み）は Hero 上層の
-// 別レイヤで行うため、この背景とは z-index で分離する（§5.4）。
-// fb7 §4.5.2 案1: noise を共通モジュール（src/lib/paperNoise.ts）へ一元化（DRY）。
-// PaperBg もシミ系（Base.astro）も同じ paperNoiseUrl を参照し、粒を完全一致させる。
+// noise は HTTP リクエスト 0 の inline data URI。Hero 奥入り込み演出は別レイヤで行うため
+// この背景とは z-index で分離する。
+// noise は共通モジュール（src/lib/paperNoise.ts）に一元化し、シミ系と粒を完全一致させる。
 import { paperNoiseUrl } from '../lib/paperNoise';
 
 interface Props {
@@ -38,11 +36,11 @@ const bgColor = mode === 'fixed' ? `var(--bg-current, ${baseColorVar})` : baseCo
     pointer-events: none;
     user-select: none;
   }
-  /* 領域 A: viewport fixed（A 案・2026-06-18 あめさん確定）。
-     設計書 §5.0「スクロール進行感を強調しない」原則を達成するため、
-     背景レイヤを viewport に固定してスクロールしてもズレないようにする
-     （旧 position: absolute は region-a 全体を覆うが scroll で一緒に動いてしまった）。
-     背景色は --bg-current を演出 B が transition で差し替える（§5.3）。 */
+  /* 領域 A: viewport fixed。
+     スクロール進行感を強調しない原則のため、背景レイヤを viewport 固定にして
+     スクロールしてもズレないようにする
+     （position: absolute では region-a 全体を覆うが scroll で一緒に動いてしまう）。
+     背景色は --bg-current をグラデ背景切替が transition で差し替える。 */
   .paper-bg--fixed {
     position: fixed;
     inset: 0;

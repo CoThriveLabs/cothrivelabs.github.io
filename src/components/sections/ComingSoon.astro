@@ -1,33 +1,31 @@
 ---
-// S8 案件受託案内（設計書 §4.3）。CTA 6 要素を構造として実装（フォーム挙動は Phase 5）。
-// 領域 B・C-DEEP 実背景。価格は「応相談」のみ・根拠なき「先着 N 名」NG・断定保証 NG。
-// ⑥邪魔排除: この section 内に他リンク・ナビ・ボタンを置かない。
+// S8 案件受託案内。CTA 6 要素を構造として実装（フォーム挙動は未実装）。
+// 領域 B・C-DEEP 実背景。価格は「応相談」のみ・根拠ない誇張表現 NG・断定保証 NG。
+// この section 内に他リンク・ナビ・ボタンを置かない（CTA 単一化）。
 ---
-{/* 案 P フェーズ2（2026-06-20・あめさん要望「TechStack 画面の上に下から覆い被さる」）:
-    ComingSoon を sentinel + overlay 構造に切替え。comingSoonCover.ts が TechStack sentinel の
-    progress 0.65〜1.0 を cover 区間として overlay の transform を translateY(100vh→0) で補間。
-    CS sentinel 消化後は is-unpinned で自然フロー復帰。
-    StudioAbout/TechStack 案 P と同型構造（pin 不使用・plain JS）。 */}
+{/* ComingSoon は sentinel + overlay 構造。comingSoonCover.ts が TechStack sentinel の
+    progress 0.65〜1.0 を cover 区間として overlay の transform を translateY(100vh→0) で補間し
+    下からせり上げる。CS sentinel 消化後は is-unpinned で自然フロー復帰（pin 不使用・plain JS）。 */}
 <div class="coming-soon-sentinel" data-comingsoon-sentinel>
   <section class="coming-soon" id="coming-soon" data-reveal data-comingsoon-overlay>
     <div class="coming-soon__inner">
-      {/* ① outcome-driven ヘッドライン */}
+      {/* outcome-driven ヘッドライン */}
       <h2 class="coming-soon__headline">
         Web 制作・LP・業務効率化のご相談、はじめませんか
       </h2>
       <p class="coming-soon__sub">現在準備中・先行のお声がけを受付中です。</p>
 
-      {/* ③ 具体的な social proof（実数のみ・誇張なし・S5 の 4 件と整合） */}
+      {/* social proof（実数のみ・誇張なし・制作物セクションと整合） */}
       <p class="coming-soon__proof">
         制作実績を公開中です（Sprout / LE CIEL / JukuMate / gizirotto の 4 件）。
       </p>
 
-      {/* ⑤ 期間明示（具体時期はあめさん判断 TODO・未確定なので範囲表現） */}
+      {/* 期間明示（具体時期未確定なので範囲表現） */}
       <p class="coming-soon__period">
         準備が整い次第、正式に受付を開始します。
       </p>
 
-      {/* ② ファーストビューに 1 つだけの CTA（フォーム挙動は Phase 5） */}
+      {/* ファーストビューに 1 つだけの CTA（フォーム挙動は未実装） */}
       <form class="coming-soon__form" data-phase5-pending>
         <label class="coming-soon__label" for="cs-email">メールアドレス</label>
         <div class="coming-soon__row">
@@ -44,7 +42,7 @@
             お声がけリストに登録
           </button>
         </div>
-        {/* ④ 紹介インセンティブは送信後の確認画面 / 自動返信で明示（Phase 5） */}
+        {/* 紹介インセンティブは送信後の確認画面 / 自動返信で明示する想定 */}
         <p class="coming-soon__note">
           登録後、受付開始のご案内を優先してお送りします。価格は応相談です。
         </p>
@@ -57,9 +55,9 @@
   .coming-soon {
     padding: var(--space-loose) 1.5rem;
     background: var(--c-paper-deep);
-    /* fb7 §10.2: 技スタ→ComingSoon 覆い被さりの土台。coverTransition.ts が transform:translateY を
-       100vh→0（window.innerHeight 実測）で駆動して下からせり上げる。
-       z:10000 = 技スタ同等・ヘッダー(10001) の下を通す（ヘッダーは常に最前面・覆わない）。
+    /* 技スタ→ComingSoon 覆い被さりの土台。comingSoonCover.ts が transform:translateY を
+       100vh→0 で駆動して下からせり上げる。
+       z:10000 = 技スタ同等。ヘッダーは常に最前面なので覆わない。
        初期 translateY は JS が set。reduce/SP（非対象）では set しない＝通常表示。 */
     position: relative;
     z-index: 10000;
@@ -146,8 +144,8 @@
     color: var(--c-main-mute);
   }
 
-  /* M6（2026-06-21 みつる調査→さき三次→みつる実装）: 520→640px に拡大、
-     520-640 帯のボタン文字「お声がけリストに登録」はみ出しを回避。 */
+  /* SP 用 BP 640px。狭幅でもボタン文字「お声がけリストに登録」がはみ出ないよう、
+     row → column で input とボタンを縦積みに切替える。 */
   @media (max-width: 640px) {
     .coming-soon__row {
       flex-direction: column;
@@ -157,7 +155,7 @@
     }
   }
 
-  /* === 案 P フェーズ2（2026-06-20）: TechStack → ComingSoon cover transition ===
+  /* === TechStack → ComingSoon cover transition ===
      PC + no-reduced-motion のみ発動。SP / reduce 時は sentinel/overlay は static 扱いで
      自然フローに戻り、reveal.ts の IO 単発出現で表示される（既存挙動維持）。
      comingSoonCover.ts が TechStack sentinel の progress 0.65〜1.0 を cover 区間として
@@ -166,16 +164,16 @@
   @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .coming-soon-sentinel {
       /* cover 区間 100vh のみ。cover 完了瞬間（cs.top <= 0）で fixed 解除し
-         ComingSoon→Contact は通常スクロールに移行（あめさん「ComingSoon→次は通常スクロールでいい」）。 */
+         ComingSoon→Contact は通常スクロールに移行する。 */
       height: 100vh;
       position: relative;
     }
     .coming-soon[data-comingsoon-overlay] {
       position: fixed;
       inset: 0;
-      /* TechStack overlay (10001) より上・Header (10004 へ引き上げ) / nav-overlay (10003) より下 */
+      /* TechStack overlay (10001) より上・Header (10004) / nav-overlay (10003) より下 */
       z-index: 10002;
-      /* 既存背景・不透明必須（下層が透けないように） */
+      /* 不透明必須（下層が透けないように） */
       background: var(--c-paper-deep);
       /* 初期は画面下に待機（JS が毎フレーム上書き） */
       transform: translateY(100vh);
@@ -188,7 +186,7 @@
       transform: none;
       z-index: auto;
     }
-    /* TechStack 案 P で踏んだ罠回避（fixed 化で grid item が natural width に縮む対策）。
+    /* Gotcha: overlay の fixed 化で grid item が natural width に縮む。
        overlay 内部の width 100% を保証して inner の max-width 中央寄せが効くようにする。 */
     .coming-soon[data-comingsoon-overlay] .coming-soon__inner {
       width: 100%;

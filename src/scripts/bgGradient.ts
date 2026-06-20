@@ -1,10 +1,9 @@
-// 演出 B: グラデ背景切替（設計書 §5.3 / 仕様書 v1.3 F4-c）。
-// 発火 3 箇所のトリガー要素（切替先セクション先頭）を IO で監視し、入域時に
-// --bg-current を C2 / C-DEEP へ書き換える。滑らかさは CSS の
-// transition: background-color が担当（§5.3.1）。GSAP 不使用＝依存ゼロ。
+// グラデ背景切替。
+// data-bg を持つトリガー要素（切替先セクション先頭）を IO で監視し、
+// 入域時に --bg-current を該当の紙色に書き換える。
+// 滑らかさは CSS の transition: background-color が担当（GSAP 不使用＝依存ゼロ）。
 //
-// reveal.ts とは IO instance / ファイルを完全分離（§5.4.1）。観測パラメータ
-// （中央帯 -30%/-30% = 5 次 FB で広げた）・unobserve 戦略（往復のため観測継続）が逆なため。
+// reveal.ts とは IO instance / ファイルを完全分離（観測パラメータと unobserve 戦略が逆のため）。
 
 type BgColor = 'paper' | 'paper-warm' | 'paper-deep';
 const VAR: Record<BgColor, string> = {
@@ -21,14 +20,11 @@ if (triggers.length) {
   const setBg = (color: BgColor) =>
     document.documentElement.style.setProperty('--bg-current', VAR[color]);
 
-  // 入域中トリガーを「現在交差中」で全件追跡する Set。IO entries は「変化が
-  // あったもの」だけ届くため、callback ごとに差分を Set に反映し、毎回 DOM 順で
-  // 最下のトリガーを正としてリプレイする。
-  // 三次テストで真因確定: entries の順序は IO 仕様上未定義のため
-  // `entries[entries.length-1]` は DOM 順最下と一致しない。かつ section 全体を
-  // 観測対象にしているため隣接 section (Members↔DevFlow) が重複交差する scrollY
-  // 区間が存在し、旧実装ではその区間で paper が勝って paper-deep が一度も発火
-  // しなかった。
+  // 入域中トリガーを「現在交差中」で全件追跡する Set。
+  // Gotcha: IO entries は「変化があったもの」だけ届く＋順序は IO 仕様上未定義のため
+  //   `entries[entries.length-1]` は DOM 順最下と一致しない。
+  //   隣接 section が重複交差する scrollY 区間では、entries 順序依存だと意図しない色が勝つ。
+  //   → callback ごとに差分を Set に反映し、毎回 DOM 順で最下のトリガーを正としてリプレイする。
   const intersecting = new Set<HTMLElement>();
 
   const io = new IntersectionObserver(
@@ -41,12 +37,12 @@ if (triggers.length) {
 
       if (intersecting.size === 0) {
         // 中央帯に何も入っていない時は初期色 C2 に戻す
-        // （Hero/Footer 領域で前回入域時の色が残留しないため・三次テスト発見）
+        // （Hero/Footer 領域で前回入域時の色が残留しないように）。
         setBg('paper');
         return;
       }
-      // DOM 順（= triggers 配列の順）で最下のものを採用 = 設計書の「最も下＝
-      // スクロール進行方向側」の本来意図。entries 順序に依存しない。
+      // DOM 順（= triggers 配列の順）で最下のものを採用 =「最も下＝スクロール進行方向側」を
+      // 正とする。entries 順序には依存しない。
       let last: HTMLElement | null = null;
       for (const el of triggers) {
         if (intersecting.has(el)) last = el;
@@ -54,13 +50,14 @@ if (triggers.length) {
       if (last) setBg((last.dataset.bg as BgColor) ?? 'paper');
     },
     {
-      // viewport 中央帯（高さ 40%）に入った瞬間に切替（§5.3.3・§5.10.3 5 次 FB で 10% → 40% へ拡幅、
-      // 「やわらかフェード」狙い。intersecting Set + DOM 順最下採用ロジックで複数同時交差にも対応済）。
+      // viewport 中央帯（高さ 40%）に入った瞬間に切替。
+      // 帯を広めに取ることで「やわらかフェード」感を出す
+      // （複数同時交差は intersecting Set + DOM 順最下採用で正しく扱う）。
       rootMargin: '-30% 0px -30% 0px',
       threshold: 0,
     }
   );
 
-  // unobserve しない（往復＝双方向スクロールで再切替するため・§5.3.2）。
+  // unobserve しない（往復＝双方向スクロールで再切替するため）。
   triggers.forEach((el) => io.observe(el));
 }

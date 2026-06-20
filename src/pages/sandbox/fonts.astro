@@ -1,12 +1,12 @@
 ---
 import Base from '../../layouts/Base.astro';
 
-// フォント比較 sandbox（非公開）。あめさん「フォントわからないからsandboxで出せる？」を受けて作成。
-// ともみ推し 3 フォント（全 SIL OFL 1.1）を C2 紙テクスチャ背景に載せ、見出し/小見出し/本文/キャッチで実物比較する。
-// ロードは Fontsource（@fontsource/*）。Astro 6 Fonts API は 6.3.2 で experimental のため、
-// 試作で確実に出すことを優先して枯れた Fontsource の CSS import を採用。
+// フォント比較 sandbox（noindex）。SIL OFL 1.1 ライセンスの和文フォント 3 種類を
+// 紙テクスチャ背景上に並べ、見出し/小見出し/本文/キャッチに適用して実物比較する。
+// ロードは Fontsource（@fontsource/*）の CSS import。Astro 6.3.2 の Fonts API は
+// 現状 experimental のため、安定動作優先で Fontsource を採用。
 
-// 必要ウェイトだけ import（試作なので過不足なく）
+// 必要ウェイトのみ import
 import '@fontsource/shippori-mincho/400.css';
 import '@fontsource/shippori-mincho/600.css';
 import '@fontsource/shippori-mincho/800.css';
@@ -16,7 +16,7 @@ import '@fontsource/zen-kaku-gothic-new/700.css';
 import '@fontsource/klee-one/400.css';
 import '@fontsource/klee-one/600.css';
 
-// C2 紙テクスチャ（paper-bg-v2.astro と同一の noise 値で統一）
+// 紙テクスチャ背景（paper-bg-v2.astro と同一の noise 値で統一）
 const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
 function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
   const [r, g, b] = rgb;

@@ -1,5 +1,5 @@
 ---
-// S4 受けられる案件（設計書 §4.2）。6 カテゴリ・「対応可」止め・誇張 NG・価格は出さない。
+// S4 受けられる案件。6 カテゴリ・「対応可」止め・誇張表現なし・価格は出さない。
 import SectionHeading from '../SectionHeading.astro';
 import Decor from '../Decor.astro';
 
@@ -13,7 +13,7 @@ const services = [
 ];
 ---
 <section class="services" id="services" data-bg="paper" data-step-section>
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。pin セクション内は noReveal。 */}
+  {/* ちらほら視差装飾。pin セクション内は noReveal（順次出現カウントに装飾を混ぜない）。 */}
   <Decor char="saki" depth="mid" corner="bottom-left" noReveal />
   <div class="services__inner">
     <SectionHeading
@@ -34,7 +34,7 @@ const services = [
 <style>
   .services {
     padding: var(--space-base) 1.5rem;
-    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    /* 装飾の absolute 配置基点・はみ出し防止 */
     position: relative;
     overflow: hidden;
   }

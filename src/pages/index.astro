@@ -1,5 +1,5 @@
 ---
-// 公式 HP v2 トップ。領域 A（S1-S7・Phase 4 で背景固定 sticky 予定）/ 領域 B（S8-S10・通常スクロール）。
+// 公式 HP トップ。領域 A（S1-S7・背景固定 sticky）/ 領域 B（S8-S10・通常スクロール）。
 // Header は自前の sections/Header を使うため Base 既定の Header は hideHeader で抑止。
 import Base from '../layouts/Base.astro';
 import PaperBg from '../components/PaperBg.astro';
@@ -16,7 +16,7 @@ import ComingSoon from '../components/sections/ComingSoon.astro';
 import Contact from '../components/sections/Contact.astro';
 import Footer from '../components/sections/Footer.astro';
 
-// 構造化データ（ホームページのみ・Google 公式ルールに準拠・W1 統一表記）
+// 構造化データ（ホームページのみ・Google 公式ルールに準拠）
 const organizationJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -52,29 +52,24 @@ const websiteJsonLd = {
 
   <Header />
   <main class="home">
-    {/* 領域 A: S1-S7（Phase 4 で背景固定 sticky・現状は通常フロー） */}
+    {/* 領域 A: S1-S7（背景固定 sticky） */}
     <div class="region-a">
       <PaperBg mode="fixed" />
-      {/* F4-e ちらほら装飾「葉っぱそよ風アニメ」（あめさん FB 2026-06-21）。
-          fixed・z:0・最背面寄り。領域 A 限定（領域 B では非表示にする方針）。
-          実体は src/scripts/leafBreeze.ts（GSAP・ノイズ摂動・reduce で no-op）。 */}
+      {/* ちらほら装飾「葉っぱそよ風アニメ」。fixed・z:0・最背面寄り。領域 A 限定。
+          実体は src/scripts/leafBreeze.ts（reduce で no-op）。 */}
       <LeafBreeze />
       <Hero />
       <StudioAbout />
       <Members />
       <Services />
-      {/* コーヒーシミ侵食 overlay 層（fb7 rev5・position:fixed）。
-          rev5 §1: 侵食駆動は reveal.ts の Services pin（STAIN_EXTRA 区間）に統合。
-          旧 #coffee-stain-anchor（独立 pin 用・高さ0）は rev5 で撤去。本体 overlay は残す。 */}
+      {/* コーヒーシミ侵食 overlay 層（position:fixed・z:9999）。
+          侵食駆動は reveal.ts の Services pin（STAIN_EXTRA 区間）に統合。 */}
       <div class="coffee-stain" data-coffee-stain aria-hidden="true"></div>
-      {/* fb7 rev9: works 全体 1 pin 統合 + reveal を timeline tween で scrub 駆動（horizontalZones.ts）。
-          本物の見出し+説明文が pin 中ずっと画面上部に残り、その下でカード帯が右から流れる。
-          複製見出し（.works-floating-title / .works__scroller-heading）は不要のため撤去済み。 */}
+      {/* works 全体 1 pin 統合 + reveal を timeline tween で scrub 駆動（horizontalZones.ts）。
+          本物の見出し+説明文が pin 中ずっと画面上部に残り、その下でカード帯が右から流れる。 */}
       <Works />
       <DevFlow />
       <TechStack />
-      {/* fb7 rev4.2 §4.4: cover の JS pin 廃止に伴い #techstack-cover-anchor を撤去。
-          技スタ→ComingSoon 覆い被さりは TechStack.astro の CSS sticky が担う（trigger アンカー不要）。 */}
     </div>
 
     {/* 領域 B: S8-S10（通常スクロール・実背景色） */}
@@ -91,7 +86,7 @@ const websiteJsonLd = {
     display: block;
   }
   /* 領域 A: 背景は region-a 直下の PaperBg(mode="fixed") に一元化（--bg-current）。
-     ここに自前のベタ背景を持たない（演出 B グラデ切替を見せるため・設計書 §5.3 / 手順 0-a）。 */
+     ここに自前のベタ背景を持たない（グラデ背景切替を見せるため）。 */
   .region-a {
     position: relative;
   }

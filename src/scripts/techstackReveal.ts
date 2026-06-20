@@ -1,17 +1,14 @@
-// 案 P（2026-06-20・あめさん観察 / ろぴ提案 / さき承認）：
-// S7 TechStack を fixed overlay + scrollY 監視で「画面転移なく順次出現」させる。
-// StudioAbout の studioReveal.ts と同型構造（コピー改変）。
+// TechStack を fixed overlay + scrollY 監視で「画面転移なく順次出現」させる。
 //
-// 経緯：
-//   - TechStack は reveal.ts (1) の pin + scrub 順次出現チェーンの末端で、
-//     上流（StudioAbout=200 / Members=170 / Services=140 / Works-intro=110）の
-//     refreshPriority 連鎖の累積誤差により「先走り」（カテゴリが想定より早く表示）を起こす。
-//   - pin チェーンから切り離し、sentinel rect のみ依存の方式に切替えると根本解消できる。
+// Why（pin チェーンから切り離す理由）:
+//   reveal.ts (1) の pin + scrub 順次出現チェーンの末端では、上流セクションの refreshPriority 連鎖の
+//   累積誤差により「先走り」（カテゴリが想定より早く表示）が発生する。
+//   pin を使わず sentinel rect のみに依存する方式に切替えることで根本解消する。
 //
-// 構造：
-//   - TechStack の自然位置に sentinel（高さ 1400px 固定）= 下流（ComingSoon / Contact）の絶対座標維持
-//   - TechStack section 本体は position: fixed で画面中央に常駐（active 時のみ可視）
-//   - scrollY 監視で sentinel が viewport 内に入った量に応じて [data-reveal] 要素を順次 active 化
+// 構造:
+//   - TechStack の自然位置に sentinel（高さ固定）= 下流（ComingSoon / Contact）の絶対座標を維持。
+//   - TechStack section 本体は position: fixed で画面中央に常駐（active 時のみ可視）。
+//   - scrollY 監視で sentinel が viewport 内に入った量に応じて [data-reveal] を順次 active 化。
 //
 // PC + no-reduced-motion のみ。SP / reduce 時は何もせず、
 // TechStack は自然フロー + reveal.ts (2) の IO 単発出現で表示される。
@@ -30,8 +27,8 @@ function setup() {
   if (total === 0) return;
 
   // sentinel の縦区間を [0, 1] に正規化して各要素の閾値を求める。
-  // 案 P フェーズ2（2026-06-20）: 0.65〜1.0 を ComingSoon cover 区間にあてるため、
-  // 5 要素が出揃う閾値を 0.85 → 0.65 に前倒し（comingSoonCover.ts と連動）。
+  // 0.65〜1.0 を ComingSoon cover 区間として残し、全要素は 0〜0.65 で出揃わせる
+  // （comingSoonCover.ts の COVER_START と連動）。
   const REVEAL_END = 0.65;
   const thresholds = reveals.map((_, i) => ((i + 1) / (total + 1)) * REVEAL_END);
 

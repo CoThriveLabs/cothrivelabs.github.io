@@ -1,20 +1,15 @@
-// 演出A Hero 入り込み（rev1 base + あめさん FB 数値温存・案 B rev2 巻き戻し）
-// 設計書: docs/designs/hp_v2_演出A_rev2_hero_studioabout_unified_2026-06-19.md
-//          ※ rev2 で行った StudioAbout 統合（pin 内 fixed overlay）は構造的負債のため撤去。
-//             Hero pin 区間内の段階0〜2（heroLogo / heroArt / L1 / L2）のみ残す。
+// Hero 入り込み演出。
 //
-// 段階配分:
-//   0a (0.0, dur 0.4)  .hero__logo  autoAlpha 1→0
-//   0b (0.0, dur 0.4)  .hero__art    y → 中央計算値 / scale 1→1.15
-//   1a (0.4, dur 0.69) L1 ともみ     scale 14.4 / blur 24px / xPercent -130 / autoAlpha 0 / yPercent -96
-//   1b (0.4, dur 0.69) L1 ろぴ       scale 14.4 / blur 24px / xPercent +130 / autoAlpha 0 / yPercent -96
-//   1c (0.4, dur 0.72) L2            scale 1→2.6 / blur 8px / transformOrigin 50% 65%
-//                                     ※ 2026-06-20 二回目 FB: L2 scale を 1.2 倍速 (dur 0.86 → 0.72)。
-//                                       blur tween (dur 1.72) と最大 scale 2.6 は据置。
-//   2  (1.26, dur 0.34) L2           scale 2.6→3.2 / autoAlpha 1→0
+// timeline 構成（time, duration の単位は timeline 内の相対時間）:
+//   ロゴ退場    (0.0, 0.4)  .hero__logo / .hero__tagline   autoAlpha 1→0
+//   art 中央寄せ (0.0, 0.4)  .hero__art                     y → 中央計算値 / scale 1→1.15
+//   L1 左拡大   (0.4, 0.69) L1 1番目                       scale 14.4 / blur 24px / xPercent -130 / autoAlpha 0 / yPercent -96
+//   L1 右拡大   (0.4, 0.69) L1 2番目                       scale 14.4 / blur 24px / xPercent +130 / autoAlpha 0 / yPercent -96
+//   L2 拡大     (0.4, 0.72) L2                             scale 1→2.6 / blur 8px / transformOrigin 50% 65%
+//   L2 フェード (1.26, 0.34) L2                            scale 2.6→3.2 / autoAlpha 1→0
 //
-// pin 長 2960px（rev1 比率維持・中速感）。scrub:1 で滑らかに追従。
-// refreshPriority: 230 維持（最高位・後続セクション pin spacer 連鎖の起点）。
+// pin 長 2960px。scrub:1 で滑らかに追従。
+// refreshPriority: 230（最高位・後続セクション pin spacer 連鎖の起点）。
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -36,6 +31,7 @@ function setup() {
 
       const hero = document.querySelector<HTMLElement>('.hero');
       const heroLogo = document.querySelector<HTMLElement>('.hero__logo');
+      const heroTagline = document.querySelector<HTMLElement>('.hero__tagline');
       const heroArt = document.querySelector<HTMLElement>('.hero__art');
       const l1Pictures = document.querySelectorAll<HTMLElement>('.hero__layer--l1 > picture');
       const l2 = document.querySelector<HTMLElement>('.hero__layer--l2');
@@ -50,18 +46,15 @@ function setup() {
 
       if (!hero || !heroLogo || !heroArt || l1Pictures.length < 2 || !l2) return;
 
-      // L1 内 picture 順序: 1番目=ともみ（左端）、2番目=ろぴ（右端）（Hero.astro DOM 順）
-      const tomomi = l1Pictures[0];
-      const ropi = l1Pictures[1];
+      // L1 内 picture 順序: 1番目=左端、2番目=右端（Hero.astro DOM 順）
+      const leftL1 = l1Pictures[0];
+      const rightL1 = l1Pictures[1];
 
-      // rev2 §3.1 [あめさん FB 1 反映]: heroArt を「画面中央より少し上」に持っていく y シフト量。
-      // - 目標 y = window.innerHeight * 0.38（viewport 縦 38% 位置 = 中央 50% より約 -12%）。
-      // - heroArt の現在中心 y との差を返す。上方向に動かしたいので必ず**負値**で返す。
-      // - 初回 FB「ワンスクロールでイラストが画面下に飛んでいく」の原因: 旧 viewportCenterY - artCenterY
-      //   は heroArt が既に viewport 中央付近（margin-top:-5rem で少し上）にいるため正値 or 0 になり、
-      //   結果として下に動いていた。今回は目標を意図的に「中央より上」に固定 + 上方向保証で再発防止。
-      // - 最低でも -40px の上移動を Math.min で保証（小さい viewport で正値に転ぶ事故防止）。
-      // - invalidateOnRefresh:true で fonts/images ロード後・リサイズ後も再計算。
+      // heroArt を「画面中央より少し上」に持っていく y シフト量を計算。
+      // 目標 y = window.innerHeight * 0.38（viewport 縦 38% 位置 = 中央 50% より約 -12%）。
+      // heroArt の現在中心 y との差を返す。Math.min で必ず -40px 以上の上移動を保証する
+      // （heroArt が既に中央付近にある場合に正値に転んで下方向に動く事故を防止）。
+      // invalidateOnRefresh:true で fonts/images ロード後・リサイズ後も再計算する。
       const getArtCenterShift = (): number => {
         const rect = heroArt.getBoundingClientRect();
         const artCenterY = rect.top + rect.height / 2;
@@ -83,47 +76,43 @@ function setup() {
         },
       });
 
-      // ── 段階0: ロゴ退場 + イラスト中央寄せ + 少しズーム ──
-      tl.to(heroLogo, { autoAlpha: 0, ease: 'power1.in', duration: 0.4 }, 0);
+      // ── ロゴ + tagline 退場 + イラスト中央寄せ + 少しズーム ──
+      // tagline はロゴと同タイミング・同 duration でフェードアウトさせる。
+      const stage0aTargets: HTMLElement[] = heroTagline ? [heroLogo, heroTagline] : [heroLogo];
+      tl.to(stage0aTargets, { autoAlpha: 0, ease: 'power1.in', duration: 0.4 }, 0);
       tl.to(
         heroArt,
         { y: () => getArtCenterShift(), scale: 1.15, ease: 'power2.out', duration: 0.4 },
         0
       );
 
-      // ── 段階1: 同位置 0.4 開始・L1 速い / L2 ゆっくり ──
-      // あめさん FB 2 rev2 + あめさん追加要望 (2026-06-20):
-      //   L1 は 3 tween に分離。
-      //     - scale: duration 0.345（max 14.4）→「大きくなる」演出を 2 倍速で。
-      //       2026-06-20 あめさん FB: scale 最大値を 9.6 → 14.4（1.5 倍）に。
-      //     - blur:  duration 0.531（= 0.69 / 1.3）→ blur のかかり方を 1.3 倍速に。
-      //     - 外側移動 (xPercent ±130 / autoAlpha): duration 1.38（= 0.69 × 2）→ 0.5 倍速で
-      //       横にゆっくり消えていく印象を強める。
-      //   L2 は blur だけ遅く分離（duration 1.72 = 元 0.86 の 2 倍時間 = 0.5 倍速）、
-      //   scale 1→2.6（duration 0.72・※ 2026-06-20 二回目 FB で 0.86→0.72 へ 1.2 倍速化、
-      //   最大 scale 2.6 は据置）。transformOrigin は scale tween に付ける。
-      // 段階1a: ともみ
-      tl.to(tomomi, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
-      tl.to(tomomi, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
+      // ── 同位置 0.4 開始・L1 速い / L2 ゆっくり ──
+      // L1 は 3 tween に分離して別速度で進める:
+      //   - scale (max 14.4) は短め duration で「大きくなる」演出を強く出す。
+      //   - blur (24px) は scale より少し遅らせて視認性を残す。
+      //   - 外側移動 (xPercent ±130 + autoAlpha + yPercent -96) は長め duration で
+      //     横にゆっくり消えていく印象を作る。
+      // L2 は scale と blur を別 tween に分離（blur tween のほうが時間長め）。
+      // 左の L1
+      tl.to(leftL1, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
+      tl.to(leftL1, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
       tl.to(
-        tomomi,
+        leftL1,
         { xPercent: -130, autoAlpha: 0, ease: 'power2.in', duration: 1.38 },
         0.4
       );
-      // 上方向移動（横移動の 0.7 倍速 = duration 1.97）。あめさん追加要望 (2026-06-20)。
-      tl.to(tomomi, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
-      // 段階1b: ろぴ
-      tl.to(ropi, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
-      tl.to(ropi, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
+      // 上方向移動（横移動より長めの duration でゆっくり持ち上げる）
+      tl.to(leftL1, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
+      // 右の L1
+      tl.to(rightL1, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
+      tl.to(rightL1, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
       tl.to(
-        ropi,
+        rightL1,
         { xPercent: 130, autoAlpha: 0, ease: 'power2.in', duration: 1.38 },
         0.4
       );
-      // 上方向移動（横移動の 0.7 倍速 = duration 1.97）。あめさん追加要望 (2026-06-20)。
-      tl.to(ropi, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
-      // 段階1c: L2（scale と blur を別 tween に分離）
-      // 2026-06-20 二回目 FB: scale tween のみ 1.2 倍速 (0.86 → 0.72)。最大 2.6 は据置・blur tween も据置。
+      tl.to(rightL1, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
+      // L2（scale と blur を別 tween に分離）
       tl.to(
         l2,
         { scale: 2.6, transformOrigin: '50% 65%', ease: 'power2.inOut', duration: 0.72 },
@@ -135,7 +124,7 @@ function setup() {
         0.4
       );
 
-      // ── 段階2: L2 フェード ──
+      // ── L2 フェード ──
       tl.to(
         l2,
         { scale: 3.2, autoAlpha: 0, ease: 'power1.in', duration: 0.34 },
@@ -146,6 +135,7 @@ function setup() {
       return () => {
         gsap.set('.hero__layer--l1, .hero__layer--l2', { willChange: 'auto' });
         gsap.set('.hero__logo', { autoAlpha: 1 });
+        if (heroTagline) gsap.set('.hero__tagline', { autoAlpha: 1 });
         gsap.set('.hero__art', { y: 0, scale: 1 });
       };
     }

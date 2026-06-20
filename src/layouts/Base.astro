@@ -1,5 +1,5 @@
 ---
-// フォント: Fontsource self-host（設計書 §3・Astro 6 Fonts API は 6.3.2 で experimental のため不採用）。
+// フォント: Fontsource self-host（Astro 6 Fonts API は experimental のため不採用）。
 // 見出し=しっぽり明朝 600/800 / 本文=Zen Kaku Gothic New 400/500/700 / アクセント=Klee One 600。
 import '@fontsource/shippori-mincho/600.css';
 import '@fontsource/shippori-mincho/800.css';
@@ -14,8 +14,8 @@ import zenJa400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-
 import zenLatin400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-latin-400-normal.woff2?url';
 
 import Header from '../components/sections/Header.astro';
-// fb7 §4.5.2 案1: 紙テクスチャ noise を共通モジュールから取得し --paper-noise-url（:root）に定義。
-// PaperBg / シミ色背景 / シミ overlay fill が同じ粒を参照して質感統一（add1・§4.5）。
+// 紙テクスチャ noise を共通モジュールから取得し --paper-noise-url（:root）に注入。
+// PaperBg / シミ色背景 / シミ overlay fill が同じ粒を参照して質感統一。
 import { paperNoiseUrl } from '../lib/paperNoise';
 const {
   title = 'Co-Thrive Labs（こすらぼ）— AIエージェント4体と作る作品集',
@@ -35,7 +35,7 @@ const ogImageURL = Astro.site
 ---
 
 <!doctype html>
-<!-- fb7 §4.5.2: --paper-noise-url を :root(=html) に注入。PaperBg/シミ系が共通参照（add1）。 -->
+<!-- --paper-noise-url を :root(=html) に注入。PaperBg / シミ系が共通参照。 -->
 <html lang="ja" style={`--paper-noise-url: url("${paperNoiseUrl}");`}>
   <head>
     <meta charset="utf-8" />
@@ -127,92 +127,89 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
-    {/* 演出A Hero 入り込み（rev1 base + あめさん FB 数値）。
-        refreshPriority:230 で Hero pin spacer を StudioAbout(200) より先に確定。 */}
+    {/* Hero 入り込み演出。refreshPriority:230 で Hero pin spacer を StudioAbout(200) より先に確定。 */}
     <script>import '../scripts/heroImmersion.ts';</script>
-    {/* 出現アニメ（設計書 §5.6・F4-b・2026-06-18 四次 FB リワーク）。Astro が GSAP 込みで
-        バンドル・defer 読込。pin + scrub 順次出現モード（[data-step-section] 持つ section）
-        と IO ベース単発出現モードの二系統。 */}
+    {/* 出現アニメ（GSAP）。pin + scrub 順次出現モード（[data-step-section] 持つ section）と
+        IO ベース単発出現モードの二系統。 */}
     <script>import '../scripts/reveal.ts';</script>
-    {/* 案 P フェーズ P（2026-06-20）: S7 TechStack も同型の fixed overlay + scrollY 監視で順次出現。
-        reveal pin チェーン末端の累積誤差による「先走り」を根本解消（StudioAbout と同パターン）。 */}
+    {/* TechStack は fixed overlay + scrollY 監視で順次出現させる。
+        reveal pin チェーン末端の累積誤差による「先走り」を構造的に回避する独立 setup。 */}
     <script>import '../scripts/techstackReveal.ts';</script>
-    {/* 案 P フェーズ2（2026-06-20）: TechStack → ComingSoon cover transition。TechStack progress
-        0.65〜1.0 を cover 区間とし、ComingSoon overlay を translateY(100vh → 0) で下からせり上げ。
-        pin 不使用・plain JS で rev4.2 破綻の罠（sticky × pin 競合）を構造的に回避。 */}
+    {/* TechStack → ComingSoon cover transition。TechStack progress 0.65〜1.0 を cover 区間とし、
+        ComingSoon overlay を translateY(100vh → 0) で下からせり上げ。
+        pin 不使用・plain JS で sticky × pin の競合罠を構造的に回避。 */}
     <script>import '../scripts/comingSoonCover.ts';</script>
-    {/* 演出 B グラデ背景切替（設計書 §5.3・F4-c）。reveal.ts と別ファイル・別 IO instance（§5.4.1）。 */}
+    {/* グラデ背景切替。reveal.ts と別ファイル・別 IO instance。 */}
     <script>import '../scripts/bgGradient.ts';</script>
-    {/* 横スク 2 ゾーン（設計書 §5.5・F3）。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
+    {/* 横スク 2 ゾーン。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
         768px+ かつ非 reduced-motion のみ pin 発動。SP/reduce は CSS 既定の縦積み。 */}
     <script>import '../scripts/horizontalZones.ts';</script>
-    {/* F4-e ちらほら視差装飾（設計書 §5.8・タスク G）。`[data-parallax][data-depth]` を
-        scrub 視差。blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止 blur 維持。 */}
+    {/* ちらほら視差装飾。`[data-parallax][data-depth]` を scrub 視差。
+        blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止だが blur は維持。 */}
     <script>import '../scripts/parallax.ts';</script>
-    {/* F4-e ちらほら装飾「葉っぱそよ風アニメ」（あめさん FB 2026-06-21）。
-        `[data-leaf]` を GSAP timeline で独立ループ・sin 摂動で showdot 風そよ風。
+    {/* ちらほら装飾「葉っぱそよ風アニメ」。`[data-leaf]` を GSAP timeline で独立ループ。
         reduce 時は no-op（静止表示）。parallax.ts と属性別なので干渉なし。 */}
     <script>import '../scripts/leafBreeze.ts';</script>
-    {/* 技スタ→ComingSoon「下から覆い被さる」単発演出（fb7 §10・coverTransition.ts 新規）。
-        coffeeStain.ts より前に登録 → coffeeStain の最終 refresh（rAF×2）で ST-cover も測られる（§10.4）。 */}
+    {/* 技スタ→ComingSoon「下から覆い被さる」単発演出。
+        coffeeStain.ts より前に登録し、coffeeStain の最終 refresh（rAF×2）で測ってもらう。 */}
     <script>import '../scripts/coverTransition.ts';</script>
-    {/* コーヒーシミ章替わり演出（設計書 §5.10.4・S4 Services → S5 Works）。
-        fb7: 侵食→四隅ベタ→全面維持の片道（後退削除）。最終 refresh をここで集約（§10.4）。 */}
+    {/* コーヒーシミ章替わり演出（侵食→四隅ベタ→全面維持の片道）。
+        ScrollTrigger 最終 refresh をここで集約する。 */}
     <script>import '../scripts/coffeeStain.ts';</script>
-    {/* F5 メンバーカード カーソル追従 tilt（設計書 §5.9・2026-06-20 採用）。
-        強さ: 中（±10deg / ±20px）・戻し: 0.6s。inner `.member-card__tilt` に閉じて
-        reveal.ts のポップ tween と干渉ゼロ。pointer:fine 偽 / reduce 真で無効化。 */}
+    {/* メンバーカード カーソル追従 tilt。強さ: ±15deg / ±30px・戻し: 0.6s。
+        inner `.member-card__tilt` に閉じて reveal.ts のポップ tween と干渉ゼロ。
+        pointer:fine 偽 / reduce 真で無効化。 */}
     <script>import '../scripts/memberCardTilt.ts';</script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    /* === v2 配色（COLOR-6 確定・設計書 §2） === */
-    --c-paper:        #FFFBF3;               /* ベース紙 C2（背景 70%・あめさん FB「AI HP 頻出ベージュ脱却・白寄せ」で #f9f2e6 → #FFFBF3） */
-    --c-paper-warm:   #f9f2e6;               /* C-WARM（旧 paper 色を保持・S3 Members/S4 Services/S5 Works のシミ周辺で「シミの茶色に合うベージュ」を維持） */
-    --c-paper-deep:   #F2EBDA;               /* C-DEEP（S2/S6/S7/S10 帯・演出 B 濃色側・白寄せ連動で #ece1c8 → #F2EBDA。C2 との対比は維持） */
+    /* === 配色 === */
+    --c-paper:        #FFFBF3;               /* ベース紙 C2（背景 70%・白寄せでベージュらしさを抑える） */
+    --c-paper-warm:   #f9f2e6;               /* C-WARM（シミ周辺で茶色に馴染むベージュ） */
+    --c-paper-deep:   #F2EBDA;               /* C-DEEP（S2/S6/S7/S10 帯・グラデ濃色側） */
     --c-main:         #3A3230;               /* ココアブラウン（文字・枠線 70-80%） */
     --c-main-soft:    rgba(58, 50, 48, 0.7); /* 本文 */
     --c-main-mute:    rgba(58, 50, 48, 0.6); /* 補助テキスト */
     --c-border:       rgba(58, 50, 48, 0.18);/* 枠線 */
     --c-accent:       #C06C5D;               /* テラコッタ（リンク・CTA 5-10%） */
-    --c-accent-dark:  #A85847;               /* hover（仮値・WCAG AA は Phase 4-5 で確定） */
+    --c-accent-dark:  #A85847;               /* hover */
 
-    /* === メンバーカラー（S3 のキャラ装飾のみ・本文/CTA に使わない・設計書 §2） === */
-    --m-ame:    #D87FA0;  /* あめまみれ ピンク */
-    --m-saki:   #6B8E5A;  /* さき みどり（旧 v1 primary と同値だが個性色として残置） */
-    --m-ropi:   #8A6FBF;  /* ろぴ むらさき */
-    --m-mitsuru:#5B89C2;  /* みつる あお */
-    --m-tomomi: #E0A867;  /* ともみ オレンジ */
+    /* === メンバーカラー（キャラ装飾のみ・本文/CTA に使わない） === */
+    --m-ame:    #D87FA0;  /* ピンク */
+    --m-saki:   #6B8E5A;  /* みどり */
+    --m-ropi:   #8A6FBF;  /* むらさき */
+    --m-mitsuru:#5B89C2;  /* あお */
+    --m-tomomi: #E0A867;  /* オレンジ */
 
-    /* === フォント（設計書 §2 / §3） === */
+    /* === フォント === */
     --font-head:   'Shippori Mincho', 'Hiragino Mincho ProN', serif;
     --font-body:   'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
     --font-accent: 'Klee One', 'Hiragino Kaku Gothic ProN', sans-serif;
 
-    /* === レイアウト（設計書 §2） === */
+    /* === レイアウト === */
     --max-w: 1120px;
     --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-    /* 演出 B グラデ背景切替の transition 時間（設計書 §5.10.3・5 次 FB で 800ms → 1500ms へ延長・「やわらかフェード」狙い）。 */
+    /* グラデ背景切替の transition 時間。長めにとって「やわらかフェード」感を出す。 */
     --bg-transition: 1500ms;
-    /* 演出 B グラデ背景切替が書き換える唯一の変数（設計書 §5.3.1）。
-       初期値 C2 で JS 未実行でも表示が崩れない（プログレッシブ）。 */
+    /* グラデ背景切替が書き換える唯一の変数。初期値 C2 で JS 未実行でも崩れない（プログレッシブ）。 */
     --bg-current: var(--c-paper);
 
-    /* === 余白トークン（設計書 §2「意図的に不揃いな余白」・§5.10.2 で PC 倍化・SP 1.3-1.4 倍に抑制） === */
-    --space-loose: clamp(8rem, 22vh, 18rem);   /* PC ≈ 18rem / SP ≈ 8rem */
-    --space-base:  clamp(5.5rem, 15vh, 12rem); /* PC ≈ 12rem / SP ≈ 5.5rem */
-    --space-snug:  clamp(3.5rem, 9vh, 7.5rem); /* PC ≈ 7.5rem / SP ≈ 3.5rem */
+    /* === 余白トークン（意図的に不揃いな余白） === */
+    --space-loose: clamp(8rem, 22vh, 18rem);   /* PC 約 18rem / SP 約 8rem */
+    --space-base:  clamp(5.5rem, 15vh, 12rem); /* PC 約 12rem / SP 約 5.5rem */
+    --space-snug:  clamp(3.5rem, 9vh, 7.5rem); /* PC 約 7.5rem / SP 約 3.5rem */
 
-    /* === コーヒーシミ演出（設計書 §5.10.4 / fb7 §4） === */
-    --c-coffee-stain: #8B6F4E;   /* シミ色（A 案）。fb7 §4.2: 値は濃いめのまま保持し、背景/fill は color-mix で薄める（適用時 mix・add1） */
-    --stain-r: 0%;               /* シミ半径（coffeeStain.ts が scrub で 0% → 150% にアニメ） */
-    --stain-fill-opacity: 0;     /* fb7 §4.2: シミ fill 層の不透明度。侵食完了で 0→1（四隅ベタ）。coffeeStain.ts 駆動 */
-    /* fb7 §8.3: 定着後の背景/fill 用の薄シミ色（紙色 30% 混色）。overlay fill と §8 セクション背景で同色にして継ぎ目を消す。 */
+    /* === コーヒーシミ演出 === */
+    --c-coffee-stain: #8B6F4E;   /* シミ色（濃いめ）。背景/fill は color-mix で薄めて適用 */
+    --stain-r: 0%;               /* シミ半径（reveal.ts が scrub でアニメ） */
+    --stain-fill-opacity: 0;     /* シミ fill 層の不透明度。侵食完了で 0→1（四隅ベタ） */
+    /* 定着後の背景/fill 用の薄シミ色（紙色 30% 混色）。
+       overlay fill と各セクション背景で同色にして継ぎ目を消す。 */
     --c-coffee-stain-soft: color-mix(in srgb, var(--c-coffee-stain) 70%, var(--c-paper));
 
-    /* === 実用トークン（v2 配色から導出・shadow は brown 基調へ） === */
+    /* === 実用トークン（shadow は brown 基調） === */
     --radius: 14px;
     --shadow-sm: 0 2px 8px rgba(58, 50, 48, 0.05);
     --shadow-md: 0 8px 24px rgba(58, 50, 48, 0.09);
@@ -245,7 +242,7 @@ const ogImageURL = Astro.site
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 見出しはしっぽり明朝（設計書 §3）。本文は Zen Kaku Gothic New。 */
+  /* 見出しはしっぽり明朝。本文は Zen Kaku Gothic New。 */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-head);
     font-weight: 700;
@@ -262,22 +259,22 @@ const ogImageURL = Astro.site
     display: block;
   }
 
-  /* === コーヒーシミ overlay（設計書 §5.10.4 / fb7 §4.2・§4.5.4） ===
+  /* === コーヒーシミ overlay ===
      位置: fixed・z:9999・pointer-events なし。
-     fb7 で edge/fill の 2 層（疑似要素）に分離:
-       ::before(edge) = 侵食中の「広がるにじみ」（radial・--stain-r で 0→150%・濃いめ）。
+     edge/fill の 2 層（疑似要素）に分離:
+       ::before(edge) = 侵食中の「広がるにじみ」（radial・--stain-r で 0→220%）。
        ::after(fill)  = 四隅まで完全シミ色のベタ（薄シミ色＋紙テクスチャ noise）。
-                        侵食完了で --stain-fill-opacity 0→1 で不透明化＝四隅ベタ（要件2）。
-     §8 セクション背景と fill を同じ「薄シミ色＋noise」にして継ぎ目を消す（§8.3）。 */
+                        侵食完了で --stain-fill-opacity 0→1 で不透明化＝四隅ベタ。
+     セクション背景と fill を同じ「薄シミ色＋noise」にして継ぎ目を消す。 */
   .coffee-stain {
     position: fixed;
     inset: 0;
-    z-index: 9999;  /* コンテンツ最前面・侵食演出（五次 FB Case A 2026-06-18） */
+    z-index: 9999;  /* コンテンツ最前面 */
     pointer-events: none;
   }
-  /* edge: 侵食中の広がるにじみ（薄茶 soft radial・--stain-r 0%→220%・fb7 rev4 §A）。
+  /* edge: 侵食中の広がるにじみ（薄茶 soft radial・--stain-r 0%→220%）。
      farthest-corner で四隅を半径基準にし、濃色終端 *0.85・透明 *1.05 でフェード帯を最小化。
-     色は soft（薄茶）に統一し fill・§8背景とピクセル一致させて継ぎ目を消す（§A.1 / §A.4）。 */
+     色は soft（薄茶）に統一し fill・各セクション背景とピクセル一致させて継ぎ目を消す。 */
   .coffee-stain::before {
     content: '';
     position: absolute;
@@ -290,8 +287,8 @@ const ogImageURL = Astro.site
     );
     will-change: background;
   }
-  /* fill: 四隅まで完全シミ色のベタ（薄シミ色＋noise）。侵食完了で不透明化（§4.2・§4.5.4）。
-     色は --c-coffee-stain-soft（§8 背景と同色）・noise は --paper-noise-url（他背景と同粒）。 */
+  /* fill: 四隅まで完全シミ色のベタ（薄シミ色＋noise）。侵食完了で不透明化。
+     色は --c-coffee-stain-soft（セクション背景と同色）・noise は --paper-noise-url（他背景と同粒）。 */
   .coffee-stain::after {
     content: '';
     position: absolute;
@@ -302,18 +299,6 @@ const ogImageURL = Astro.site
     opacity: var(--stain-fill-opacity, 0);
     will-change: opacity;
   }
-
-  /* fb7 rev5 §1.4: #coffee-stain-anchor（独立 pin 用・高さ0）は撤去。
-     侵食駆動が reveal.ts の Services pin に統合され独立 pin が不要になったため。
-     coffee-stain 本体 overlay（.coffee-stain / edge / fill）は上で定義済み・残す。 */
-
-  /* fb7 rev4.2 §4.4: #techstack-cover-anchor は cover の JS pin 廃止に伴い撤去（CSS sticky 方式へ移行）。 */
-
-  /* fb7 rev6: .works-floating-title 関連 CSS は撤去。
-     works 全体を 1 pin に統合した（horizontalZones.ts）ので、本物の見出し+説明文が pin 内で
-     物理的に画面に残るようになり、複製見出しが不要になった。 */
-
-  /* fb7 §4.4: .is-over-stain トグルは撤去。制作物以降は §8 で常時 z:10000（シミ超え）にする。 */
 
   /* fade-in 共通 */
   [data-fade] {
@@ -327,8 +312,9 @@ const ogImageURL = Astro.site
     transform: translateY(0);
   }
 
-  /* 出現アニメの初期状態（設計書 §5.6・実体は scripts/reveal.ts・2026-06-18 三次 FB）。
-     入域前のチラ見え防止。デフォルト（テキスト等）はフェード（translateY(20px)）。
+  /* 出現アニメの初期状態（実体は scripts/reveal.ts）。
+     入域前のチラ見え防止のため、CSS でも初期 transform を持つ。
+     デフォルト（テキスト等）はフェード（translateY(20px)）。
      `.member-card[data-reveal]` は斜め飛び込み + 反動の初期値を CSS でも分岐させて
      チラ見えを完全に防ぐ（reveal.ts の gsap.set より早い画面初期描画段階で適用）。 */
   [data-reveal] {
@@ -340,9 +326,6 @@ const ogImageURL = Astro.site
   .member-card[data-reveal] {
     transform: translateY(200px) translateX(-80px) rotate(-15deg) scale(0.8);
   }
-
-  /* 旧 v1 の番号振り・英語添字ユーティリティ（巨大背面番号 / "01 About" 風ラベル / eyebrow）は
-     v2 で全撤去（設計書 §6 Phase 1 / 仕様書 D4「番号振り NG・英語小添字 NG・見出しは日本語のみ」）。 */
 
   /* フォーカス可視（キーボード操作時のみ） */
   a:focus-visible,
@@ -369,8 +352,8 @@ const ogImageURL = Astro.site
     .member-card[data-reveal] {
       transform: none;
     }
-    /* コーヒーシミ演出スキップ（§5.10.4 / fb7 §11・reduce のみ全オフ）。
-       edge=--stain-r:0%（透明）・fill=--stain-fill-opacity:0（非表示）で完全に出さない。 */
+    /* reduce 時はコーヒーシミ演出を完全オフ。
+       edge=--stain-r:0%（透明）・fill=--stain-fill-opacity:0（非表示）。 */
     .coffee-stain {
       --stain-r: 0%;
       --stain-fill-opacity: 0;

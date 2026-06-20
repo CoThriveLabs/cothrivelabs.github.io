@@ -1,5 +1,5 @@
 ---
-// 制作物カード（設計書 §4.1）。課題/作ったもの/技術/工夫の 4 項目を見出し付きで構造化。
+// 制作物カード。課題/作ったもの/技術/工夫の 4 項目を見出し付きで構造化。
 // status='準備中' の場合は原稿待ちプレースホルダとして淡色表示（リンク無効）。
 export interface Props {
   title: string;
@@ -160,7 +160,7 @@ const hasLink = !isPending && mainHref && mainHref !== '#';
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.8;
-    /* あめさん FB 2026-06-21: 説明文の色を濃く。--c-main-soft (α=0.7) → α=0.85。 */
+    /* 説明文は本文より少し濃く出す（--c-main-soft α=0.7 → α=0.85） */
     color: rgba(58, 50, 48, 0.85);
   }
   .work-card__tags {

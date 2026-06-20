@@ -1,16 +1,17 @@
-// 案 P フェーズ2（2026-06-20・あめさん要望「TechStack 画面の上に下から覆い被さる」/
-// ろぴ確定設計）: TechStack → ComingSoon cover transition。
+// TechStack → ComingSoon cover transition（TechStack 画面の上に下から覆い被さる演出）。
 //
-// 構造：
+// 構造:
 //   - TechStack sentinel の progress 0.65〜1.0 を cover 区間とし、
 //     ComingSoon overlay の transform を translateY(100vh → 0) で補間して下からせり上げる。
 //   - CS sentinel 区間内は overlay が画面固定（transform = 0）。
-//   - CS sentinel 消化後（cs.bottom <= vh）は is-unpinned で fixed 解除して自然フロー復帰。
+//   - CS sentinel 消化後（cs.top <= 0）は is-unpinned で fixed 解除して自然フロー復帰。
 //
 // PC + no-reduced-motion のみ。SP / reduce 時は何もせず、ComingSoon は自然フローで表示される
 // （ComingSoon.astro の @media ガードで sentinel/overlay は static 扱いに戻る）。
 //
-// rev4.2 破綻の罠（sticky × pin 競合）は pin 不使用・plain JS により構造的に回避。
+// Why pin 不使用:
+//   sticky × ScrollTrigger pin の競合（同一要素で両方が transform を書く）を回避するため、
+//   pin を使わず plain JS の scroll listener + rAF で transform を直書きする方式にしている。
 
 function setup() {
   const mql = window.matchMedia('(prefers-reduced-motion: no-preference)');
@@ -38,7 +39,7 @@ function setup() {
       const tProgress = -t.top / t.height;
 
       // cover 完了瞬間（CS sentinel top が viewport top に到達 = T sentinel 完全通過）で
-      // fixed 解除して通常スクロールに移行。あめさん要望「ComingSoon→次セクションは通常スクロール」。
+      // fixed 解除して通常スクロールに移行（ComingSoon→Contact は普通のスクロール）。
       const csConsumed = cs.top <= 0;
       overlay!.classList.toggle('is-unpinned', csConsumed);
       if (csConsumed) {
@@ -57,7 +58,7 @@ function setup() {
       } else {
         translateY = 0;
       }
-      // inline style で直書き（Astro scoped CSS 壁の回避・案 P 系列の共通パターン）。
+      // inline style で直書き（Astro scoped CSS の壁を回避）。
       overlay!.style.transform = `translateY(${translateY}px)`;
     });
   }

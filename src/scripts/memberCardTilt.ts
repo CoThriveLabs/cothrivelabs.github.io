@@ -1,23 +1,21 @@
-// メンバーカード カーソル追従 tilt（設計書 §5.9・F5）。
-// 参考: BALLPARK STYLE（独自実装。コピー禁止）。
-// あめさん指示（2026-06-20）: 強さ=中（±15deg / ±30px）・戻し=0.6s（倍化→効きすぎ FB で中間値に抑え）。
+// メンバーカード カーソル追従 tilt。
+// 強さ=中（±15deg / ±30px）・戻し=0.6s。
 //
-// 設計判断:
+// Why:
 //   - 外殻 `.member-card` は reveal.ts のポップ tween（translateY/rotate/scale）を持つので
-//     tilt の transform は **inner `.member-card__tilt`** に閉じる（干渉ゼロ）。
+//     tilt の transform は inner `.member-card__tilt` に閉じる（干渉ゼロ）。
 //   - GSAP quickTo を rotation 系 / translate 系の 2 層で持ち、mousemove ごとに値を流す。
 //   - mouseleave で全パラメータを 0 に戻す（同 quickTo・duration 0.6s で戻る）。
 //   - タッチ端末（pointer: fine 偽）・prefers-reduced-motion: reduce では何もしない。
 import { gsap } from 'gsap';
 
-const TILT_MAX_DEG = 15;   // ±15deg（X/Y 軸 rotation）— 倍化（20）→ 効きすぎ FB で中間値へ抑え（2026-06-20）
-const TILT_MAX_PX = 30;    // ±30px（X/Y translate）— 倍化（40）→ 効きすぎ FB で中間値へ抑え（2026-06-20）
+const TILT_MAX_DEG = 15;   // ±15deg（X/Y 軸 rotation）
+const TILT_MAX_PX = 30;    // ±30px（X/Y translate）
 const DURATION = 0.6;      // 戻し / 追従の quickTo duration
 const EASE = 'power3.out';
 
 function setupCard(card: HTMLElement) {
-  // tilt の transform を載せる inner（MemberCard.astro 改修で導入）。
-  // 万一構造が古くて __tilt が無ければカード本体に fallback。
+  // tilt の transform を載せる inner。万一構造が古くて __tilt が無ければカード本体に fallback。
   const target = (card.querySelector('.member-card__tilt') as HTMLElement) ?? card;
 
   const setRotX = gsap.quickTo(target, 'rotationX', { duration: DURATION, ease: EASE });

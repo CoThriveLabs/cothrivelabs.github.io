@@ -1,15 +1,13 @@
 ---
-// S2 スタジオ概要（設計書 §4.2）。--space-loose。未登記のため「スタジオ」表記で統一。
-// リード文はあめさん確定原文（PF エピソード混入版は破棄）。
-// あめさん FB 2026-06-21: facts カード削除（ともみが後で対抗文を追加するためのプレースホルダ）。
-//                        併せて data-bg paper-deep → paper-warm に変更。
+// S2 スタジオ概要。未登記のため「スタジオ」表記で統一。
+// data-bg は paper-warm（背景色トリガー）。
 import SectionHeading from '../SectionHeading.astro';
 import Decor from '../Decor.astro';
 ---
 <section class="studio-about" id="studio-about" data-bg="paper-warm" data-step-section>
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。aria-hidden 装飾扱い・コンテンツ下層
-      Decor は装飾なので data-reveal は外しておく（pin scrub 進行カウントに混ぜると意図と
-      ズレるため・§5.6 四次 FB）。視差は parallax.ts で別途。 */}
+  {/* ちらほら視差装飾。装飾なので data-reveal は外す
+      （pin scrub 進行カウントに装飾を混ぜると順次出現の意図とズレる）。
+      視差は parallax.ts が別途担当。 */}
   <Decor char="ropi" depth="back" corner="top-left" noReveal />
   <Decor char="tomomi" depth="mid" corner="bottom-right" noReveal />
   <div class="studio-about__inner">
@@ -17,7 +15,7 @@ import Decor from '../Decor.astro';
 
     <div class="studio-about__body">
       <div class="studio-about__lead" data-reveal>
-        {/* v1.4 リード文（ともみ敬体ドラフト v3 §4 反映・3 段落構造） */}
+        {/* リード文（敬体・3 段落構造） */}
         <p>
           こすらぼ（Co-Thrive Labs）は、あめまみれ（人間）と AIエージェント4体で動かしている小さなスタジオです。ひとりでは抱えきれなかった「企画・設計・実装・テスト」を 5 人で役割分担し、フルスタックで開発を進めていきます。
         </p>
@@ -35,12 +33,11 @@ import Decor from '../Decor.astro';
 <style>
   .studio-about {
     padding: var(--space-loose) 1.5rem;
-    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    /* 装飾の absolute 配置基点・はみ出し防止 */
     position: relative;
     overflow: hidden;
-    /* 案A: Hero pin spacer 余剰（≒1vh 真空区間）詰め。S2 を Hero 直後に
-       吸い寄せて document スクロール量を短縮（演出 timeline / 相対位置は不変）。
-       倍化 (2026-06-20 二回目 FB): 体感変化が薄かったため -50vh → -100vh。 */
+    /* Hero pin spacer の真空区間を詰めるための負 margin。
+       S2 を Hero 直後に吸い寄せて document スクロール量を短縮（演出 timeline 相対位置は不変）。 */
     margin-top: -100vh;
   }
   .studio-about__inner {
@@ -50,7 +47,7 @@ import Decor from '../Decor.astro';
     position: relative;
     z-index: 1;
   }
-  /* あめさん FB 2026-06-21: facts カード削除に伴い 2 列 grid → 単列化（lead だけ残す）。 */
+  /* lead 単列レイアウト（facts カードはなし） */
   .studio-about__body {
     display: block;
   }
@@ -66,8 +63,7 @@ import Decor from '../Decor.astro';
   }
 
   @media (max-width: 768px) {
-    /* 案A SP: 画面崩れ抑制のため半量にとどめる。
-       倍化 (2026-06-20 二回目 FB): -25vh → -50vh。 */
+    /* SP は画面崩れ抑制のため半量に留める */
     .studio-about {
       margin-top: -50vh;
     }

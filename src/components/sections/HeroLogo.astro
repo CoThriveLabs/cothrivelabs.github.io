@@ -1,11 +1,11 @@
 ---
-// 手書きロゴ「こすらぼ Co-Thrive Labs」（設計書 §4.2 S1 / §5.2・task 2）。
-// hero-rogofont.png を 2 色（テラコッタ／ダークブラウン）に分離 → potrace → svgo 最適化した
+// 手書きロゴ「こすらぼ Co-Thrive Labs」。
+// 元画像を 2 色（テラコッタ／ダークブラウン）に分離 → potrace → svgo 最適化した
 // fill path 2 本をインライン SVG 化。同じ viewBox 上に重ねて元画像を再現。
-// お絵描きアニメ：塗りロゴを「太い横帯ストロークの mask」で覆い、mask path の
-// stroke-dashoffset を 1→0 にして左から描かれていく演出（stroke-dashoffset 方式）。
+// お絵描きアニメ: 塗りロゴを「太い横帯ストロークの mask」で覆い、mask path の
+// stroke-dashoffset を 1→0 にして左から描かれていく（stroke-dashoffset 方式）。
 // fill を保つため描画完了後も手書きの塗りが残る（中空縁取りにならない）。
-// あめさん明示：このアニメは PF 全体の手書き感の核 → reduced-motion でも無効化しない。
+// このアニメは手書き感の核なので reduced-motion でも無効化しない（完了状態は forwards で固定）。
 import { heroLogoPathKosurabo, heroLogoPathCoThrive, heroLogoViewBox } from './heroLogoPath';
 
 const VBX = 74, VBY = 88, W = 1653, H = 723;
@@ -55,6 +55,6 @@ const maskId = 'hero-logo-wipe';
       stroke-dashoffset: 0;
     }
   }
-  /* あめさん明示：手書き感の核のため reduced-motion でも止めない（他演出は §5 で即時表示だがこれは例外）。
-     ただし配慮として完了状態は確実に表示されるよう forwards で固定済み。 */
+  /* 手書き感の核なので reduced-motion でも止めない（他演出は即時表示だがこれは例外）。
+     配慮として完了状態は確実に表示されるよう forwards で固定。 */
 </style>

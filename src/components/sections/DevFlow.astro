@@ -1,6 +1,6 @@
 ---
-// S6 開発フロー（設計書 §4.2）。flow-diagram.md の 5 段を縦積み骨格（横スク scrub は Phase 4）。
-// C-DEEP 背景・--space-snug。
+// S6 開発フロー。5 段の工程を縦積みで列挙（PC では後段の @media で横スク化）。
+// C-DEEP 背景。
 import SectionHeading from '../SectionHeading.astro';
 
 const steps = [
@@ -30,10 +30,9 @@ const steps = [
       ))}
     </ol>
 
-    {/* v1.4 S6 末尾コラム「運用の前提」（設計書 §4.6 / 仕様書 v1.4）。
-        横スク pin（.devflow__list のみ x tween）の対象外なので、pin spacer 通過後の
-        通常 flow で出現する。`data-reveal` は IO 単発出現モードで拾われる（pin 非依存）。
-        SP は dl 縦並び化（Q-α17 推し案 B・ろぴ提示 2 案のうち推奨案）。 */}
+    {/* S6 末尾コラム「運用の前提」。横スク pin（.devflow__list のみ x tween）の対象外なので、
+        pin spacer 通過後の通常 flow で出現する。`data-reveal` は IO 単発出現モードで拾われる。
+        SP は dl 縦並び化（thead 非表示・td block 化）。 */}
     <aside class="devflow__epilog" data-reveal>
       <h3 class="devflow__epilog-heading">運用の前提 — 人が判断する部分・AI で自動化する部分・人と AI で協力する部分</h3>
       <p class="devflow__epilog-lead">
@@ -64,8 +63,8 @@ const steps = [
     max-width: 760px;
     margin: 0 auto;
   }
-  /* あめさん FB 2026-06-21: 説明文の色を濃く。共通 SectionHeading の lead (--c-main-mute α=0.6)
-     を S6 限定で α=0.85 に override（S2-S4 共通コンポは変えない）。 */
+  /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S6 限定で α=0.85 に上書き。
+     他セクション共通コンポは変えない（S6 だけ濃く出して可読性確保）。 */
   .devflow :global(.section-heading__lead) {
     color: rgba(58, 50, 48, 0.85);
   }
@@ -116,7 +115,7 @@ const steps = [
     font-family: var(--font-body);
     font-size: 0.9rem;
     line-height: 1.8;
-    /* あめさん FB 2026-06-21: 説明文の色を濃く。--c-main-soft (α=0.7) → α=0.85。 */
+    /* 説明文は本文より少し濃く出す（--c-main-soft α=0.7 → α=0.85） */
     color: rgba(58, 50, 48, 0.85);
   }
 
@@ -130,10 +129,14 @@ const steps = [
     }
   }
 
-  /* v1.4 S6 末尾コラム「運用の前提」（設計書 §4.6） */
+  /* S6 末尾コラム「運用の前提」 */
   .devflow__epilog {
     max-width: 760px;
+    /* 横スク 5 段（.devflow__list）の終了後にさらに 1 viewport 分（100vh）下げ、
+       マトリクスの出現を 1 スクロール遅延させる。
+       reveal.ts の IO 発火は要素 bottom 入域なので margin-top で自動的に遅れる。 */
     margin: var(--space-base) auto 0;
+    margin-top: 100vh;
     padding: 1.5rem 0 0;
     /* 横スク pin 内（PC scrub）でも .devflow__inner の通常 flow 子要素として
        縦方向に配置（横スク tween 対象は .devflow__list だけ）。 */
@@ -194,9 +197,13 @@ const steps = [
   }
   .devflow__matrix tr:last-child td { border-bottom: none; }
 
-  /* Q-α17 推し案 B: SP（< 768px）で表を dl 風縦並び化（table タグのまま CSS で疑似 dl 化）。
+  /* SP（< 768px）で表を dl 風縦並び化（table タグのまま CSS で疑似 dl 化）。
      thead 隠し / tr を block / td を block + 区分セルを「ラベル」、例セルを「内容」として縦積み。 */
   @media (max-width: 767px) {
+    /* SP 用は半分（50vh）で控えめに */
+    .devflow__epilog {
+      margin-top: 50vh;
+    }
     .devflow__matrix {
       border-radius: var(--radius);
     }
@@ -237,9 +244,9 @@ const steps = [
     }
   }
 
-  /* fb7 §8（要件6＋add1）: 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
-     §11: 全幅 no-preference ガード（SP でも ON・reduce のみ除外）。§4.4: 常時 z:10000（シミ超え）。
-     R13: color-mix 非対応向けに background-color ベタ値を前置きフォールバック。 */
+  /* 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
+     SP でも ON・reduce のみ除外。常時 z:10000（シミ overlay より前面）。
+     color-mix 非対応環境向けに background-color ベタ値を前置きフォールバック。 */
   @media (prefers-reduced-motion: no-preference) {
     .devflow {
       position: relative;
@@ -252,14 +259,14 @@ const steps = [
   }
 
   /* 768px+ かつ非 reduced-motion: scrub 連続横スク用に横並び化
-     （実際の pin / translateX は horizontalZones.ts が担当・設計書 §5.5 / タスク D） */
+     （実際の pin / translateX は horizontalZones.ts が担当） */
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     .devflow {
       padding-left: 0;
       padding-right: 0;
       overflow: hidden;
-      /* fb7 rev7 §3.4: pin spacer の素地（region-a の紙色）露出を防ぐ。
-         画面高さを確保し flex 縦中央寄せで中身を中央に置き、spacer の上下余白を消す。 */
+      /* pin spacer の素地（region-a の紙色）露出を防ぐため画面高さを確保し、
+         flex 縦中央寄せで中身を中央に置く（spacer の上下余白を消す）。 */
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -277,12 +284,11 @@ const steps = [
       align-items: stretch;
       will-change: transform;
     }
-    /* M4（2026-06-21 みつる調査→さき三次→みつる実装）: clamp 化で中域もステップ幅を滑らかに。
-       下限 220 / 中域 32vw / 上限 320。 */
+    /* clamp 化で中域もステップ幅を滑らかに（下限 220 / 中域 32vw / 上限 320） */
     .devflow__step {
       flex: 0 0 auto;
       width: clamp(220px, 32vw, 320px);
-      /* flex shrink 防止の念押し（Works と同方針・三次差し戻し対策） */
+      /* flex shrink 防止の念押し */
       min-width: clamp(220px, 32vw, 320px);
       flex-direction: column;
       align-items: flex-start;

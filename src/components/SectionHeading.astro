@@ -1,5 +1,5 @@
 ---
-// 日本語のみ見出し（番号・英語小添字を構造的に持たない・設計書 §4.1 / 仕様書 D4）。
+// 日本語のみ見出し（番号・英語小添字を構造的に持たない）。
 // 見出しはしっぽり明朝（--font-head）。リード文は任意の温度感補足。
 export interface Props {
   title: string;
@@ -9,7 +9,7 @@ export interface Props {
 }
 const { title, lead, align = 'center', underline = true } = Astro.props;
 ---
-{/* heading と lead を別々に [data-reveal] とする（設計書 §5.6 / 2026-06-18 四次 FB）。
+{/* heading と lead を別々に [data-reveal] とする。
     pin + scrub 順次出現で「見出し → リード → 各カード」と 1 つずつ出すため、
     SectionHeading 内も heading と lead で data-reveal を分離する。
     ラッパ div には data-reveal を付けない（要素単位の発火制御を阻害しないため）。 */}

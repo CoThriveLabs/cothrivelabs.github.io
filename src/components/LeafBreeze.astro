@@ -1,6 +1,5 @@
 ---
-// F4-e ちらほら装飾「葉っぱそよ風アニメ」（設計書 §5.8 / あめさん FB 2026-06-21）。
-// showdot 風ノイズ摂動で「控えめに風が流れる」感を出す装飾レイヤ。
+// ちらほら装飾「葉っぱそよ風アニメ」。控えめに風が流れる感を出す装飾レイヤ。
 //
 // 構成:
 //   - 葉っぱ 8 枚（near 2 / mid 3 / far 3）の 3 段視差層。
@@ -8,7 +7,7 @@
 //     PaperBg(--fixed, z-index:-1) より上、コンテンツ（z-index 既定 = auto）より下相当。
 //   - aria-hidden="true" / 装飾扱い（読み上げ対象外）。
 //
-// 動きは src/scripts/leafBreeze.ts（GSAP timeline・各葉独立ループ・sin 摂動）。
+// 動きは src/scripts/leafBreeze.ts（GSAP timeline・各葉独立ループ）。
 // reduce 時はスクリプト側で no-op → 葉は静止表示（CSS の初期 left/top/opacity のまま）。
 //
 // data-leaf 属性は leafBreeze.ts の querySelectorAll セレクタ。
@@ -83,9 +82,8 @@ const LEAVES: LeafCfg[] = [
     will-change: transform;
   }
 
-  /* あめさん FB 2026-06-21 二次: 「緑感じられない」→ 各 depth の --m-saki 比率を倍化。
-     近景 40% / 中景 55% / 遠景 70% に強化し、葉らしい緑感をはっきり出す。
-     ベースのココアブラウンは残しつつ、far ほど緑寄りの遠近感は維持。 */
+  /* 各 depth の緑寄り比率（葉らしい緑感を出すため）。
+     ベースのココアブラウンを残しつつ、近景 40% / 中景 55% / 遠景 70% で far ほど緑寄りの遠近感。 */
   /* near: 前景・くっきり・main + 緑 40%。 */
   .leaf-breeze__leaf--near {
     color: color-mix(in srgb, var(--c-main) 60%, var(--m-saki) 40%);

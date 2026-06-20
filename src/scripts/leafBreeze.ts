@@ -1,18 +1,16 @@
-// F4-e ちらほら装飾「葉っぱそよ風アニメ」JS 駆動（設計書 §5.8 / あめさん FB 2026-06-21）。
-//
-// シンプル化リライト（2026-06-21 第3弾）:
-//   - 横断 modifiers の sin 摂動が動かない症状の真因切り分けのため、
-//     modifiers を完全廃止。確実に動く「素の gsap.to」3 本で構成する。
-//   - HMR / 多重 import で setup() が複数回走っても tween が重複しないよう、
-//     forEach 内の冒頭で各葉に対し `gsap.killTweensOf(leaf)` を呼ぶ。
-//     これで「最後に走った setup() の 1 セットだけが生き残る」状態を保証。
-//   - idempotent ガード（window.__leafBreezeInit__）は無害なので残置。
+// ちらほら装飾「葉っぱそよ風アニメ」JS 駆動。
 //
 // 構成（葉ごとに 3 tween）:
 //   (1) 横断: x を線形で右へ。onRepeat で左端 + ランダム y に再投入。
 //   (2) 上下浮遊: y を yoyo（風で持ち上がる感）。
 //   (3) 回転: rotation を yoyo（葉が風で揺れる感）。
-//   → sin 摂動なしでも yoyo y + yoyo rotation の組合せで自然なそよ風感が出る。
+//   → yoyo y + yoyo rotation の組合せで自然なそよ風感が出る（横断の modifiers は不使用）。
+//
+// Gotcha:
+//   - HMR / 多重 import で setup() が複数回走っても tween が重複しないよう、
+//     forEach 内の冒頭で各葉に対し `gsap.killTweensOf(leaf)` を呼ぶ。
+//     これで「最後に走った setup() の 1 セットだけが生き残る」状態を保証。
+//   - idempotent ガード（window.__leafBreezeInit__）も無害な保険として残置。
 //
 // 視差・出現演出との非干渉:
 //   - parallax.ts (`[data-parallax]`) と属性が別なので DOM 競合なし。

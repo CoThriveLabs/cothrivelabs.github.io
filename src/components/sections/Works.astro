@@ -1,7 +1,7 @@
 ---
-// S5 制作物一覧（設計書 §4.2）。WorkCard で 4 件縦積み（横スクは Phase 4）。
-// 4 件すべて確定原稿で公開中（task 4・さき起草）。詳細ページは Phase 5 で本実装（仮パス）、
-// ぎじろっとのみ v1.0 公開済の外部 URL に飛ばす。
+// S5 制作物一覧。WorkCard で 4 件を SP では縦積み、PC では横スクで配置。
+// 4 件すべて確定原稿で公開中。詳細ページは未実装の仮パス、
+// ぎじろっとのみ公開済の外部 URL に飛ばす。
 import SectionHeading from '../SectionHeading.astro';
 import WorkCard from '../WorkCard.astro';
 
@@ -49,8 +49,8 @@ const works = [
 ];
 ---
 <section class="works" id="works" data-bg="paper-warm">
-  {/* ブロック1: 見出し+説明文。rev9: works 全体 1pin 統合のため data-step-section を撤去
-      （reveal.ts (1) pin 対象から外し、horizontalZones.ts の timeline tween で駆動を一元化）。 */}
+  {/* ブロック1: 見出し+説明文。works 全体 1pin 統合のため data-step-section を持たず、
+      reveal.ts (1) pin 対象から外して horizontalZones.ts の timeline tween で駆動を一元化。 */}
   <div class="works__intro" id="works-intro">
     <div class="works__inner works__inner--intro">
       <SectionHeading
@@ -59,9 +59,8 @@ const works = [
       />
     </div>
   </div>
-  {/* ブロック2: 横スク pin（horizontalZones.ts）= 段階5。
-      rev9: works 全体 1pin 統合により本物の見出しが pin 中画面に残り続けるため、
-      rev7 で置いていた scroller 内部 absolute 複製見出し（.works__scroller-heading）は撤去。 */}
+  {/* ブロック2: 横スク pin（horizontalZones.ts）。
+      works 全体 1pin 統合により本物の見出しが pin 中画面に残り続けるため、複製見出しは持たない。 */}
   <div class="works__scroller">
     <div class="works__inner works__inner--scroller">
       <div class="works__list">
@@ -85,25 +84,24 @@ const works = [
 <style>
   .works {
     padding: var(--space-snug) 1.5rem var(--space-base);
-    /* 案A: シミ侵食完了〜Works 見出しの真空区間（≒1.82vh + 500px）詰め。
-       Services pin spacer 余剰を吸収し document スクロール量を短縮（演出 timeline
-       / data-bg トリガー要素相対位置は不変・reveal.ts は invalidateOnRefresh で再計算）。
-       倍化 (2026-06-20 二回目 FB): 体感変化が薄かったため calc(-100vh - 500px) → calc(-200vh - 1000px)。 */
+    /* シミ侵食完了〜Works 見出しの真空区間（pinSpacing 余剰）を負 margin で詰める。
+       document スクロール量を短縮しつつ、演出 timeline / data-bg トリガー要素の相対位置は不変
+       （reveal.ts は invalidateOnRefresh で再計算）。 */
     margin-top: calc(-200vh - 1000px);
   }
   .works__inner {
     max-width: 820px;
     margin: 0 auto;
   }
-  /* あめさん FB 2026-06-21: 説明文の色を濃く。共通 SectionHeading の lead (--c-main-mute α=0.6)
-     を S5 限定で α=0.85 に override（S2-S4 共通コンポは変えない）。 */
+  /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S5 限定で α=0.85 に上書き。
+     S5 のみ濃く出して可読性確保（共通コンポは変えない）。 */
   .works :global(.section-heading__lead) {
     color: rgba(58, 50, 48, 0.85);
   }
-  /* 見出しブロックは z を持てる土台（制作物 section が §8 で z:10000 化済み）。 */
+  /* 見出しブロックは z を持てる土台（works section は後段で z:10000 化）。 */
   .works__intro {
     position: relative;
-    /* fb7 §5（要件3）: Services 等と同等の天井 padding（見出しが上端に貼り付くのを防ぐ）。 */
+    /* 他セクションと揃えて天井 padding を確保（見出しが上端に貼り付くのを防ぐ）。 */
     padding-top: var(--space-base);
   }
   .works__list {
@@ -112,10 +110,9 @@ const works = [
     gap: 1.5rem;
   }
 
-  /* fb7 §8（要件6＋add1）: 制作物以降は「薄シミ色＋紙テクスチャ noise」背景でシミ全面維持を表現。
-     §11: 全幅 no-preference ガード（SP でも ON・reduce のみ紙色のまま除外）。
-     §4.4: 常時 z:10000 でシミ overlay(9999) の前面（.is-over-stain トグル廃止の代替）。
-     R13: color-mix 非対応環境向けに background-color のベタ値を前置きフォールバック。 */
+  /* 制作物以降は「薄シミ色＋紙テクスチャ noise」背景でシミ全面維持を表現。
+     SP でも ON・reduce のみ紙色のまま除外。常時 z:10000 でシミ overlay(9999) の前面。
+     color-mix 非対応環境向けに background-color のベタ値を前置きフォールバック。 */
   @media (prefers-reduced-motion: no-preference) {
     .works {
       position: relative;
@@ -125,16 +122,15 @@ const works = [
       background-image: var(--paper-noise-url);
       background-repeat: repeat;
     }
-    /* fb7 rev4.4 §2.4: シミ侵食 pin 中だけ works を overlay(9999) 背面へ降格（先走り防止）。
-       coffeeStain.ts が onEnter で is-stain-invading を付与・onLeave で除去。侵食完了で §8 の z:10000 に復帰。
-       works 自身の §8 背景（薄茶+noise）は overlay fill（薄茶+noise）と同色同粒なので z 前後で段差は出ない。 */
+    /* シミ侵食 progress 連動で works を overlay(9999) 背面へ降格（侵食中だけ・先走り防止）。
+       reveal.ts が is-stain-invading を付け外しする。侵食完了で z:10000 に復帰。
+       works 自身の背景（薄茶+noise）は overlay fill（薄茶+noise）と同色同粒なので z 前後で段差は出ない。 */
     .works.is-stain-invading {
       z-index: 9998;
     }
   }
 
-  /* 案A SP: 画面崩れ抑制のため半量にとどめる。
-     倍化 (2026-06-20 二回目 FB): calc(-50vh - 250px) → calc(-100vh - 500px)。 */
+  /* SP は画面崩れ抑制のため負 margin を半量に留める */
   @media (max-width: 767px) {
     .works {
       margin-top: calc(-100vh - 500px);
@@ -142,20 +138,19 @@ const works = [
   }
 
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-    /* fb7 rev9 §2.3: works 全体を 1 pin 化（horizontalZones.ts）。
-       pin 中の画面構成 = works 1 枚として確定（縦flex column）。 */
+    /* works 全体を 1 pin 化（horizontalZones.ts）。pin 中の画面構成 = works 1 枚として確定。 */
     .works {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    /* rev9: 自然高（見出し+lead+padding）で画面上部固定領域。 */
+    /* 自然高（見出し+lead+padding）で画面上部固定領域。 */
     .works__intro {
       flex: 0 0 auto;
       padding-top: var(--header-h-scrolled);
     }
-    /* rev9: 残りスペース全部を取り、その中で縦中央寄せ（カード帯を画面中央〜下に配置）。
-       ★ 横方向の中央配置ロジック（horizontalZones.ts の getStartX 等）は不可触・縦のみ調整。 */
+    /* 残りスペース全部を取り、その中で縦中央寄せ（カード帯を画面中央〜下に配置）。
+       Gotcha: 横方向の中央配置ロジック（horizontalZones.ts の getStartX 等）は不可触・縦のみ調整。 */
     .works__scroller {
       position: relative;
       padding-left: 0;
@@ -172,7 +167,7 @@ const works = [
       max-width: none;
       margin: 0;
       padding: 0 1.5rem;
-      /* flex 子として横幅が潰れないよう全幅を担保（縦中央寄せで shrink しても width 維持）。 */
+      /* flex 子として横幅が潰れないよう全幅を担保（縦中央寄せで shrink しても width 維持） */
       width: 100%;
     }
     .works__list {
@@ -181,13 +176,12 @@ const works = [
       gap: 2rem;
       will-change: transform;
     }
-    /* Astro scoped CSS は別 component (WorkCard.astro) の DOM 要素には
+    /* Gotcha: Astro scoped CSS は別 component (WorkCard.astro) の DOM 要素に
        data-astro-cid を継承しないため、子セレクタ `.works__list > *` が WorkCard の
        <article class="work-card"> に当たらない。:global() で scope を抜けて直接当てる。
-       三次差し戻し原因: width 指定が当たらず flex item が default で縮み、
-       scrollWidth ≈ clientWidth で totalScroll ≈ 0 → pin の意味なし状態だった。 */
-    /* M4（2026-06-21 みつる調査→さき三次→みつる実装）: clamp 化で中域もカード幅を滑らかに。
-       下限 280 / 中域 60vw / 上限 560。768-933px 帯のカード狭さを段階的に解消。 */
+       これを忘れると width 指定が当たらず flex item が default で縮み、
+       scrollWidth ≈ clientWidth で totalScroll ≈ 0 → 横スクが効かない。
+       clamp 化で中域も滑らかに（下限 280 / 中域 60vw / 上限 560）。 */
     .works__list > :global(.work-card) {
       flex: 0 0 auto;
       width: clamp(280px, 60vw, 560px);

@@ -1,10 +1,8 @@
 ---
-// S1 ファーストビュー（設計書 §4.2 / §5.2）。
-// CTA なし・h1=サイト名・手書きロゴは Phase 3 素材待ちのためプレースホルダ枠。
-// 集合イラストは Phase 3 で実体化：メンバーを個別 DOM レイヤー（L1/L2）に分割し、
-// data-hero-layer 属性 + will-change 予約で Phase 4 演出 A（Hero 奥入り込み）が乗れる形にする。
-// 演出（scale/translate/blur）は Phase 4。Phase 3 は静的レイヤー構造まで。
-// 背景は紙 C2（領域 A 先頭）。スクロール誘導のみ。
+// S1 ファーストビュー。CTA なし・h1=サイト名・手書きロゴはプレースホルダ枠。
+// 集合イラストはメンバーを個別 DOM レイヤー（L1/L2）に分割し、
+// data-hero-layer 属性 + will-change 予約で Hero 奥入り込み演出が乗る形にする。
+// 背景は紙 C2。スクロール誘導のみ。
 import { Picture } from 'astro:assets';
 import centerImg from '../../assets/hero/center.png';
 import tomomiImg from '../../assets/hero/tomomi.png';
@@ -13,22 +11,21 @@ import HeroLogo from './HeroLogo.astro';
 ---
 <section class="hero" id="hero">
   <div class="hero__inner">
-    {/* 手書きロゴ（こすらぼ）：stroke-dashoffset お絵描きアニメ */}
+    {/* 手書きロゴ（こすらぼ）: stroke-dashoffset お絵描きアニメ */}
     <div class="hero__logo">
       <HeroLogo />
     </div>
 
     <h1 class="sr-only">Co-Thrive Labs（こすらぼ）</h1>
 
-    {/* v1.4 S1 一行コピー（仕様書 v1.4 / 設計書 §4.5）。
-        data-reveal は付けない（LCP/CLS 安定優先・ろぴ推奨）。
-        演出 A heroImmersion.ts の transform 対象は既存 logo/art/L1/L2 のままで
+    {/* S1 一行コピー。data-reveal は付けない（LCP/CLS 安定優先）。
+        Hero 入り込み演出 heroImmersion.ts の transform 対象は logo/art/L1/L2 のままで
         tagline は独立（演出に巻き込まない）。 */}
-    <p class="hero__tagline">人と AI で、確かなものを作る Web 開発スタジオ</p>
+    <p class="hero__tagline">ー 人とAIで、確かなものを作るWeb開発スタジオ ー</p>
 
-    {/* 集合イラスト：メンバーを個別レイヤーに分割（Phase 4 演出 A の前提構造） */}
+    {/* 集合イラスト: メンバーを個別レイヤーに分割（Hero 入り込み演出の前提構造） */}
     <div class="hero__art" role="img" aria-label="Co-Thrive Labs のメンバー 5 人の集合イラスト">
-      {/* L2 中央・ゆっくり：みつる + さき + あめまみれ */}
+      {/* L2 中央・ゆっくり */}
       <div class="hero__layer hero__layer--l2" data-hero-layer="l2" aria-hidden="true">
         <Picture
           src={centerImg}
@@ -41,7 +38,7 @@ import HeroLogo from './HeroLogo.astro';
           decoding="async"
         />
       </div>
-      {/* L1 手前・速い：ともみ + ろぴ */}
+      {/* L1 手前・速い */}
       <div class="hero__layer hero__layer--l1" data-hero-layer="l1" aria-hidden="true">
         <Picture
           src={tomomiImg}
@@ -83,13 +80,13 @@ import HeroLogo from './HeroLogo.astro';
     align-items: center;
     justify-content: center;
     gap: 0;
-    /* あめさん FB 3: ロゴ＋集合イラストが 100vh 内に収まるよう縦 padding を縮小 */
+    /* ロゴ + 集合イラストを 100vh 内に収納するため縦 padding を控えめに */
     padding: var(--space-base) -0.5rem var(--space-tight);
     text-align: center;
   }
   .hero__inner {
     position: relative;
-    /* あめさん FB 2: hero__art 1.3 倍化 (max 1196px) を許容するため max-width を 1196 + 余白 で拡大。 */
+    /* hero__art を 1.3 倍化（max 1196px）で許容するため max-width を 1196 + 余白で拡大 */
     max-width: 1200px;
     display: flex;
     flex-direction: column;
@@ -99,22 +96,23 @@ import HeroLogo from './HeroLogo.astro';
   .hero__logo {
     display: flex;
     justify-content: center;
-    margin-bottom: 0rem;
-    /* 演出A rev2 段階0a: opacity tween 再描画ヒント */
+    /* opacity tween の GPU 合成ヒント */
     will-change: opacity;
-    /* あめさん FB 3: SP（< 768px）では scale 1.0 維持（はみ出し回避）。PC 用 scale 1.3 は @media (min-width: 768px) で適用。 */
     transform-origin: center center;
-    /* SP 既定: scale なし（はみ出し回避） */
+    /* SP 既定: scale なし（はみ出し回避）。PC（>= 768px）で scale(1.3) を後段の @media で適用 */
     transform: scale(1);
     max-width: 100%;
+    /* SP 既定: 上に詰めて art との重なりを抑える。PC では @media で 3rem に上書き */
+    margin-top: 1rem;
   }
-  /* v1.4 S1 一行コピー（設計書 §4.5） */
+  /* S1 一行コピー */
   .hero__tagline {
     font-family: var(--font-accent); /* Klee One */
-    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    font-size: clamp(1.05rem, 1.4vw, 1.15rem);
     color: var(--c-main-soft);
     text-align: center;
-    margin: 1rem 0 1.5rem;
+    /* SP 既定: 親 .hero__inner で詰める。PC では @media で 3rem に上書き */
+    margin-top: 1rem;
     line-height: 1.5;
   }
   /* SEO 用非表示 h1 */
@@ -129,20 +127,19 @@ import HeroLogo from './HeroLogo.astro';
     white-space: nowrap;
     border: 0;
   }
-  /* 集合イラスト（メンバー個別レイヤー・Phase 4 演出 A の前提構造） */
+  /* 集合イラスト（メンバー個別レイヤー・Hero 入り込み演出の前提構造） */
   .hero__art {
     position: relative;
-    /* あめさん FB 2: 初期サイズ 1.3 倍。CSS scale ではなく width を直接拡大（GSAP transform tween 衝突回避）。
-       旧 min(920px, 96vw) → 1.3 倍。vw は 100vw で上限丸め（横はみ出し抑制）。
-       あめさん FB 3: SP では 92vw に抑え左右余裕確保（< 768px は @media で上書き）。 */
+    /* CSS scale ではなく width を直接拡大（GSAP transform tween との衝突回避）。
+       1.3 倍化。vw は 100vw で上限丸め（横はみ出し抑制）。
+       SP では @media で 92vw に抑え左右余裕確保。 */
     width: min(1196px, 100vw);
     aspect-ratio: 1536 / 1024;
-    /* あめさん FB 3: 縦方向の制約。aspect-ratio が効くため max-height 指定で
-       「縦が狭い PC では height 基準で width が自動縮小」される。Hero は height:100vh ＋
-       logo / scroll-dot との縦同居スペースを考慮し 65vh で頭打ち。 */
-    max-height: 65vh;
-    margin-top: -5.0rem;
-    /* 演出A rev2 段階0b: translateY + scale 再描画ヒント（layer の will-change と分離） */
+    /* SP 既定: 56vh で 100vh 内収納。PC では @media で 75vh に拡張 */
+    max-height: 56vh;
+    /* SP 既定: art を logo に寄せず素直に並べる。PC では @media で -8rem に */
+    margin-top: 0;
+    /* translateY + scale の再描画ヒント（layer の will-change と分離） */
     will-change: transform;
   }
   /* 各レイヤーは枠全体に重ねる（3 枚が同一構図の透過 PNG で合わさり 1 枚絵になる） */
@@ -158,12 +155,12 @@ import HeroLogo from './HeroLogo.astro';
     height: 100%;
     object-fit: contain;
   }
-  /* L2 中央・ゆっくり：その場でゆっくり拡大（Phase 4） */
+  /* L2 中央: ゆっくり拡大 */
   .hero__layer--l2 {
     z-index: 1;
     will-change: transform, filter, opacity;
   }
-  /* L1 手前・速い：外側へ大きく速く（Phase 4） */
+  /* L1 手前: 外側へ大きく速く */
   .hero__layer--l1 {
     z-index: 2;
     will-change: transform, filter, opacity;
@@ -197,40 +194,40 @@ import HeroLogo from './HeroLogo.astro';
   @media (prefers-reduced-motion: reduce) {
     .hero__scroll-dot { animation: none; }
   }
-  @media (min-width: 640px) {
+
+  /* タブレット帯（640-767px）: SP より少しゆとり・art の左右余裕は維持 */
+  @media (min-width: 640px) and (max-width: 767px) {
+    .hero__logo {
+      margin-top: 2rem;
+    }
+    .hero__tagline {
+      margin-top: 2rem;
+    }
+    .hero__art {
+      width: min(1196px, 92vw);
+      max-height: 60vh;
+      margin-top: -2rem;
+    }
+  }
+
+  /* PC（>= 768px）: ロゴ scale(1.3) を適用、各要素のゆとりを大きく */
+  @media (min-width: 768px) {
     .hero {
       height: 100vh;
       padding: var(--space-base) 1rem;
     }
     .hero__logo {
-      margin-bottom: 1.0rem;
-    }
-
-  }
-  @media (max-width: 640px) {
-
-    .hero__logo {
-      margin-bottom: 0rem;
-    }
-    .hero__art {
-      margin-top: 0rem;
-    }
-  }
-  /* あめさん FB 3: SP（< 768px）はロゴ scale 据え置き、集合イラストは 92vw に抑え max-height は 56vh に。 */
-  /* M7（2026-06-21 みつる調査→さき三次→みつる実装）: BP 値統一 767.98 → 767。 */
-  @media (max-width: 767px) {
-    .hero__logo {
-      transform: scale(1);
-    }
-    .hero__art {
-      width: min(1196px, 92vw);
-      max-height: 56vh;
-    }
-  }
-  /* あめさん FB 3: PC（>= 768px）でのみロゴ scale(1.3) を適用（はみ出し回避）。 */
-  @media (min-width: 768px) {
-    .hero__logo {
       transform: scale(1.3);
+      margin-top: 3rem;
+      margin-bottom: 0;
+    }
+    .hero__tagline {
+      margin-top: 3rem;
+    }
+    .hero__art {
+      width: min(1196px, 100vw);
+      max-height: 75vh;
+      margin-top: -8rem;
     }
   }
 </style>

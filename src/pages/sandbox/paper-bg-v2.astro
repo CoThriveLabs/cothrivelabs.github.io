@@ -1,11 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
 
-// 紙テクスチャ背景 v2。あめさん FB:「C くらいの粒感じゃないと素材感が見て分からない」
-// → noise は全パターン C 値（baseFreq 0.35 / octaves 3 / seed 11 / α 0.14 / rgb 0.32,0.24,0.14）で固定。
-// 背景色だけ B1/B2/B3 と C 原色で振り、白系背景に C 粒感を乗せた質感を比較する。
+// 紙テクスチャ背景の比較用 sandbox（noindex）。粒感を固定したまま背景色だけ振り、
+// 白系背景に粒感を乗せた質感のバリエーション C1/C2/C3/C-DEEP を比較する。
 
-// 全パターン共通の C 値 noise
+// 全パターン共通の noise 値（粒感を固定して背景色の見え方だけ比較するため定数化）
 const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
 
 function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
@@ -27,14 +26,14 @@ const noiseUrl = makeNoiseSvg(NOISE);
 const noiseSummary = "noise 統一: baseFreq 0.35 / α 0.14 / rgb(0.32,0.24,0.14) ／ 背景色のみ変化";
 
 const patterns = [
-  { id: "C1", bg: "#f5ecdd", note: "やや白め + C 粒感", recommended: false },
-  { id: "C2", bg: "#f9f2e6", note: "白め中間 + C 粒感", recommended: true },
-  { id: "C3", bg: "#fcf7ec", note: "かなり白 + C 粒感", recommended: false },
-  { id: "C-DEEP", bg: "#ece1c8", note: "濃色アクセント用（たまに使う想定）", recommended: false },
+  { id: "C1", bg: "#f5ecdd", note: "やや白めの背景", recommended: false },
+  { id: "C2", bg: "#f9f2e6", note: "白め中間の背景", recommended: true },
+  { id: "C3", bg: "#fcf7ec", note: "かなり白い背景", recommended: false },
+  { id: "C-DEEP", bg: "#ece1c8", note: "濃色アクセント用", recommended: false },
 ];
 ---
 
-<Base title="紙テクスチャ背景 v2（C 粒感統一）— Sandbox（非公開）">
+<Base title="紙テクスチャ背景 v2 — Sandbox（非公開）">
   <Fragment slot="head-extra">
     <meta name="robots" content="noindex, nofollow" />
   </Fragment>
