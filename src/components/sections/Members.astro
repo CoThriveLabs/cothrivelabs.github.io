@@ -72,27 +72,42 @@ const members = [
     /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
     position: relative;
     overflow: hidden;
+    /* 2026-06-20 あめさん FB: S2 margin-top -100vh の連鎖シフトを部分相殺・見出しが見える時間確保 */
+    /* 2026-06-20 二回目 FB: 倍化 50vh→100vh / 25vh→50vh */
+    margin-top: 100vh;
   }
+  @media (max-width: 767px) {
+    .members {
+      margin-top: 50vh;
+    }
+  }
+  /* Members だけグランドコンテナ（--max-w: 1120px）より広い 1500px に拡張（2026-06-21 あめさん FB）。
+     PC 1920px viewport の左右余白を使い切り、5列×2:3 カードを十分な幅で見せる。
+     SP/タブレットは min() で viewport-4rem に縮むため安全。グランドコンテナ自体は触らない。 */
   .members__inner {
-    max-width: var(--max-w);
+    max-width: min(1500px, 100vw - 4rem);
     margin: 0 auto;
     position: relative;
     z-index: 1;
   }
+  /* カード 1.5倍化に伴い minmax / gap を見直し（2026-06-20）。
+     1500px 拡張に合わせ minmax 240→280px, gap 1→1.5rem（2026-06-21）。 */
   .members__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
   }
   /* 5 枚を意図的に均等割りしすぎない: 広い画面では最後の 2 枚が少し詰まる自然な配置 */
   @media (min-width: 960px) {
     .members__grid {
       grid-template-columns: repeat(5, 1fr);
+      gap: 1.5rem;
     }
   }
   @media (max-width: 520px) {
     .members__grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
     }
   }
 </style>
