@@ -3,48 +3,55 @@
 // 領域 B・C-DEEP 実背景。価格は「応相談」のみ・根拠なき「先着 N 名」NG・断定保証 NG。
 // ⑥邪魔排除: この section 内に他リンク・ナビ・ボタンを置かない。
 ---
-<section class="coming-soon" id="coming-soon" data-reveal>
-  <div class="coming-soon__inner">
-    {/* ① outcome-driven ヘッドライン */}
-    <h2 class="coming-soon__headline">
-      Web 制作・LP・業務効率化のご相談、はじめませんか
-    </h2>
-    <p class="coming-soon__sub">現在準備中・先行のお声がけを受付中です。</p>
+{/* 案 P フェーズ2（2026-06-20・あめさん要望「TechStack 画面の上に下から覆い被さる」）:
+    ComingSoon を sentinel + overlay 構造に切替え。comingSoonCover.ts が TechStack sentinel の
+    progress 0.65〜1.0 を cover 区間として overlay の transform を translateY(100vh→0) で補間。
+    CS sentinel 消化後は is-unpinned で自然フロー復帰。
+    StudioAbout/TechStack 案 P と同型構造（pin 不使用・plain JS）。 */}
+<div class="coming-soon-sentinel" data-comingsoon-sentinel>
+  <section class="coming-soon" id="coming-soon" data-reveal data-comingsoon-overlay>
+    <div class="coming-soon__inner">
+      {/* ① outcome-driven ヘッドライン */}
+      <h2 class="coming-soon__headline">
+        Web 制作・LP・業務効率化のご相談、はじめませんか
+      </h2>
+      <p class="coming-soon__sub">現在準備中・先行のお声がけを受付中です。</p>
 
-    {/* ③ 具体的な social proof（実数のみ・誇張なし・S5 の 4 件と整合） */}
-    <p class="coming-soon__proof">
-      制作実績を公開中です（Sprout / LE CIEL / JukuMate / gizirotto の 4 件）。
-    </p>
-
-    {/* ⑤ 期間明示（具体時期はあめさん判断 TODO・未確定なので範囲表現） */}
-    <p class="coming-soon__period">
-      準備が整い次第、正式に受付を開始します。
-    </p>
-
-    {/* ② ファーストビューに 1 つだけの CTA（フォーム挙動は Phase 5） */}
-    <form class="coming-soon__form" data-phase5-pending>
-      <label class="coming-soon__label" for="cs-email">メールアドレス</label>
-      <div class="coming-soon__row">
-        <input
-          class="coming-soon__input"
-          id="cs-email"
-          type="email"
-          name="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-          required
-        />
-        <button class="coming-soon__button" type="submit">
-          お声がけリストに登録
-        </button>
-      </div>
-      {/* ④ 紹介インセンティブは送信後の確認画面 / 自動返信で明示（Phase 5） */}
-      <p class="coming-soon__note">
-        登録後、受付開始のご案内を優先してお送りします。価格は応相談です。
+      {/* ③ 具体的な social proof（実数のみ・誇張なし・S5 の 4 件と整合） */}
+      <p class="coming-soon__proof">
+        制作実績を公開中です（Sprout / LE CIEL / JukuMate / gizirotto の 4 件）。
       </p>
-    </form>
-  </div>
-</section>
+
+      {/* ⑤ 期間明示（具体時期はあめさん判断 TODO・未確定なので範囲表現） */}
+      <p class="coming-soon__period">
+        準備が整い次第、正式に受付を開始します。
+      </p>
+
+      {/* ② ファーストビューに 1 つだけの CTA（フォーム挙動は Phase 5） */}
+      <form class="coming-soon__form" data-phase5-pending>
+        <label class="coming-soon__label" for="cs-email">メールアドレス</label>
+        <div class="coming-soon__row">
+          <input
+            class="coming-soon__input"
+            id="cs-email"
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+          <button class="coming-soon__button" type="submit">
+            お声がけリストに登録
+          </button>
+        </div>
+        {/* ④ 紹介インセンティブは送信後の確認画面 / 自動返信で明示（Phase 5） */}
+        <p class="coming-soon__note">
+          登録後、受付開始のご案内を優先してお送りします。価格は応相談です。
+        </p>
+      </form>
+    </div>
+  </section>
+</div>
 
 <style>
   .coming-soon {
@@ -144,6 +151,44 @@
       flex-direction: column;
     }
     .coming-soon__button {
+      width: 100%;
+    }
+  }
+
+  /* === 案 P フェーズ2（2026-06-20）: TechStack → ComingSoon cover transition ===
+     PC + no-reduced-motion のみ発動。SP / reduce 時は sentinel/overlay は static 扱いで
+     自然フローに戻り、reveal.ts の IO 単発出現で表示される（既存挙動維持）。
+     comingSoonCover.ts が TechStack sentinel の progress 0.65〜1.0 を cover 区間として
+     overlay の transform を translateY(100vh → 0) で補間（毎フレーム JS で transform 直書き）。
+     CS sentinel 区間内は画面固定維持、消化後は is-unpinned で自然フロー復帰。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .coming-soon-sentinel {
+      /* cover 区間 100vh のみ。cover 完了瞬間（cs.top <= 0）で fixed 解除し
+         ComingSoon→Contact は通常スクロールに移行（あめさん「ComingSoon→次は通常スクロールでいい」）。 */
+      height: 100vh;
+      position: relative;
+    }
+    .coming-soon[data-comingsoon-overlay] {
+      position: fixed;
+      inset: 0;
+      /* TechStack overlay (10001) より上・Header (10004 へ引き上げ) / nav-overlay (10003) より下 */
+      z-index: 10002;
+      /* 既存背景・不透明必須（下層が透けないように） */
+      background: var(--c-paper-deep);
+      /* 初期は画面下に待機（JS が毎フレーム上書き） */
+      transform: translateY(100vh);
+      will-change: transform;
+      /* transition なし（毎フレーム JS で transform 直書き） */
+    }
+    /* cover 完了後、自然フローへ復帰（CS sentinel 消化後） */
+    .coming-soon[data-comingsoon-overlay].is-unpinned {
+      position: relative;
+      transform: none;
+      z-index: auto;
+    }
+    /* TechStack 案 P で踏んだ罠回避（fixed 化で grid item が natural width に縮む対策）。
+       overlay 内部の width 100% を保証して inner の max-width 中央寄せが効くようにする。 */
+    .coming-soon[data-comingsoon-overlay] .coming-soon__inner {
       width: 100%;
     }
   }

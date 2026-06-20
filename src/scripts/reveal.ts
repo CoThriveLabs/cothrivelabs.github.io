@@ -257,6 +257,11 @@ function setup() {
   // SP(768px未満)はカードを IO 対象に残し、従来通り IO 単発フェードで表示する。
   // reduced-motion 時は手前の早期 return に入るためここに到達しない（幅だけで判定）。
   const isWide = window.matchMedia('(min-width: 768px)').matches;
+  // 案 P フェーズ P（2026-06-20）: S7 TechStack を techstackReveal.ts の fixed overlay 演出に委譲。
+  //   data-step-section 撤去で (1) pin パスからは自動除外されるが、(2) IO パスにも流さないようガード。
+  //   PC + no-reduced-motion のときだけ overlay 内 reveal を IO 単発から除外する。
+  //   ※ S2 StudioAbout の案 P は撤回済み（2026-06-20）。S2 は通常の pin+scrub 経路に戻った。
+  const techstackWide = isWide && window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
   const allReveal = Array.from(
     document.querySelectorAll<HTMLElement>('[data-reveal]')
   );
@@ -268,7 +273,8 @@ function setup() {
     (el) =>
       !pinnedReveals.has(el) &&
       !(isWide && el.closest('.works__scroller')) &&
-      !(isWide && el.closest('.works__intro'))
+      !(isWide && el.closest('.works__intro')) &&
+      !(techstackWide && el.closest('[data-techstack-overlay]'))
   );
 
   if (ioTargets.length) {

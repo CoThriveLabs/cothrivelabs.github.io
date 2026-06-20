@@ -35,34 +35,44 @@ const categories = [
   },
 ];
 ---
-<section class="techstack" id="techstack" data-bg="paper" data-step-section>
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。pin セクション内は noReveal。 */}
-  <Decor char="saki" depth="back" corner="bottom-right" noReveal />
-  <div class="techstack__inner">
-    <SectionHeading
-      title="技術スタック"
-      lead="案件に合わせて、ご希望のスタックも、コストを抑えながら堅く作れる組み合わせも選べます。"
-    />
-    <div class="techstack__grid">
-      {categories.map((cat) => (
-        <div class="techstack__cat" data-reveal>
-          <h3 class="techstack__cat-name">{cat.name}</h3>
-          <ul class="techstack__items">
-            {cat.items.map((it) => (
-              <li class="techstack__item">
-                <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
-                <span class="techstack__item-body">
-                  <span class="techstack__item-name">{it.name}</span>
-                  <span class="techstack__item-use">{it.use}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+{/* 案 P（2026-06-20）: S7 TechStack を fixed overlay + scrollY 監視で「画面転移なく順次出現」させる。
+    StudioAbout で実績のあるパターンを TechStack に同型展開（先走りバグ解消＋reveal pin チェーン解体）。
+    sentinel wrapper（自然位置・高さ 1400px）がスクロール量を稼ぎ、その scrollY を techstackReveal.ts が
+    監視して overlay の active クラスと内部要素の is-revealed を切替える。pin を使わないので
+    Services 以前の refreshPriority 連鎖の末端依存（先走り原因）から完全に切り離せる。
+    PaperBg 駆動は sentinel の data-bg に移譲。背景（シミ色+noise）も sentinel 側に集約し、
+    overlay は背景透明＝コンテンツだけが浮かんで見える形にする。 */}
+<div class="techstack-sentinel" data-techstack-sentinel data-bg="paper">
+  <section class="techstack" id="techstack" data-techstack-overlay>
+    {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。pin セクション内は noReveal。
+        fixed overlay 化により parallax は機能しないため noParallax を立てる（案 P）。 */}
+    <Decor char="saki" depth="back" corner="bottom-right" noReveal noParallax />
+    <div class="techstack__inner">
+      <SectionHeading
+        title="技術スタック"
+        lead="案件に合わせて、ご希望のスタックも、コストを抑えながら堅く作れる組み合わせも選べます。"
+      />
+      <div class="techstack__grid">
+        {categories.map((cat) => (
+          <div class="techstack__cat" data-reveal>
+            <h3 class="techstack__cat-name">{cat.name}</h3>
+            <ul class="techstack__items">
+              {cat.items.map((it) => (
+                <li class="techstack__item">
+                  <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
+                  <span class="techstack__item-body">
+                    <span class="techstack__item-name">{it.name}</span>
+                    <span class="techstack__item-use">{it.use}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <style>
   .techstack {
@@ -145,8 +155,8 @@ const categories = [
      R13: color-mix 非対応向けに background-color ベタ値を前置きフォールバック。
      fb7 rev4.3 §2.1: rev4.2 の sticky 覆い被さりは reveal pin（JS）と同一要素競合し実機破綻
        （techstack 区間で scrollTo がロック・ComingSoon が Contact に到達不可）したため撤去。
-       技スタ→ComingSoon は通常スクロールに確定（案c・あめさん合意）。position は relative に戻す
-       （base と同値＝§8 で position を上書きしない状態）。z-index:10000・背景・noise は維持。 */
+     案 P（2026-06-20）: PC + no-pref 時のみ後段の @media で overlay 化に上書きする。
+     SP / reduce では従来通りこのブロックの設定（背景 + z:10000）を維持。 */
   @media (prefers-reduced-motion: no-preference) {
     .techstack {
       position: relative;
@@ -155,6 +165,72 @@ const categories = [
       background-color: var(--c-coffee-stain-soft);
       background-image: var(--paper-noise-url);
       background-repeat: repeat;
+    }
+  }
+
+  /* === 案 P（2026-06-20）: fixed overlay + scrollY 監視 出現演出 ===
+     PC + no-reduced-motion のみ発動。SP / reduce 時は sentinel/overlay は static 扱いで
+     自然フローに戻り、reveal.ts (2) の IO 単発出現で表示される（既存挙動維持）。
+     上の @media (prefers-reduced-motion: no-preference) の背景設定を sentinel 側に移譲し、
+     overlay は背景透明にする。順序: 上の no-pref ブロック → このブロック（より具体的）で上書き。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .techstack-sentinel {
+      /* 修正: 1400px → 2400px（あめさん「TechStack→次セクション表示までが短い」要望）。
+         reveal 区間 = REVEAL_END(0.65) * 2400 = 1560px、cover 区間 = 35% * 2400 = 840px に延長。
+         カードの順次表示も cover 演出ももう少しゆっくり堪能できる。 */
+      height: 2400px;
+      position: relative;
+      /* 背景（シミ色+noise）は sentinel 側で持つ → overlay は背景透明 */
+      background-color: var(--c-coffee-stain);
+      background-color: var(--c-coffee-stain-soft);
+      background-image: var(--paper-noise-url);
+      background-repeat: repeat;
+    }
+    .techstack[data-techstack-overlay] {
+      position: fixed;
+      inset: 0;
+      /* ComingSoon (z:10000) より上に置く。fb7 章替わり用に ComingSoon が z:10000 で
+         上に来る設計だったが、本 overlay は is-active 中だけ表示なので問題なし。
+         coffee-stain (9999) もこの時点では既に display:none 済（coverTransition.ts）。 */
+      z-index: 10001;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      /* 案 P フェーズ2（2026-06-20）: ComingSoon overlay が下から覆い被さるため、TechStack 側の
+         opacity transition は不要（あめさん NG）。ComingSoon が完全カバーした瞬間に is-active 解除する。 */
+      /* TechStack overlay の背景（sentinel と同じシミ色+noise）。is-active 時に画面全体を覆い、
+         下にある ComingSoon が透けて見えるのを防ぐ。is-active 解除時は visibility:hidden なので
+         sentinel との二重描画は起きない。 */
+      background-color: var(--c-coffee-stain);
+      background-color: var(--c-coffee-stain-soft);
+      background-image: var(--paper-noise-url);
+      background-repeat: repeat;
+    }
+    /* fb FB1（2026-06-20）: overlay の display:grid; place-items:center は grid item（.techstack__inner）を
+       natural width（コンテンツ最小幅）に縮める。すると内側 .techstack__grid の
+       repeat(auto-fit, minmax(260px, 1fr)) が「親の有効幅」を 260px 程度しか取れず、
+       カードが PC でも 1+2 縦並びになる。inner を 100%幅にして max-width: var(--max-w) で
+       中央寄せされた本来の幅を確保し、auto-fit が PC で 3 列展開できるようにする。 */
+    .techstack[data-techstack-overlay] .techstack__inner {
+      width: 100%;
+    }
+    .techstack[data-techstack-overlay].is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    /* fixed 化中の内部要素は techstackReveal.ts が is-revealed を順次付与してフェードイン。
+       reveal.ts (1) pin 系列に乗らないので、CSS で初期非表示 → is-revealed で立ち上げ。 */
+    .techstack [data-reveal] {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    }
+    .techstack [data-reveal].is-revealed {
+      opacity: 1;
+      transform: none;
     }
   }
 </style>

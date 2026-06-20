@@ -127,10 +127,20 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
+    {/* 演出A Hero 入り込み（rev1 base + あめさん FB 数値）。
+        refreshPriority:230 で Hero pin spacer を StudioAbout(200) より先に確定。 */}
+    <script>import '../scripts/heroImmersion.ts';</script>
     {/* 出現アニメ（設計書 §5.6・F4-b・2026-06-18 四次 FB リワーク）。Astro が GSAP 込みで
         バンドル・defer 読込。pin + scrub 順次出現モード（[data-step-section] 持つ section）
         と IO ベース単発出現モードの二系統。 */}
     <script>import '../scripts/reveal.ts';</script>
+    {/* 案 P フェーズ P（2026-06-20）: S7 TechStack も同型の fixed overlay + scrollY 監視で順次出現。
+        reveal pin チェーン末端の累積誤差による「先走り」を根本解消（StudioAbout と同パターン）。 */}
+    <script>import '../scripts/techstackReveal.ts';</script>
+    {/* 案 P フェーズ2（2026-06-20）: TechStack → ComingSoon cover transition。TechStack progress
+        0.65〜1.0 を cover 区間とし、ComingSoon overlay を translateY(100vh → 0) で下からせり上げ。
+        pin 不使用・plain JS で rev4.2 破綻の罠（sticky × pin 競合）を構造的に回避。 */}
+    <script>import '../scripts/comingSoonCover.ts';</script>
     {/* 演出 B グラデ背景切替（設計書 §5.3・F4-c）。reveal.ts と別ファイル・別 IO instance（§5.4.1）。 */}
     <script>import '../scripts/bgGradient.ts';</script>
     {/* 横スク 2 ゾーン（設計書 §5.5・F3）。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。

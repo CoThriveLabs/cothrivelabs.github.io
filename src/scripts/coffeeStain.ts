@@ -26,6 +26,11 @@ const setup = () => {
 
   // (1) 初期状態を強制リセット（ページロード時の全面バグ防止）。要素が無くても refresh 集約は行う。
   if (stain) {
+    // あめさん要望「S4→次セクション移行時の中央広がりアニメ消失」修正（2026-06-20）:
+    // 前回ページの coverTransition.ts onComplete で stain.style.display='none' が立った状態が
+    // ページリロード後も inline style として残置する事象を検出（さき eval で確認）。明示的に
+    // display を空文字に戻して CSS のデフォルト表示状態（block 等）に復帰させる。
+    stain.style.display = '';
     gsap.set(stain, { '--stain-r': '0%', '--stain-fill-opacity': 0 });
   }
 

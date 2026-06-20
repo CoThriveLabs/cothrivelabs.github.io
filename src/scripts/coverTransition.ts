@@ -19,10 +19,16 @@ import gsap from 'gsap';
 
 function setup() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const comingSoon = document.querySelector<HTMLElement>('.coming-soon');
+  // 案 P フェーズ2 で ComingSoon section を fixed overlay 化したため、`.coming-soon` を
+  // IO target にすると常時 viewport 内になり即発火してしまう（→ ロード直後に
+  // stain.style.display='none' で侵食消失）。observe 対象は自然位置の wrapper である
+  // CS sentinel に切替える（fixed 化されていない natural flow 要素）。
+  // SP/reduce 時は CS sentinel が生成されていない可能性に備えて .coming-soon にフォールバック。
+  const csTarget = document.querySelector<HTMLElement>('[data-comingsoon-sentinel]')
+    ?? document.querySelector<HTMLElement>('.coming-soon');
   const stain = document.querySelector<HTMLElement>('[data-coffee-stain]');
   // reduce はシミ自体出ない（fill 元々0）ので IO 不要。要素欠落時も何もしない。
-  if (reduceMotion || !comingSoon || !stain) return;
+  if (reduceMotion || !csTarget || !stain) return;
 
   // ComingSoon が下から近づいたら領域A→B 境界＝coffee-stain 全体を消す（紙色世界へ）。
   // rev5 §4: fill だけでなく edge（--stain-r）も 0 にし、完了で display:none（edge radial 残存対策）。
@@ -48,7 +54,7 @@ function setup() {
     // rev5 §4: ComingSoon が画面に来る前に消え切るよう前倒し（下端から 15% 手前で発火）。
     { threshold: 0, rootMargin: '0px 0px 15% 0px' }
   );
-  io.observe(comingSoon);
+  io.observe(csTarget);
 }
 
 // fonts/images ロード完了後に登録（要素位置確定後に IO を張る）。

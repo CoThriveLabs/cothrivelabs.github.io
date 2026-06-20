@@ -27,9 +27,13 @@ export interface Props {
   // pin + scrub セクション内（[data-step-section]）に置くときは true。
   // reveal.ts の順次出現カウントに装飾が混ざるのを防ぐ（§5.6 / 2026-06-18 四次 FB）。
   noReveal?: boolean;
+  // fixed overlay セクション内（案 P・S2）に置くときは true。
+  // parallax.ts が position:fixed 中の transform yPercent を上書きして表示が壊れるため
+  // data-parallax を出さないようにする（2026-06-20）。
+  noParallax?: boolean;
 }
 
-const { char, depth, corner, offsetX, offsetY, size, noReveal = false } = Astro.props;
+const { char, depth, corner, offsetX, offsetY, size, noReveal = false, noParallax = false } = Astro.props;
 
 const IMAGES: Record<Char, ImageMetadata> = { ropi, mituru, saki, tomomi };
 const img = IMAGES[char];
@@ -69,7 +73,7 @@ const styleStr = styleParts.join('; ');
   loading="lazy"
   decoding="async"
   class:list={['decor', { 'decor--no-reveal': noReveal }]}
-  data-parallax
+  data-parallax={noParallax ? undefined : ''}
   data-depth={depth}
   data-reveal={noReveal ? undefined : ''}
   aria-hidden="true"

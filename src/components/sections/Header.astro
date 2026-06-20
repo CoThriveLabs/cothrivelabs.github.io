@@ -128,8 +128,10 @@ const navItems = [
     top: 0;
     left: 0;
     right: 0;
-    /* fb7 §3: シミ(9999)・コンテンツレイヤー(10000) 超えで常時最前面化（要件1）。 */
-    z-index: 10001;
+    /* fb7 §3: シミ(9999)・コンテンツレイヤー(10000) 超えで常時最前面化（要件1）。
+       案 P フェーズ2（2026-06-20）: TechStack overlay(10001)・ComingSoon overlay(10002) より
+       上に置くため 10001 → 10004 へ引き上げ。Header は常に最前面・覆わない。 */
+    z-index: 10004;
     height: 64px;
   }
   .site-header__inner {
@@ -206,8 +208,10 @@ const navItems = [
   .site-nav-overlay {
     position: fixed;
     inset: 0;
-    /* fb7 §3: シミ超え・ヘッダーボタンより下（要件1）。z:99 → 10000。 */
-    z-index: 10000;
+    /* fb7 §3: シミ超え・ヘッダーボタンより下（要件1）。z:99 → 10000。
+       案 P フェーズ2（2026-06-20）: ComingSoon overlay(10002) より上で開けるよう 10000 → 10003。
+       Header(10004) は引き続き最前面・nav-overlay の閉じボタンと一体で動かす。 */
+    z-index: 10003;
     background: var(--c-paper);
     display: flex;
     align-items: center;

@@ -69,18 +69,22 @@ import HeroLogo from './HeroLogo.astro';
 <style>
   .hero {
     position: relative;
-    min-height: 92vh;
+    z-index: 0;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0;
-    padding: var(--space-loose) -0.5rem var(--space-base);
+    /* あめさん FB 3: ロゴ＋集合イラストが 100vh 内に収まるよう縦 padding を縮小 */
+    padding: var(--space-base) -0.5rem var(--space-tight);
     text-align: center;
   }
   .hero__inner {
     position: relative;
-    max-width: 900px;
+    /* あめさん FB 2: hero__art 1.3 倍化 (max 1196px) を許容するため max-width を 1196 + 余白 で拡大。 */
+    max-width: 1200px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -90,6 +94,13 @@ import HeroLogo from './HeroLogo.astro';
     display: flex;
     justify-content: center;
     margin-bottom: 0rem;
+    /* 演出A rev2 段階0a: opacity tween 再描画ヒント */
+    will-change: opacity;
+    /* あめさん FB 3: SP（< 768px）では scale 1.0 維持（はみ出し回避）。PC 用 scale 1.3 は @media (min-width: 768px) で適用。 */
+    transform-origin: center center;
+    /* SP 既定: scale なし（はみ出し回避） */
+    transform: scale(1);
+    max-width: 100%;
   }
   /* SEO 用非表示 h1 */
   .sr-only {
@@ -106,9 +117,18 @@ import HeroLogo from './HeroLogo.astro';
   /* 集合イラスト（メンバー個別レイヤー・Phase 4 演出 A の前提構造） */
   .hero__art {
     position: relative;
-    width: min(920px, 96vw);
+    /* あめさん FB 2: 初期サイズ 1.3 倍。CSS scale ではなく width を直接拡大（GSAP transform tween 衝突回避）。
+       旧 min(920px, 96vw) → 1.3 倍。vw は 100vw で上限丸め（横はみ出し抑制）。
+       あめさん FB 3: SP では 92vw に抑え左右余裕確保（< 768px は @media で上書き）。 */
+    width: min(1196px, 100vw);
     aspect-ratio: 1536 / 1024;
+    /* あめさん FB 3: 縦方向の制約。aspect-ratio が効くため max-height 指定で
+       「縦が狭い PC では height 基準で width が自動縮小」される。Hero は height:100vh ＋
+       logo / scroll-dot との縦同居スペースを考慮し 65vh で頭打ち。 */
+    max-height: 65vh;
     margin-top: -5.0rem;
+    /* 演出A rev2 段階0b: translateY + scale 再描画ヒント（layer の will-change と分離） */
+    will-change: transform;
   }
   /* 各レイヤーは枠全体に重ねる（3 枚が同一構図の透過 PNG で合わさり 1 枚絵になる） */
   .hero__layer {
@@ -126,12 +146,12 @@ import HeroLogo from './HeroLogo.astro';
   /* L2 中央・ゆっくり：その場でゆっくり拡大（Phase 4） */
   .hero__layer--l2 {
     z-index: 1;
-    will-change: transform;
+    will-change: transform, filter, opacity;
   }
   /* L1 手前・速い：外側へ大きく速く（Phase 4） */
   .hero__layer--l1 {
     z-index: 2;
-    will-change: transform;
+    will-change: transform, filter, opacity;
   }
   /* スクロール誘導 */
   .hero__scroll {
@@ -164,21 +184,37 @@ import HeroLogo from './HeroLogo.astro';
   }
   @media (min-width: 640px) {
     .hero {
-      min-height: 84vh;
+      height: 100vh;
       padding: var(--space-base) 1rem;
     }
     .hero__logo {
       margin-bottom: 1.0rem;
     }
-    
+
   }
   @media (max-width: 640px) {
-    
+
     .hero__logo {
       margin-bottom: 0rem;
     }
     .hero__art {
       margin-top: 0rem;
+    }
+  }
+  /* あめさん FB 3: SP（< 768px）はロゴ scale 据え置き、集合イラストは 92vw に抑え max-height は 56vh に。 */
+  @media (max-width: 767.98px) {
+    .hero__logo {
+      transform: scale(1);
+    }
+    .hero__art {
+      width: min(1196px, 92vw);
+      max-height: 56vh;
+    }
+  }
+  /* あめさん FB 3: PC（>= 768px）でのみロゴ scale(1.3) を適用（はみ出し回避）。 */
+  @media (min-width: 768px) {
+    .hero__logo {
+      transform: scale(1.3);
     }
   }
 </style>
