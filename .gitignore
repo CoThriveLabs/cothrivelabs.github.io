@@ -53,3 +53,6 @@ spec.html
 # Backup files
 *.bak
 public/*.bak
+
+# 検証残骸 (一時ファイル・CDP eval 系・2026-06-20 fb-v2 Phase 4 後整理)
+.tmp-*
