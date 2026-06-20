@@ -85,6 +85,11 @@ const works = [
 <style>
   .works {
     padding: var(--space-snug) 1.5rem var(--space-base);
+    /* 案A: シミ侵食完了〜Works 見出しの真空区間（≒1.82vh + 500px）詰め。
+       Services pin spacer 余剰を吸収し document スクロール量を短縮（演出 timeline
+       / data-bg トリガー要素相対位置は不変・reveal.ts は invalidateOnRefresh で再計算）。
+       倍化 (2026-06-20 二回目 FB): 体感変化が薄かったため calc(-100vh - 500px) → calc(-200vh - 1000px)。 */
+    margin-top: calc(-200vh - 1000px);
   }
   .works__inner {
     max-width: 820px;
@@ -120,6 +125,14 @@ const works = [
        works 自身の §8 背景（薄茶+noise）は overlay fill（薄茶+noise）と同色同粒なので z 前後で段差は出ない。 */
     .works.is-stain-invading {
       z-index: 9998;
+    }
+  }
+
+  /* 案A SP: 画面崩れ抑制のため半量にとどめる。
+     倍化 (2026-06-20 二回目 FB): calc(-50vh - 250px) → calc(-100vh - 500px)。 */
+  @media (max-width: 767px) {
+    .works {
+      margin-top: calc(-100vh - 500px);
     }
   }
 

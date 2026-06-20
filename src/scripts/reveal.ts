@@ -54,7 +54,9 @@ const STEP_DISTANCE_PX = 400;
 // ── fb7 rev5 §1: シミ侵食を Services の reveal pin に統合（案1・STAIN_EXTRA 区間方式）──
 // coffeeStain.ts の独立 pin は廃止。Services（#services）の reveal pin 末尾に専用区間を足し、
 // 全カードが出揃ってからシミが「Services 固定中に」中央→四隅へ侵食する。Services のみ適用。
-const STAIN_EXTRA_PX = 1100; // 旧 INVADE_PX と同値。Services pin に加算するシミ専用区間長。
+// 2026-06-20 あめさん FB: シミ広がり 0.7倍速に（スクロール回数を少し増やす）。1100→1570
+// 2026-06-20 二回目 FB: 更に 0.5倍速 = 区間 2 倍 = 1570→3140（スクロール量を更に倍に）。
+const STAIN_EXTRA_PX = 3140; // Services pin に加算するシミ専用区間長。
 const STAIN_R_MAX = 220; // --stain-r 最大（%）。rev4 §A: 220%×0.85=187%w で四隅(57%w)を確実に越える。
 // B1（rev4.4 §2.3）の配分比を踏襲（edge 先行・fill 少し遅れて完成）。
 const STAIN_EDGE_END = 0.4; // edge（--stain-r）拡張完了 stainP。
@@ -177,7 +179,10 @@ function setup() {
     const isStainSection = section.id === 'services';
     const pinLength = basePinLength + (isStainSection ? STAIN_EXTRA_PX : 0);
     // revealRatio: reveal 区間（カード順次出現）が pin 全体に占める割合。
-    //   Services: 3600/4700≒0.766。これ以降（0.766→1.0）が STAIN_EXTRA 区間＝シミ専用。
+    //   Services: basePinLength=3600（要素数 8 × STEP_DISTANCE_PX 400 + 1 余白）、
+    //             pinLength=3600+3140=6740 → 3600/6740≒0.534。
+    //             これ以降（0.534→1.0）が STAIN_EXTRA 区間＝シミ専用
+    //             （2026-06-20 二回目 FB で 1570→3140 へ更に 2 倍延長＝0.5 倍速）。
     //   非 Services: 1（全区間が reveal）。
     const revealRatio = basePinLength / pinLength;
 

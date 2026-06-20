@@ -45,6 +45,10 @@ const facts = [
     /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
     position: relative;
     overflow: hidden;
+    /* 案A: Hero pin spacer 余剰（≒1vh 真空区間）詰め。S2 を Hero 直後に
+       吸い寄せて document スクロール量を短縮（演出 timeline / 相対位置は不変）。
+       倍化 (2026-06-20 二回目 FB): 体感変化が薄かったため -50vh → -100vh。 */
+    margin-top: -100vh;
   }
   .studio-about__inner {
     max-width: var(--max-w);
@@ -98,6 +102,11 @@ const facts = [
     .studio-about__body {
       grid-template-columns: 1fr;
       gap: 2rem;
+    }
+    /* 案A SP: 画面崩れ抑制のため半量にとどめる。
+       倍化 (2026-06-20 二回目 FB): -25vh → -50vh。 */
+    .studio-about {
+      margin-top: -50vh;
     }
   }
 </style>

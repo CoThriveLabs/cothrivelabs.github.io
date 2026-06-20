@@ -6,9 +6,11 @@
 // 段階配分:
 //   0a (0.0, dur 0.4)  .hero__logo  autoAlpha 1→0
 //   0b (0.0, dur 0.4)  .hero__art    y → 中央計算値 / scale 1→1.15
-//   1a (0.4, dur 0.69) L1 ともみ     scale 9.6 / blur 24px / xPercent -130 / autoAlpha 0 / yPercent -96
-//   1b (0.4, dur 0.69) L1 ろぴ       scale 9.6 / blur 24px / xPercent +130 / autoAlpha 0 / yPercent -96
-//   1c (0.4, dur 0.86) L2            scale 1→2.6 / blur 8px / transformOrigin 50% 65%
+//   1a (0.4, dur 0.69) L1 ともみ     scale 14.4 / blur 24px / xPercent -130 / autoAlpha 0 / yPercent -96
+//   1b (0.4, dur 0.69) L1 ろぴ       scale 14.4 / blur 24px / xPercent +130 / autoAlpha 0 / yPercent -96
+//   1c (0.4, dur 0.72) L2            scale 1→2.6 / blur 8px / transformOrigin 50% 65%
+//                                     ※ 2026-06-20 二回目 FB: L2 scale を 1.2 倍速 (dur 0.86 → 0.72)。
+//                                       blur tween (dur 1.72) と最大 scale 2.6 は据置。
 //   2  (1.26, dur 0.34) L2           scale 2.6→3.2 / autoAlpha 1→0
 //
 // pin 長 2960px（rev1 比率維持・中速感）。scrub:1 で滑らかに追従。
@@ -92,14 +94,16 @@ function setup() {
       // ── 段階1: 同位置 0.4 開始・L1 速い / L2 ゆっくり ──
       // あめさん FB 2 rev2 + あめさん追加要望 (2026-06-20):
       //   L1 は 3 tween に分離。
-      //     - scale: duration 0.345（max 9.6）→「大きくなる」演出を 2 倍速で。
+      //     - scale: duration 0.345（max 14.4）→「大きくなる」演出を 2 倍速で。
+      //       2026-06-20 あめさん FB: scale 最大値を 9.6 → 14.4（1.5 倍）に。
       //     - blur:  duration 0.531（= 0.69 / 1.3）→ blur のかかり方を 1.3 倍速に。
       //     - 外側移動 (xPercent ±130 / autoAlpha): duration 1.38（= 0.69 × 2）→ 0.5 倍速で
       //       横にゆっくり消えていく印象を強める。
       //   L2 は blur だけ遅く分離（duration 1.72 = 元 0.86 の 2 倍時間 = 0.5 倍速）、
-      //   scale 1→2.6（duration 0.86）は据え置き。transformOrigin は scale tween に付ける。
+      //   scale 1→2.6（duration 0.72・※ 2026-06-20 二回目 FB で 0.86→0.72 へ 1.2 倍速化、
+      //   最大 scale 2.6 は据置）。transformOrigin は scale tween に付ける。
       // 段階1a: ともみ
-      tl.to(tomomi, { scale: 9.6, ease: 'power2.in', duration: 0.69 }, 0.4);
+      tl.to(tomomi, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
       tl.to(tomomi, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
       tl.to(
         tomomi,
@@ -109,7 +113,7 @@ function setup() {
       // 上方向移動（横移動の 0.7 倍速 = duration 1.97）。あめさん追加要望 (2026-06-20)。
       tl.to(tomomi, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
       // 段階1b: ろぴ
-      tl.to(ropi, { scale: 9.6, ease: 'power2.in', duration: 0.69 }, 0.4);
+      tl.to(ropi, { scale: 14.4, ease: 'power2.in', duration: 0.69 }, 0.4);
       tl.to(ropi, { filter: 'blur(24px)', ease: 'power2.in', duration: 0.531 }, 0.4);
       tl.to(
         ropi,
@@ -119,9 +123,10 @@ function setup() {
       // 上方向移動（横移動の 0.7 倍速 = duration 1.97）。あめさん追加要望 (2026-06-20)。
       tl.to(ropi, { yPercent: -96, ease: 'power2.in', duration: 1.97 }, 0.4);
       // 段階1c: L2（scale と blur を別 tween に分離）
+      // 2026-06-20 二回目 FB: scale tween のみ 1.2 倍速 (0.86 → 0.72)。最大 2.6 は据置・blur tween も据置。
       tl.to(
         l2,
-        { scale: 2.6, transformOrigin: '50% 65%', ease: 'power2.inOut', duration: 0.86 },
+        { scale: 2.6, transformOrigin: '50% 65%', ease: 'power2.inOut', duration: 0.72 },
         0.4
       );
       tl.to(
