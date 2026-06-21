@@ -204,7 +204,7 @@ import HeroLogo from './HeroLogo.astro';
       height: 60vh;
       max-width: min(1196px, 92vw);
       /* viewport 縦が狭い時は重なり回避のため負マージンを緩める */
-      margin-top: clamp(-2rem, -1vh, 0rem);
+      margin-top: -2rem;
     }
   }
 
@@ -226,7 +226,7 @@ import HeroLogo from './HeroLogo.astro';
       height: 70vh;
       max-width: min(1196px, 100vw);
       /* viewport 縦が狭い時は art の食い込みを浅くしてコピー文と分離 */
-      margin-top: clamp(-8rem, -5vh, -2rem);
+      margin-top: -6rem;
     }
   }
 
@@ -247,7 +247,7 @@ import HeroLogo from './HeroLogo.astro';
       height: 75vh;
       max-width: min(1196px, 100vw);
       /* viewport 縦が狭い時は art の食い込みを浅くしてコピー文と分離 */
-      margin-top: clamp(-8rem, -5vh, -2rem);
+      margin-top: -8rem;
     }
   }
 

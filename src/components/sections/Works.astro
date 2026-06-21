@@ -110,21 +110,18 @@ const works = [
     gap: 1.5rem;
   }
 
-  /* 制作物以降は「薄シミ色＋紙テクスチャ noise」背景でシミ全面維持を表現。
-     SP でも ON・reduce のみ紙色のまま除外。常時 z:10000 でシミ overlay(9999) の前面。
-     color-mix 非対応環境向けに background-color のベタ値を前置きフォールバック。 */
+  /* 背景色は fixed 背景レイヤ（--bg-current）に委ね、works 自身は紙テクスチャ noise のみを重ねる。
+     自前の background-color を持つとシミ侵食前から画面下端に色が透けて見える「先走り」が出るため。
+     SP でも noise は ON・reduce のみ除外。常時 z:10000 でシミ overlay(9999) の前面。 */
   @media (prefers-reduced-motion: no-preference) {
     .works {
       position: relative;
       z-index: 10000;
-      background-color: var(--c-coffee-stain);
-      background-color: var(--c-coffee-stain-soft);
       background-image: var(--paper-noise-url);
       background-repeat: repeat;
     }
-    /* シミ侵食 progress 連動で works を overlay(9999) 背面へ降格（侵食中だけ・先走り防止）。
-       reveal.ts が is-stain-invading を付け外しする。侵食完了で z:10000 に復帰。
-       works 自身の背景（薄茶+noise）は overlay fill（薄茶+noise）と同色同粒なので z 前後で段差は出ない。 */
+    /* シミ侵食中は overlay(9999) 背面へ降格して overlay 側の塗りを優先させる。
+       侵食完了で z:10000 に復帰し、works の noise が overlay の上に来る。 */
     .works.is-stain-invading {
       z-index: 9998;
     }

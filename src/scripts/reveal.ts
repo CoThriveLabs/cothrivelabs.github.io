@@ -49,8 +49,8 @@ const STAIN_EXTRA_PX = 3140; // Services pin に加算するシミ専用区間�
 const STAIN_R_MAX = 220; // --stain-r 最大（%）。220%×0.85=187%w で四隅(57%w)を確実に越える。
 // edge 先行・fill が少し遅れて完成する配分。
 const STAIN_EDGE_END = 0.4; // edge（--stain-r）拡張完了 stainP。
-const STAIN_FILL_START = 0.25; // fill（--stain-fill-opacity）立ち上がり開始 stainP。
-const STAIN_FILL_END = 0.55; // fill 完成 stainP。以降 1 を保持。
+const STAIN_FILL_START = 0.5; // fill（--stain-fill-opacity）立ち上がり開始 stainP。edge 完了後に開始して上端の先走りを防ぐ。
+const STAIN_FILL_END = 0.75; // fill 完成 stainP。以降 1 を保持。
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
