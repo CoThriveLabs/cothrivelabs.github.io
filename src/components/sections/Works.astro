@@ -1,52 +1,9 @@
 ---
 // S5 制作物一覧。WorkCard で 4 件を SP では縦積み、PC では横スクで配置。
-// 4 件すべて確定原稿で公開中。詳細ページは未実装の仮パス、
-// ぎじろっとのみ公開済の外部 URL に飛ばす。
+// What: works データを src/data/works.ts に集約し、ここはレイアウト責務のみに絞る。
 import SectionHeading from '../SectionHeading.astro';
 import WorkCard from '../WorkCard.astro';
-
-const works = [
-  {
-    title: 'Sprout',
-    subtitle: '成長する TODO アプリ',
-    challenge: 'ロードマップとタスクを一望できる場所がなく、長期目標の分解管理に困っていた。',
-    built: 'ゴール→タスク→ステップの3階層で管理し、進捗に応じて植物が育つ SPA。',
-    tags: ['FastAPI', 'SQLite', 'Vanilla JS'],
-    craft: 'AIエージェントが API 経由で直接タスクを投入でき、会話だけで運用できるようにした。',
-    detailUrl: '/works/sprout/',
-    status: '公開中' as const,
-  },
-  {
-    title: 'LE CIEL ÉTOILÉ',
-    subtitle: '架空フレンチレストランの紹介サイト',
-    challenge: 'みつる版・ろぴ版で同じ案件を 2 回作り、それぞれの長所と短所が残った状態だった。',
-    built: '2 版の良いとこ取りで v2 を作り直し、Canvas 星空背景と縦積みエディトリアル Hero で銀座モダンフレンチの世界観を表現した静的サイト。',
-    tags: ['HTML/CSS/JS', 'Canvas 星空', 'パララックス'],
-    craft: 'lerp 追従と prefers-reduced-motion 対応を両立し、装飾の上品さとアクセシビリティを並立させた。',
-    detailUrl: '/works/le-ciel-etoile/',
-    status: '公開中' as const,
-  },
-  {
-    title: 'JukuMate',
-    subtitle: '個人塾向け業務自動化 SaaS の営業 LP',
-    challenge: '小規模塾は IT ツール選定の判断材料が少なく、保護者連絡や生徒管理に多くの時間を取られていた。',
-    built: '「保護者日次レポート + AI チャットボットでの学習可視化」を訴求する縦長 LP。塾長視点の Solution を 1 スクロールで体験できるよう、本ページめくり SVG 装飾とスクロール pin 演出を組み合わせた。',
-    tags: ['Astro', 'GSAP', 'Cloudflare Workers'],
-    craft: '紙の質感を出すための本ページめくり装飾を SVG で再現し、塾長の判断負荷を下げる情報設計に仕上げた。',
-    detailUrl: '/works/jukumate/',
-    status: '公開中' as const,
-  },
-  {
-    title: 'ぎじろっと',
-    subtitle: '家族の議事録 AI',
-    challenge: '議事録ツールの多くは会社の会議向けで、家族会議や家計報告など「家庭の議事録」は書式が揺れがちだった。',
-    built: '家族向けに振り切ったテンプレート議事録 SaaS。組み込みテンプレや独自テンプレ PDF から項目構造を抽出し、Claude が箇条書きメモを書式に沿って整形して PDF 出力する。',
-    tags: ['Next.js 15', 'Supabase', 'Claude'],
-    craft: 'PDF プレビューと最終出力のずれを 1 モジュールに集約する「座標の真実マップ」設計で、WYSIWYG エディタの精度を担保した。',
-    detailUrl: 'https://gizirotto.cothrivelabs.com',
-    status: '公開中' as const,
-  },
-];
+import { works } from '../../data/works';
 ---
 <section class="works" id="works">
   {/* ブロック1: 見出し+説明文。works 全体 1pin 統合のため data-step-section を持たず、
@@ -72,16 +29,7 @@ const works = [
       <div class="works-sentinel" data-works-sentinel data-bg="paper-warm" aria-hidden="true"></div>
       <div class="works__list">
         {works.map((w) => (
-          <WorkCard
-            title={w.title}
-            subtitle={w.subtitle}
-            challenge={w.challenge}
-            built={w.built}
-            tags={w.tags}
-            craft={w.craft}
-            detailUrl={w.detailUrl}
-            status={w.status}
-          />
+          <WorkCard detail={w} />
         ))}
       </div>
     </div>
@@ -191,11 +139,11 @@ const works = [
     }
     /* Gotcha: Astro scoped CSS は別 component (WorkCard.astro) の DOM 要素に
        data-astro-cid を継承しないため、子セレクタ `.works__list > *` が WorkCard の
-       <article class="work-card"> に当たらない。:global() で scope を抜けて直接当てる。
+       <article class="pf-card"> に当たらない。:global() で scope を抜けて直接当てる。
        これを忘れると width 指定が当たらず flex item が default で縮み、
        scrollWidth ≈ clientWidth で totalScroll ≈ 0 → 横スクが効かない。
        clamp 化で中域も滑らかに（下限 280 / 中域 60vw / 上限 560）。 */
-    .works__list > :global(.work-card) {
+    .works__list > :global(.pf-card) {
       flex: 0 0 auto;
       width: clamp(280px, 60vw, 560px);
       /* flex shrink 防止の念押し（flex 指定だけで効くが Safari 等で稀に override される保険） */
@@ -203,3 +151,9 @@ const works = [
     }
   }
 </style>
+
+<script>
+  // What: PF カード「詳細」ボタン押下で <dialog> を開閉する制御スクリプト。
+  // Why: Works.astro スコープで 1 度だけ読み込むことで、他ページのバンドルを膨らませない。
+  import '../../scripts/pf-modal';
+</script>

@@ -1,111 +1,249 @@
 ---
-// 制作物カード。課題/作ったもの/技術/工夫の 4 項目を見出し付きで構造化。
-// status='準備中' の場合は原稿待ちプレースホルダとして淡色表示（リンク無効）。
+// 制作物カード本体 + 詳細モーダル。
+// What: サムネ・本体・「見る」「詳細」ボタン横並びカード + <dialog> ベースの詳細モーダル。
+// Why: ネイティブ <dialog> + <details> で focus trap / ESC / a11y を OS 任せにし JS を最小化。
+// Gotcha: detail.tagline が空文字なら詳細ボタン + dialog DOM ともに描画しない。
+import type { WorkDetail } from '../data/works.types';
+
 export interface Props {
-  title: string;
-  subtitle: string;
-  challenge?: string;
-  built?: string;
-  tags?: string[];
-  craft?: string;
-  url?: string;
-  detailUrl?: string;
-  status?: '公開中' | '準備中';
+  detail: WorkDetail;
 }
-const {
-  title,
-  subtitle,
-  challenge,
-  built,
-  tags = [],
-  craft,
-  url,
-  detailUrl,
-  status = '公開中',
-} = Astro.props;
-const isPending = status === '準備中';
-const mainHref = detailUrl ?? url;
-const hasLink = !isPending && mainHref && mainHref !== '#';
+
+const { detail } = Astro.props;
+const hasModal = detail.tagline.length > 0;
+const modalId = `pf-modal-${detail.slug}`;
+const titleId = `${modalId}-title`;
 ---
-<article class:list={['work-card', { 'is-pending': isPending }]} data-reveal>
-  <div class="work-card__head">
-    <div class="work-card__titles">
-      <h3 class="work-card__title">{title}</h3>
-      <p class="work-card__subtitle">{subtitle}</p>
-    </div>
-    <span class:list={['work-card__status', { 'is-pending': isPending }]}>{status}</span>
+<article class="pf-card" data-reveal>
+  <div class="pf-card__thumbnail" aria-hidden="true">
+    <img src={detail.thumbnail} alt="" loading="lazy" decoding="async" />
   </div>
 
-  {isPending ? (
-    <p class="work-card__pending-note">制作物データを準備中です。近日公開します。</p>
-  ) : (
-    <dl class="work-card__items">
-      {challenge && (<><dt>課題</dt><dd>{challenge}</dd></>)}
-      {built && (<><dt>作ったもの</dt><dd>{built}</dd></>)}
-      {tags.length > 0 && (
-        <><dt>使った技術</dt>
-        <dd>
-          <ul class="work-card__tags">
-            {tags.map((t) => <li class="work-card__tag">{t}</li>)}
-          </ul>
-        </dd></>
-      )}
-      {craft && (<><dt>工夫したこと</dt><dd>{craft}</dd></>)}
-    </dl>
-  )}
+  <div class="pf-card__body">
+    <header class="pf-card__head">
+      <h3 class="pf-card__title">{detail.title}</h3>
+      <p class="pf-card__subtitle">{detail.subtitle}</p>
+    </header>
 
-  {hasLink && (
-    <div class="work-card__links">
-      <a
-        class="work-card__link"
-        href={mainHref}
-        target={mainHref.startsWith('http') ? '_blank' : undefined}
-        rel={mainHref.startsWith('http') ? 'noopener' : undefined}
+    <p class="pf-card__challenge" aria-label="課題">
+      <span class="pf-card__challenge-label">課題</span>
+      <span class="pf-card__challenge-text">{detail.challenge}</span>
+    </p>
+
+    <p class="pf-card__summary">{detail.summary}</p>
+
+    <ul class="pf-card__tags" aria-label="使った技術">
+      {detail.tags.map((t) => <li class="pf-card__tag">{t}</li>)}
+    </ul>
+  </div>
+
+  <footer class="pf-card__footer">
+    <a
+      class="pf-card__btn pf-card__btn--primary"
+      href={detail.primaryLink.url}
+      target={detail.primaryLink.external ? '_blank' : undefined}
+      rel={detail.primaryLink.external ? 'noopener noreferrer' : undefined}
+      aria-label={`${detail.title}を見る`}
+    >
+      <span>見る</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+        <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    {hasModal && (
+      <button
+        class="pf-card__btn pf-card__btn--secondary"
+        type="button"
+        aria-haspopup="dialog"
+        aria-controls={modalId}
+        data-pf-modal-open={detail.slug}
       >
-        <span>見る</span>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    </div>
-  )}
+        詳細
+      </button>
+    )}
+  </footer>
 </article>
 
+{hasModal && (
+  <dialog
+    class="pf-modal"
+    id={modalId}
+    aria-labelledby={titleId}
+  >
+    <div class="pf-modal__inner">
+      <header class="pf-modal__header">
+        <div class="pf-modal__thumbnail" aria-hidden="true">
+          <img src={detail.thumbnail} alt="" />
+        </div>
+        <div class="pf-modal__titles">
+          <h2 class="pf-modal__title" id={titleId}>{detail.title}</h2>
+          <p class="pf-modal__subtitle">{detail.subtitle}</p>
+          <p class="pf-modal__tagline">{detail.tagline}</p>
+        </div>
+        <button
+          class="pf-modal__close"
+          type="button"
+          aria-label="詳細を閉じる"
+          data-pf-modal-close
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="pf-modal__sections">
+        {detail.overview.length > 0 && (
+          <details class="pf-acc" open>
+            <summary class="pf-acc__summary">概要</summary>
+            <div class="pf-acc__body">
+              {detail.overview.map((p) => <p>{p}</p>)}
+            </div>
+          </details>
+        )}
+
+        {detail.security.length > 0 && (
+          <details class="pf-acc" open>
+            <summary class="pf-acc__summary">セキュリティ実装</summary>
+            <div class="pf-acc__body">
+              {detail.security.map((s) => (
+                <details class="pf-acc pf-acc--sub">
+                  <summary class="pf-acc__summary pf-acc__summary--sub">{s.heading}</summary>
+                  <div class="pf-acc__body">
+                    {s.paragraphs.map((p) => <p>{p}</p>)}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {detail.techStack.length > 0 && (
+          <details class="pf-acc">
+            <summary class="pf-acc__summary">技術スタック</summary>
+            <div class="pf-acc__body">
+              {detail.techStack.map((cat) => (
+                <div class="pf-tech-cat">
+                  <h4 class="pf-tech-cat__title">{cat.category}</h4>
+                  <ul class="pf-tech-cat__items">
+                    {cat.items.map((it) => (
+                      <li class="pf-tech-cat__item">
+                        <span class="pf-tech-cat__name">{it.name}</span>
+                        <span class="pf-tech-cat__note">{it.note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {detail.architectureNotes.length > 0 && (
+          <details class="pf-acc">
+            <summary class="pf-acc__summary">アーキテクチャ判断</summary>
+            <div class="pf-acc__body">
+              {detail.architectureNotes.map((p) => <p>{p}</p>)}
+            </div>
+          </details>
+        )}
+
+        {detail.quality.length > 0 && (
+          <details class="pf-acc">
+            <summary class="pf-acc__summary">品質保証</summary>
+            <div class="pf-acc__body">
+              {detail.quality.map((p) => <p>{p}</p>)}
+            </div>
+          </details>
+        )}
+      </div>
+
+      <footer class="pf-modal__footer">
+        <button
+          class="pf-modal__btn pf-modal__btn--ghost"
+          type="button"
+          data-pf-modal-close
+        >閉じる</button>
+        {detail.links.length > 0 && (
+          <div class="pf-modal__links">
+            {detail.links.map((l) => (
+              <a
+                class="pf-modal__btn pf-modal__btn--primary"
+                href={l.url}
+                target={l.external ? '_blank' : undefined}
+                rel={l.external ? 'noopener noreferrer' : undefined}
+              >{l.label}</a>
+            ))}
+          </div>
+        )}
+      </footer>
+    </div>
+  </dialog>
+)}
+
 <style>
-  .work-card {
+  /* カード本体 */
+  .pf-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    padding: 1.75rem;
-    background: #fff;
+    gap: 1rem;
+    padding: 0 0 1.5rem;
+    background: var(--c-paper);
     border: 1px solid var(--c-border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
-    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+    overflow: hidden;
+    transition:
+      transform 0.3s var(--ease),
+      box-shadow 0.3s var(--ease),
+      border-color 0.3s var(--ease);
   }
-  .work-card:hover {
+  .pf-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
     border-color: var(--c-accent);
   }
-  .work-card.is-pending {
-    background: var(--c-paper);
-    border-style: dashed;
+  .pf-card:focus-within {
+    box-shadow: var(--shadow-md);
+    border-color: var(--c-accent);
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
   }
-  .work-card.is-pending:hover {
-    transform: none;
-    box-shadow: var(--shadow-sm);
-    border-color: var(--c-border);
+
+  /* サムネ枠 16:9 */
+  .pf-card__thumbnail {
+    aspect-ratio: 16 / 9;
+    background: var(--c-paper-deep);
+    border-bottom: 1px solid var(--c-border);
+    overflow: hidden;
   }
-  .work-card__head {
+  .pf-card__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s var(--ease);
+  }
+  .pf-card:hover .pf-card__thumbnail img {
+    transform: scale(1.03);
+  }
+
+  /* 本体 */
+  .pf-card__body {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0 1.5rem;
   }
-  .work-card__title {
-    margin: 0 0 0.25rem;
+  .pf-card__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .pf-card__title {
+    margin: 0;
     font-family: var(--font-head);
     font-size: 1.3rem;
     font-weight: 600;
@@ -113,57 +251,49 @@ const hasLink = !isPending && mainHref && mainHref !== '#';
     color: var(--c-main);
     letter-spacing: var(--ls-tight);
   }
-  .work-card__subtitle {
+  .pf-card__subtitle {
     margin: 0;
-    font-size: 1.144rem;
+    font-size: 1.05rem;
     color: var(--c-accent);
     font-weight: 500;
   }
-  .work-card__status {
-    flex-shrink: 0;
-    font-size: 0.68rem;
-    letter-spacing: 0.08em;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    background: rgba(58, 50, 48, 0.08);
-    color: var(--c-main-soft);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .work-card__status.is-pending {
-    background: rgba(192, 108, 93, 0.12);
-    color: var(--c-accent-dark);
-  }
-  .work-card__pending-note {
-    margin: 0;
-    font-size: 1.144rem;
-    line-height: 1.8;
-    color: var(--c-main-mute);
-  }
-  /* 4 項目: dt を小ラベル、dd を本文に */
-  .work-card__items {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    gap: 0.55rem 1rem;
-    margin: 0;
-  }
-  .work-card__items dt {
-    font-family: var(--font-accent);
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--c-main-mute);
-    letter-spacing: 0.04em;
-    padding-top: 0.1rem;
-    white-space: nowrap;
-  }
-  .work-card__items dd {
-    margin: 0;
-    font-size: 1.235rem;
-    line-height: 1.8;
-    /* 説明文は本文より少し濃く出す（--c-main-soft α=0.7 → α=0.85） */
+
+  .pf-card__challenge {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
     color: rgba(58, 50, 48, 0.85);
   }
-  .work-card__tags {
+  .pf-card__challenge-label {
+    flex-shrink: 0;
+    font-family: var(--font-accent);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: var(--c-paper-deep);
+    border: 1px solid var(--c-border);
+    color: var(--c-main-mute);
+    white-space: nowrap;
+    margin-top: 0.15rem;
+  }
+
+  .pf-card__summary {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: rgba(58, 50, 48, 0.85);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .pf-card__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
@@ -171,7 +301,7 @@ const hasLink = !isPending && mainHref && mainHref !== '#';
     padding: 0;
     list-style: none;
   }
-  .work-card__tag {
+  .pf-card__tag {
     font-family: var(--font-body);
     font-size: 0.72rem;
     padding: 0.2rem 0.65rem;
@@ -182,65 +312,373 @@ const hasLink = !isPending && mainHref && mainHref !== '#';
     font-weight: 500;
     letter-spacing: 0.04em;
   }
-  .work-card__links {
-    margin-top: auto;
+
+  /* フッタ */
+  .pf-card__footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 1.5rem;
+    margin-top: 0.25rem;
   }
-  .work-card__link {
+  .pf-card__btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
     padding: 0.55rem 1.15rem;
     border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: inherit;
+    transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+  }
+  .pf-card__btn--primary {
     background: var(--c-accent);
     color: #fff;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: background 0.25s var(--ease), transform 0.25s var(--ease);
   }
-  /* stretched-link: メインリンクをカード全体に拡張 */
-  .work-card__link::before {
+  .pf-card__btn--primary:hover {
+    background: var(--c-accent-dark);
+  }
+  .pf-card:hover .pf-card__btn--primary {
+    background: var(--c-accent-dark);
+  }
+  /* Gotcha: stretched-link でカード全体クリックを「見る」に集約。
+     詳細ボタンは z-index 2 で前面化し stretched オーバーレイをすり抜けて発火する。 */
+  .pf-card__btn--primary::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
   }
-  .work-card:has(.work-card__link) {
-    cursor: pointer;
-  }
-  .work-card__link > * {
+  .pf-card__btn--primary > * {
     position: relative;
     z-index: 2;
   }
-  .work-card__link:hover {
-    background: var(--c-accent-dark);
+
+  .pf-card__btn--secondary {
+    background: transparent;
+    color: var(--c-main);
+    border-color: var(--c-border);
+    position: relative;
+    z-index: 2;
   }
-  .work-card:hover .work-card__link {
-    background: var(--c-accent-dark);
+  .pf-card__btn--secondary:hover {
+    background: var(--c-paper-deep);
+    border-color: var(--c-main-mute);
   }
-  .work-card__link svg {
-    transition: transform 0.25s var(--ease);
+
+  .pf-card__btn:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
   }
-  .work-card__link:hover svg {
-    transform: translateX(2px);
+
+  /* SP */
+  @media (max-width: 480px) {
+    .pf-card__footer { flex-direction: column; }
+    .pf-card__btn { width: 100%; }
   }
-  .work-card:focus-within {
-    box-shadow: var(--shadow-md);
-    border-color: var(--c-accent);
+
+  /* reduce-motion: hover の transform / scale を停止 */
+  @media (prefers-reduced-motion: reduce) {
+    .pf-card,
+    .pf-card__thumbnail img,
+    .pf-card__btn {
+      transition: none;
+    }
+    .pf-card:hover {
+      transform: none;
+    }
+    .pf-card:hover .pf-card__thumbnail img {
+      transform: none;
+    }
+  }
+
+  /* 詳細モーダル */
+  .pf-modal {
+    border: none;
+    padding: 0;
+    background: transparent;
+    max-width: min(720px, calc(100vw - 2rem));
+    width: 100%;
+    max-height: calc(100vh - 2rem);
+    border-radius: var(--radius);
+  }
+  .pf-modal::backdrop {
+    background: rgba(58, 50, 48, 0.55);
+    backdrop-filter: blur(3px);
+  }
+  .pf-modal[open] {
+    animation: pf-modal-in 0.25s var(--ease);
+  }
+  @keyframes pf-modal-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pf-modal[open] { animation: none; }
+  }
+
+  .pf-modal__inner {
+    background: var(--c-paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+  }
+
+  .pf-modal__header {
+    position: relative;
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .pf-modal__thumbnail {
+    aspect-ratio: 1 / 1;
+    background: var(--c-paper-deep);
+    border-radius: calc(var(--radius) - 4px);
+    overflow: hidden;
+  }
+  .pf-modal__thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pf-modal__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-self: center;
+    min-width: 0;
+  }
+  .pf-modal__title {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--c-main);
+    letter-spacing: var(--ls-tight);
+  }
+  .pf-modal__subtitle {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--c-accent);
+    font-weight: 500;
+  }
+  .pf-modal__tagline {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-accent);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(58, 50, 48, 0.85);
+  }
+  .pf-modal__close {
+    background: transparent;
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c-main);
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .pf-modal__close:hover {
+    background: var(--c-paper-deep);
+    border-color: var(--c-main-mute);
+  }
+  .pf-modal__close:focus-visible {
     outline: 2px solid var(--c-accent);
     outline-offset: 2px;
   }
-  .work-card__link:focus-visible {
-    outline: none;
+
+  .pf-modal__sections {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0.5rem 1.25rem 1rem;
+    scrollbar-width: thin;
   }
 
-  @media (max-width: 480px) {
-    .work-card__items {
-      grid-template-columns: 1fr;
-      gap: 0.2rem;
+  .pf-acc {
+    border-bottom: 1px solid var(--c-border);
+  }
+  .pf-acc:last-child {
+    border-bottom: none;
+  }
+  .pf-acc__summary {
+    padding: 0.85rem 0;
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--c-main);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* Gotcha: details summary のネイティブマーカー消し（独自三角を ::before で出す） */
+  .pf-acc__summary::-webkit-details-marker { display: none; }
+  .pf-acc__summary::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--c-main-mute);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    transition: transform 0.2s var(--ease);
+    flex-shrink: 0;
+  }
+  .pf-acc[open] > .pf-acc__summary::before {
+    transform: rotate(90deg);
+  }
+  .pf-acc__summary:hover { color: var(--c-accent); }
+  .pf-acc__summary:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .pf-acc__body {
+    padding: 0 0 1rem 1rem;
+    font-size: 0.98rem;
+    line-height: 1.85;
+    color: rgba(58, 50, 48, 0.85);
+  }
+  .pf-acc__body p { margin: 0 0 0.75rem; }
+  .pf-acc__body p:last-child { margin-bottom: 0; }
+
+  .pf-acc--sub {
+    border-bottom: 1px dashed var(--c-border);
+  }
+  .pf-acc--sub:last-child { border-bottom: none; }
+  .pf-acc__summary--sub {
+    padding: 0.55rem 0;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+  }
+
+  .pf-tech-cat { margin-bottom: 1rem; }
+  .pf-tech-cat:last-child { margin-bottom: 0; }
+  .pf-tech-cat__title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--c-main-mute);
+  }
+  .pf-tech-cat__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .pf-tech-cat__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.95rem;
+  }
+  .pf-tech-cat__name {
+    font-weight: 600;
+    color: var(--c-main);
+  }
+  .pf-tech-cat__note {
+    color: rgba(58, 50, 48, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .pf-modal__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--c-border);
+    background: var(--c-paper-deep);
+  }
+  .pf-modal__links {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .pf-modal__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: inherit;
+    transition: background 0.25s var(--ease);
+  }
+  .pf-modal__btn--ghost {
+    background: transparent;
+    color: var(--c-main);
+    border-color: var(--c-border);
+  }
+  .pf-modal__btn--ghost:hover {
+    background: var(--c-paper);
+    border-color: var(--c-main-mute);
+  }
+  .pf-modal__btn--primary {
+    background: var(--c-accent);
+    color: #fff;
+  }
+  .pf-modal__btn--primary:hover {
+    background: var(--c-accent-dark);
+  }
+  .pf-modal__btn:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+
+  /* SP: フルスクリーン化 */
+  @media (max-width: 640px) {
+    .pf-modal {
+      max-width: 100vw;
+      max-height: 100vh;
+      border-radius: 0;
+      margin: 0;
     }
-    .work-card__items dt {
-      padding-top: 0.5rem;
+    .pf-modal__inner {
+      border-radius: 0;
+      max-height: 100vh;
+      height: 100vh;
+    }
+    .pf-modal__header {
+      grid-template-columns: 80px 1fr auto;
+    }
+    .pf-modal__title {
+      font-size: 1.25rem;
+    }
+    .pf-modal__footer {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+    .pf-modal__btn {
+      width: 100%;
+      justify-content: center;
+    }
+    .pf-modal__links {
+      flex-direction: column;
     }
   }
 </style>

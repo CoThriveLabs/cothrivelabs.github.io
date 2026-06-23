@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 405" width="720" height="405" role="img" aria-label="JukuMate">
+  <rect width="720" height="405" fill="#F2EBDA"/>
+  <rect x="0.5" y="0.5" width="719" height="404" fill="none" stroke="#D8CFB8" stroke-width="1"/>
+  <text x="360" y="215" fill="#3A3230" font-family="'Shippori Mincho','Noto Serif JP',serif" font-size="72" font-weight="600" text-anchor="middle" letter-spacing="0.04em">JukuMate</text>
+  <text x="360" y="270" fill="#9A8F7A" font-family="'Shippori Mincho','Noto Serif JP',serif" font-size="20" font-weight="500" text-anchor="middle" letter-spacing="0.12em">CRAM SCHOOL SAAS LP</text>
+</svg>
