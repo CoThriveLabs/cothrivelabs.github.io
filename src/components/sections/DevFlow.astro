@@ -1,6 +1,4 @@
 ---
-// S6 開発フロー。5 段の工程を縦積みで列挙（PC では後段の @media で横スク化）。
-// C-DEEP 背景。
 import SectionHeading from '../SectionHeading.astro';
 
 const steps = [
@@ -11,63 +9,82 @@ const steps = [
   { no: '05', title: '実機検証', who: 'さき → あめまみれ', body: '実機で最終確認。問題があれば前の段に差し戻す。' },
 ];
 ---
-<section class="devflow" id="devflow" data-bg="paper-deep">
-  <div class="devflow__inner">
-    <SectionHeading
-      title="開発フロー"
-      lead="案件は5つの段を通します。テストは省略しない決まりです。"
-    />
-    <ol class="devflow__list">
-      {steps.map((s) => (
-        <li class="devflow__step" data-reveal>
-          <span class="devflow__no" aria-hidden="true">{s.no}</span>
-          <div class="devflow__content">
-            <h3 class="devflow__title">{s.title}</h3>
-            <p class="devflow__who">{s.who}</p>
-            <p class="devflow__body">{s.body}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
 
-    {/* S6 末尾コラム「運用の前提」。横スク pin（.devflow__list のみ x tween）の対象外なので、
-        pin spacer 通過後の通常 flow で出現する。`data-reveal` は IO 単発出現モードで拾われる。
-        SP は dl 縦並び化（thead 非表示・td block 化）。 */}
-    <aside class="devflow__epilog" data-reveal>
-      <h3 class="devflow__epilog-heading">運用の前提 — 人が判断する部分・AI で自動化する部分・人と AI で協力する部分</h3>
-      <p class="devflow__epilog-lead">
-        AI に書かせて終わり、ではありません。出力されたコードは必ず人が読み、設計書と仕様書に照らして採否を決めます。こすらぼでは、開発工程を以下の三分割で運用しています。
-      </p>
-      <table class="devflow__matrix">
-        <thead>
-          <tr><th>区分</th><th>対象工程の例</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>人が判断する</td><td>API キーの登録 / 本番公開の push 操作 / 法務・契約判断</td></tr>
-          <tr><td>AI で自動化する</td><td>設計書の作成 / 実装 / ドキュメント整備</td></tr>
-          <tr><td>人と AI で協力する</td><td>コードチェック / セキュリティ対策 / レビュー</td></tr>
-        </tbody>
-      </table>
-      <p class="devflow__epilog-summary">
-        自動化していい部分と、人が判断する部分を分けて運用する。これが、こすらぼが「どう動くチームか」の前提です。AI を活用するからこそ、責任の所在を曖昧にしないことを大切にしています。
-      </p>
-    </aside>
+<section class="devflow" id="devflow" data-bg="paper-deep">
+  <div class="devflow__pin" data-devflow-pin>
+    <div class="devflow__inner">
+      <SectionHeading title="開発フロー" lead="案件は5つの段を通します。テストは省略しない決まりです。" />
+
+      <ol class="devflow__list">
+        {steps.map((s) => (
+          <li class="devflow__step" data-reveal>
+            <span class="devflow__no" aria-hidden="true">{s.no}</span>
+            <div class="devflow__content">
+              <h3 class="devflow__title">{s.title}</h3>
+              <p class="devflow__who">{s.who}</p>
+              <p class="devflow__body">{s.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   </div>
+
+  <aside class="devflow__epilog" data-reveal-late data-bg="paper-deep">
+    <h3 class="devflow__epilog-heading">運用の前提 — 人が判断する部分・AI で自動化する部分・人と AI で協力する部分</h3>
+    <p class="devflow__epilog-lead">
+      AI に書かせて終わり、ではありません。出力されたコードは必ず人が読み、設計書と仕様書に照らして採否を決めます。こすらぼでは、開発工程を以下の三分割で運用しています。
+    </p>
+
+    <table class="devflow__matrix">
+      <thead>
+        <tr>
+          <th>区分</th>
+          <th>対象工程の例</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>人が判断する</td>
+          <td>API キーの登録 / 本番公開の push 操作 / 法務・契約判断</td>
+        </tr>
+        <tr>
+          <td>AI で自動化する</td>
+          <td>設計書の作成 / 実装 / ドキュメント整備</td>
+        </tr>
+        <tr>
+          <td>人と AI で協力する</td>
+          <td>コードチェック / セキュリティ対策 / レビュー</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="devflow__epilog-summary">
+      自動化していい部分と、人が判断する部分を分けて運用する。これが、こすらぼが「どう動くチームか」の前提です。AI を活用するからこそ、責任の所在を曖昧にしないことを大切にしています。
+    </p>
+  </aside>
 </section>
 
 <style>
   .devflow {
-    padding: var(--space-snug) 1.5rem var(--space-base);
+    position: relative;
+    z-index: 10000;
+    padding: 0 1.5rem var(--space-base);
   }
+
+  .devflow__pin {
+    padding: var(--space-snug) 0 var(--space-base);
+  }
+
   .devflow__inner {
     max-width: 760px;
     margin: 0 auto;
   }
-  /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S6 限定で α=0.85 に上書き。
-     他セクション共通コンポは変えない（S6 だけ濃く出して可読性確保）。 */
+
   .devflow :global(.section-heading__lead) {
     color: rgba(58, 50, 48, 0.85);
   }
+
   .devflow__list {
     list-style: none;
     margin: 0;
@@ -76,6 +93,7 @@ const steps = [
     flex-direction: column;
     gap: 1rem;
   }
+
   .devflow__step {
     display: flex;
     align-items: flex-start;
@@ -85,7 +103,7 @@ const steps = [
     border: 1px solid var(--c-border);
     border-radius: var(--radius);
   }
-  /* 番号は装飾の連番（"01 about" 型の英語添字ではなく、工程の手順番号なので可） */
+
   .devflow__no {
     flex-shrink: 0;
     font-family: var(--font-accent);
@@ -96,6 +114,7 @@ const steps = [
     font-feature-settings: 'tnum' 1;
     padding-top: 0.1rem;
   }
+
   .devflow__title {
     margin: 0 0 0.2rem;
     font-family: var(--font-head);
@@ -103,6 +122,7 @@ const steps = [
     font-weight: 600;
     color: var(--c-main);
   }
+
   .devflow__who {
     margin: 0 0 0.5rem;
     font-family: var(--font-accent);
@@ -110,33 +130,23 @@ const steps = [
     letter-spacing: 0.04em;
     color: var(--c-main-mute);
   }
+
   .devflow__body {
     margin: 0;
     font-family: var(--font-body);
     font-size: 1.235rem;
     line-height: 1.8;
-    /* 説明文は本文より少し濃く出す（--c-main-soft α=0.7 → α=0.85） */
     color: rgba(58, 50, 48, 0.85);
   }
 
-  @media (max-width: 480px) {
-    .devflow__step {
-      padding: 1.25rem 1.25rem;
-      gap: 1rem;
-    }
-    .devflow__no {
-      font-size: 1.25rem;
-    }
+  .devflow__epilog {
+    position: relative;
+    z-index: 10000;
+    max-width: 760px;
+    margin: var(--space-base) auto clamp(6rem, 18vh, 12rem);
+    padding: 1.5rem 0 0;
   }
 
-  /* S6 末尾コラム「運用の前提」 */
-  .devflow__epilog {
-    max-width: 760px;
-    margin: var(--space-base) auto 0;
-    padding: 1.5rem 0 0;
-    /* 横スク pin 内（PC scrub）でも .devflow__inner の通常 flow 子要素として
-       縦方向に配置（横スク tween 対象は .devflow__list だけ） */
-  }
   .devflow__epilog-heading {
     font-family: var(--font-head);
     font-size: clamp(1.05rem, 1.8vw, 1.25rem);
@@ -145,19 +155,20 @@ const steps = [
     margin: 0 0 0.75rem;
     line-height: 1.6;
   }
+
   .devflow__epilog-lead,
   .devflow__epilog-summary {
     font-family: var(--font-body);
     font-size: 1.235rem;
-    /* C-DEEP（#F2EBDA）上で約 6.5:1 想定（WCAG AA クリア） */
     color: rgba(58, 50, 48, 0.85);
     line-height: 1.85;
     margin: 0 0 1rem;
   }
+
   .devflow__epilog-summary {
     margin-bottom: 0;
   }
-  /* マトリクス表（PC: 表構造維持） */
+
   .devflow__matrix {
     width: 100%;
     border-collapse: collapse;
@@ -167,43 +178,59 @@ const steps = [
     border-radius: var(--radius);
     overflow: hidden;
   }
+
   .devflow__matrix th,
   .devflow__matrix td {
-    padding: 0.85rem 1rem;
+    padding: 0.95rem 1rem;
     vertical-align: top;
     text-align: left;
     border-bottom: 1px solid var(--c-border);
-    font-size: 0.92rem;
+    font-size: 1.235rem;
     line-height: 1.7;
   }
+
   .devflow__matrix th {
     background: color-mix(in srgb, var(--c-paper-deep) 80%, transparent);
     font-family: var(--font-head);
     font-weight: 600;
     color: var(--c-main);
   }
+
   .devflow__matrix td:first-child {
     width: 30%;
     font-weight: 600;
     color: var(--c-main);
     white-space: nowrap;
   }
+
   .devflow__matrix td:last-child {
     color: rgba(58, 50, 48, 0.85);
   }
-  .devflow__matrix tr:last-child td { border-bottom: none; }
 
-  /* SP（< 768px）で表を dl 風縦並び化（table タグのまま CSS で疑似 dl 化）。
-     thead 隠し / tr を block / td を block + 区分セルを「ラベル」、例セルを「内容」として縦積み。 */
+  .devflow__matrix tr:last-child td {
+    border-bottom: none;
+  }
+
+  @media (max-width: 480px) {
+    .devflow__step {
+      padding: 1.25rem 1.25rem;
+      gap: 1rem;
+    }
+
+    .devflow__no {
+      font-size: 1.25rem;
+    }
+  }
+
   @media (max-width: 767px) {
     .devflow__matrix {
       border-radius: var(--radius);
     }
+
     .devflow__matrix thead {
-      /* SP では区分/例の見出し列を視覚的に隠す（スクリーンリーダー用に
-         clip ではなく display:none 採用 → table セマンティクスは残る） */
       display: none;
     }
+
     .devflow__matrix,
     .devflow__matrix tbody,
     .devflow__matrix tr,
@@ -211,24 +238,29 @@ const steps = [
       display: block;
       width: 100%;
     }
+
     .devflow__matrix tr {
       padding: 0.75rem 0;
       border-bottom: 1px solid var(--c-border);
     }
+
     .devflow__matrix tr:last-child {
       border-bottom: none;
     }
+
     .devflow__matrix td {
-      padding: 0.2rem 1rem;
+      padding: 0.25rem 1rem;
       border-bottom: none;
-      font-size: 0.88rem;
+      font-size: 1.235rem;
     }
+
     .devflow__matrix td:first-child {
       width: 100%;
       white-space: normal;
-      padding-bottom: 0.3rem;
-      font-size: 0.9rem;
+      padding-bottom: 0.35rem;
+      font-size: 1.235rem;
     }
+
     .devflow__matrix td:last-child {
       padding-top: 0;
       padding-left: 1rem;
@@ -236,13 +268,8 @@ const steps = [
     }
   }
 
-  /* 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
-     SP でも ON・reduce のみ除外。常時 z:10000（シミ overlay より前面）。
-     color-mix 非対応環境向けに background-color ベタ値を前置きフォールバック。 */
   @media (prefers-reduced-motion: no-preference) {
     .devflow {
-      position: relative;
-      z-index: 10000;
       background-color: var(--c-coffee-stain);
       background-color: var(--c-coffee-stain-soft);
       background-image: var(--paper-noise-url);
@@ -250,25 +277,28 @@ const steps = [
     }
   }
 
-  /* 768px+ かつ非 reduced-motion: scrub 連続横スク用に横並び化
-     （実際の pin / translateX は horizontalZones.ts が担当） */
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     .devflow {
       padding-left: 0;
       padding-right: 0;
-      overflow: hidden;
-      /* pin spacer の素地（region-a の紙色）露出を防ぐため画面高さを確保し、
-         flex 縦中央寄せで中身を中央に置く（spacer の上下余白を消す）。 */
+      overflow: visible;
+    }
+
+    .devflow__pin {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
+      padding: var(--space-snug) 0 var(--space-base);
+      overflow: hidden;
     }
+
     .devflow__inner {
       max-width: none;
       margin: 0;
       padding: 0 1.5rem;
     }
+
     .devflow__list {
       flex-direction: row;
       flex-wrap: nowrap;
@@ -276,14 +306,17 @@ const steps = [
       align-items: stretch;
       will-change: transform;
     }
-    /* clamp 化で中域もステップ幅を滑らかに（下限 220 / 中域 32vw / 上限 320） */
+
     .devflow__step {
       flex: 0 0 auto;
       width: clamp(220px, 32vw, 320px);
-      /* flex shrink 防止の念押し */
       min-width: clamp(220px, 32vw, 320px);
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    .devflow__epilog {
+      width: min(760px, calc(100% - 3rem));
     }
   }
 </style>
