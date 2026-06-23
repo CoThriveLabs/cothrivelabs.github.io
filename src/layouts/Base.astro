@@ -132,6 +132,9 @@ const ogImageURL = Astro.site
     {/* 出現アニメ（GSAP）。pin + scrub 順次出現モード（[data-step-section] 持つ section）と
         IO ベース単発出現モードの二系統。 */}
     <script>import '../scripts/reveal.ts';</script>
+    {/* Layered Pinning From Bottom: TechStack→ComingSoon を共通 container に重ね、
+        前面パネルを yPercent:-100 で押し出す GSAP 公式パターン。 */}
+    <script>import '../scripts/layeredPin.ts';</script>
     {/* TechStack は fixed overlay + scrollY 監視で順次出現させる。
         reveal pin チェーン末端の累積誤差による「先走り」を構造的に回避する独立 setup。 */}
     <script>import '../scripts/techstackReveal.ts';</script>

@@ -69,12 +69,18 @@ const websiteJsonLd = {
           本物の見出し+説明文が pin 中ずっと画面上部に残り、その下でカード帯が右から流れる。 */}
       <Works />
       <DevFlow />
-      <TechStack />
+      <div class="layered-pin-container">
+        <div class="layered-pin-panel" data-panel="techstack">
+          <TechStack />
+        </div>
+        <div class="layered-pin-panel" data-panel="comingsoon">
+          <ComingSoon />
+        </div>
+      </div>
     </div>
 
-    {/* 領域 B: S8-S10（通常スクロール・実背景色） */}
+    {/* 領域 B: S9-S10（通常スクロール・実背景色） */}
     <div class="region-b">
-      <ComingSoon />
       <Contact />
     </div>
   </main>
@@ -94,5 +100,32 @@ const websiteJsonLd = {
   .region-b {
     position: relative;
     background: var(--c-paper-deep);
+  }
+
+  /* Layered Pinning: TechStack / ComingSoon を同一 container に重ね、
+     scrub で前面パネルを yPercent:-100 押し出し → 下のパネルが下から現れる。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .layered-pin-container {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .layered-pin-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+  }
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .layered-pin-container {
+      height: auto;
+    }
+    .layered-pin-panel {
+      position: static;
+      height: auto;
+    }
   }
 </style>
