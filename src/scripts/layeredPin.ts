@@ -3,64 +3,71 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
+let mm: gsap.MatchMedia | undefined;
+
+const DESKTOP_QUERY = '(min-width: 768px) and (prefers-reduced-motion: no-preference)';
+
 const setup = () => {
-  const mm = gsap.matchMedia();
-  mm.add(
-    { isDesktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)' },
-    (ctx) => {
-      if (!ctx.conditions?.isDesktop) return;
+  mm?.revert();
+  mm = gsap.matchMedia();
 
-      const container = document.querySelector<HTMLElement>('.layered-pin-container');
-      const panels = gsap.utils.toArray<HTMLElement>('.layered-pin-panel');
-      if (!container || panels.length < 2) return;
+  mm.add(DESKTOP_QUERY, () => {
+    const container = document.querySelector<HTMLElement>('.layered-pin-container');
+    if (!container) return;
 
-      // ComingSoon (last-child) を前面に。後の panel ほど z-index が高い。
-      gsap.set(panels, { zIndex: (i) => i + 1 });
-      // ComingSoon を初期は画面下に隠す。
-      gsap.set('.layered-pin-panel:last-child', { yPercent: 100 });
+    const techPanel = container.querySelector<HTMLElement>('[data-panel="techstack"]');
+    const comingPanel = container.querySelector<HTMLElement>('[data-panel="comingsoon"]');
 
-      // TechStack のカテゴリ reveal 初期状態（前半 50% で順次出現）。
-      const cats = container.querySelectorAll<HTMLElement>('.techstack__cat[data-reveal]');
-      cats.forEach((el) => gsap.set(el, { opacity: 0.001, y: 30 }));
-      const thresholds = Array.from(cats, (_, i) => (i + 1) / (cats.length + 1));
+    if (!techPanel || !comingPanel) return;
 
-      // ComingSoon を下から上へスクロール連動で登らせる。
-      // 前半 50%: TechStack のカテゴリ順次フェードイン（ComingSoon はまだ画面下で待機）
-      // 後半 50%: ComingSoon が yPercent 100 → 0 で TechStack の上に覆い被さる
-      gsap.fromTo(
-        '.layered-pin-panel:last-child',
-        { yPercent: 100 },
-        {
-          yPercent: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '.layered-pin-container',
-            start: 'top top',
-            end: '+=200%',
-            scrub: true,
-            pin: true,
-            pinSpacing: true,
-            invalidateOnRefresh: true,
-            refreshPriority: 80,
-            onUpdate: (self) => {
-              const p = self.progress;
-              const cardPhase = p / 0.5;
-              if (cardPhase <= 1) {
-                cats.forEach((el, i) => {
-                  if (cardPhase >= thresholds[i]) {
-                    gsap.to(el, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
-                  } else if (cardPhase < thresholds[i] - 0.02) {
-                    gsap.set(el, { opacity: 0.001, y: 30 });
-                  }
-                });
-              }
-            },
-          },
-        }
-      );
+    const cats = gsap.utils.toArray<HTMLElement>(
+      techPanel.querySelectorAll<HTMLElement>('.techstack__cat[data-layered-reveal]')
+    );
+
+    const headingReveals = gsap.utils.toArray<HTMLElement>(
+      techPanel.querySelectorAll<HTMLElement>('.techstack__heading, .techstack__heading [data-reveal]')
+    );
+
+    gsap.set(techPanel, { zIndex: 1, yPercent: 0, autoAlpha: 1 });
+    gsap.set(comingPanel, { zIndex: 2, yPercent: 100, autoAlpha: 1 });
+    gsap.set(headingReveals, { autoAlpha: 1, clearProps: 'transform' });
+    gsap.set(cats, { autoAlpha: 0, y: 30 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        id: 'layered-pin-techstack-comingsoon',
+        trigger: container,
+        start: 'top top',
+        end: () => `+=${Math.round(window.innerHeight * 2)}`,
+        scrub: true,
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        refreshPriority: 80,
+      },
+    });
+
+    if (cats.length > 0) {
+      tl.to(cats, {
+        autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power2.out',
+      }, 0);
     }
-  );
+
+    tl.to(comingPanel, {
+      yPercent: 0, duration: 0.65, ease: 'none',
+    }, cats.length > 0 ? 0.65 : 0);
+
+    requestAnimationFrame(() => { ScrollTrigger.refresh(); });
+
+    return () => {
+      tl.scrollTrigger?.kill();
+      tl.kill();
+    };
+  });
 };
 
 if (document.readyState === 'complete') setup();
 else window.addEventListener('load', setup, { once: true });
+
+document.addEventListener('astro:page-load', setup);

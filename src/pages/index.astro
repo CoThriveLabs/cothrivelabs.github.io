@@ -96,36 +96,54 @@ const websiteJsonLd = {
   .region-a {
     position: relative;
   }
-  /* 領域 B: 通常スクロール・実背景色（S8/S10 は C-DEEP / S9 は C2） */
+  /* 領域 B: 通常スクロール・実背景色（S8/S10 は C-DEEP / S9 は C2）。
+     z-index は .coffee-stain (fixed, z:9999) を覆い、Contact/Footer の隠蔽を防ぐ。 */
   .region-b {
     position: relative;
+    z-index: 10000;
     background: var(--c-paper-deep);
   }
 
   /* Layered Pinning: TechStack / ComingSoon を同一 container に重ね、
-     scrub で前面パネルを yPercent:-100 押し出し → 下のパネルが下から現れる。 */
+     ComingSoon (last-child) を下から登らせて TechStack の上に覆い被せる。
+     重なり順は panel に一本化（section 側の z-index は持たない）。 */
   @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .layered-pin-container {
       position: relative;
       height: 100vh;
+      height: 100svh;
       overflow: hidden;
+      isolation: isolate;
     }
     .layered-pin-panel {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 100vh;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    .layered-pin-panel[data-panel='techstack'] { z-index: 1; }
+    .layered-pin-panel[data-panel='comingsoon'] {
+      z-index: 2;
+      will-change: transform;
     }
   }
   @media (max-width: 767px), (prefers-reduced-motion: reduce) {
     .layered-pin-container {
+      position: relative;
       height: auto;
+      overflow: visible;
+      isolation: auto;
     }
     .layered-pin-panel {
       position: static;
       height: auto;
+      overflow: visible;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
   }
 </style>

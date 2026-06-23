@@ -1,12 +1,12 @@
 ---
 // S10 Footer。法的書面 4 件リンク・note/X「準備中」。
-// 領域 B・C-DEEP 実背景（濃色フッタ）。法的書面ページは未作成のため現状「準備中」。
+// 領域 B・C-DEEP 実背景（濃色フッタ）。
 const year = new Date().getFullYear();
 const legal = [
-  { label: 'プライバシーポリシー', soon: true },
-  { label: '利用規約', soon: true },
-  { label: '特定商取引法に基づく表記', soon: true },
-  { label: 'セキュリティポリシー', soon: true },
+  { label: 'プライバシーポリシー', href: '/privacy' },
+  { label: '利用規約', href: '/terms' },
+  { label: '特定商取引法に基づく表記', href: '/tokushoho' },
+  { label: 'セキュリティポリシー', href: '/security' },
 ];
 ---
 <footer class="site-footer">
@@ -32,9 +32,7 @@ const legal = [
 
     <nav class="site-footer__legal" aria-label="法的書面">
       {legal.map((l) => (
-        l.soon
-          ? <span class="site-footer__legal-item is-soon">{l.label}<span class="site-footer__badge">準備中</span></span>
-          : <a class="site-footer__legal-item" href="#">{l.label}</a>
+        <a class="site-footer__legal-item" href={l.href}>{l.label}</a>
       ))}
     </nav>
 
@@ -54,7 +52,10 @@ const legal = [
 </footer>
 
 <style>
+  /* position/z-index は .coffee-stain (fixed, z:9999) を覆い、Footer 隠蔽を防ぐ。 */
   .site-footer {
+    position: relative;
+    z-index: 10000;
     padding: var(--space-base) 1.5rem 2.5rem;
     background: linear-gradient(180deg, #2a2320 0%, #1f1a18 100%);
     color: #d6d3cb;

@@ -1,64 +1,11 @@
-// 出現アニメ（pin + scrub 順次出現）。
-//
-// 二系統:
-//   (1) `[data-step-section]` を持つ section → pin + scrub 順次出現
-//        対象: StudioAbout / Members / Services / TechStack
-//        section 全体を pin、pin 中の progress に応じて内部 `[data-reveal]` を順次表示。
-//        要素 i の発火 progress: i / (totalCount + 1)。
-//        全要素出た時点で pin 解除 → 次セクションへ自然遷移。
-//        pin 区間長: 要素数 × STEP_DISTANCE_PX（200px ≒ 2 wheel スクロール相当）。
-//   (2) 上記以外の `[data-reveal]` → IO ベースの単発出現
-//        対象: Hero / Works / DevFlow / 領域 B (ComingSoon / Contact) / Decor / WorkCard 等
-//        画面入域時に 1 回だけフェード（pin なし）。
-//
-// アニメ種別（両モード共通）:
-//   - `.member-card` クラス: ポップ・斜め飛び込み + 反動
-//       初期: opacity:0, x:-80, y:200, rotate:-15deg, scale:0.8
-//       終了: opacity:1, x:0, y:0, rotate:0, scale:1
-//       duration 0.6s / ease 'back.out(2.2)'
-//   - それ以外（テキスト・見出し・リード文・カード以外）: フェード
-//       初期: opacity:0, y:20
-//       終了: opacity:1, y:0
-//       duration 0.4s / ease 'power2.out'
-//
-// reduced-motion:
-//   pin 化せず、全要素を即時表示（gsap.set で初期状態を打ち消し）。
-//
-// 他スクリプトとの干渉:
-//   - bgGradient.ts: `--bg-current` CSS 変数のみ書く → DOM プロパティ非干渉。
-//   - parallax.ts: `transform yPercent` scrub。Decor は IO モード（pin 対象外）→ 干渉なし。
-//   - horizontalZones.ts: Works / DevFlow は pin 対象外（既存横スク pin 維持）→ 棲み分け。
-//
-// Gotcha:
-//   - Astro <script type="module"> は defer 相当で fonts/images 未ロード時点で実行されるため、
-//     ScrollTrigger 登録は window.load 後 + ScrollTrigger.refresh() のパターン必須。
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// pin + scrub 各要素間の pin 区間長（px / 要素 1 つあたり）。
-// 400px に設定（200px だと体感速度が速すぎ・各要素の発火までのスクロール量を増やすことで
-// 順次出現を落ち着いて見せる）。アニメ duration は不変。
 const STEP_DISTANCE_PX = 400;
-
-// ── シミ侵食を Services の reveal pin に統合（STAIN_EXTRA 区間方式）──
-// Services（#services）の reveal pin 末尾に専用区間を足し、
-// 全カードが出揃ってからシミが「Services 固定中に」中央→四隅へ侵食する。Services のみ適用。
-const STAIN_EXTRA_PX = 3140; // Services pin に加算するシミ専用区間長。
-const STAIN_R_MAX = 220; // --stain-r 最大（%）。220%×0.85=187%w で四隅(57%w)を確実に越える。
-// edge 先行・fill が少し遅れて完成する配分。
-const STAIN_EDGE_END = 0.4; // edge（--stain-r）拡張完了 stainP。
-const STAIN_FILL_START = 0.5; // fill（--stain-fill-opacity）立ち上がり開始 stainP。edge 完了後に開始して上端の先走りを防ぐ。
-const STAIN_FILL_END = 0.75; // fill 完成 stainP。以降 1 を保持。
-
-const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-
-// テキストフェード（カード以外）
 const TEXT_DURATION_S = 0.4;
 const TEXT_Y_PX = 20;
-
-// メンバーカード = 斜め飛び込み + 反動
 const CARD_DURATION_S = 0.6;
 const CARD_Y_PX = 200;
 const CARD_X_PX = -80;
@@ -81,8 +28,24 @@ function setInitialState(el: HTMLElement, isCard: boolean) {
       scale: CARD_SCALE,
     });
   } else {
-    gsap.set(el, { opacity: 0, y: TEXT_Y_PX, x: 0, rotation: 0, scale: 1 });
+    gsap.set(el, {
+      opacity: 0,
+      y: TEXT_Y_PX,
+      x: 0,
+      rotation: 0,
+      scale: 1,
+    });
   }
+}
+
+function setVisibleState(el: HTMLElement) {
+  gsap.set(el, {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    rotation: 0,
+    scale: 1,
+  });
 }
 
 function playReveal(el: HTMLElement, isCard: boolean) {
@@ -108,168 +71,91 @@ function playReveal(el: HTMLElement, isCard: boolean) {
   }
 }
 
+function showAllWithoutMotion() {
+  const all = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal-late]'));
+  all.forEach(setVisibleState);
+}
+
 function setup() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
-  // ───────────────────────────────────────────────
-  // reduced-motion: 全 [data-reveal] を即時表示・pin なし
-  // ───────────────────────────────────────────────
-  if (reduceMotion) {
-    const all = document.querySelectorAll<HTMLElement>('[data-reveal]');
-    gsap.set(Array.from(all), { opacity: 1, x: 0, y: 0, rotation: 0, scale: 1 });
+  if (reduceMotion || !isDesktop) {
+    showAllWithoutMotion();
     return;
   }
 
-  // ───────────────────────────────────────────────
-  // (1) pin + scrub 順次出現セクション
-  // ───────────────────────────────────────────────
-  // `[data-step-section]` を持つ section を pin、内部 `[data-reveal]` を順次表示。
-  // 順次表示の順序 = section 内の DOM 順（querySelectorAll 自然順）。
-  // 入れ子の section（万が一）は外側のみ拾う想定。
-  const stepSections = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-step-section]')
-  );
-
-  // pin 内に含まれる data-reveal を後段の IO モードから除外するため Set で記録
+  const stepSections = Array.from(document.querySelectorAll<HTMLElement>('[data-step-section]'));
   const pinnedReveals = new Set<HTMLElement>();
+  const devflowSection = document.querySelector<HTMLElement>('.devflow');
 
-  // シミ侵食 progress 連動で works を z 降格させるための参照（侵食中だけ 9998）。
-  const works = document.querySelector<HTMLElement>('.works');
-  const stain = document.querySelector<HTMLElement>('[data-coffee-stain]');
-
-  // DOM 縦順にソートしてから index で refreshPriority を付与（順序根治）。
-  // 上にあるセクションほど大きい値＝先に refresh され、その pin spacer が
-  // 下のセクションの start に反映される。
   stepSections
     .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)
     .forEach((section, sectionIndex) => {
-    // section 内の全 [data-reveal] を DOM 順に拾う（section 全体スコープ）。
-    const revealEls = Array.from(
-      section.querySelectorAll<HTMLElement>('[data-reveal]')
-    );
-    if (!revealEls.length) return;
+      const revealEls = Array.from(section.querySelectorAll<HTMLElement>('[data-reveal]'));
+      if (!revealEls.length) return;
 
-    const entries: Entry[] = revealEls.map((el) => {
-      const isCard = isCardEl(el);
-      pinnedReveals.add(el);
-      return { el, isCard };
-    });
+      const entries: Entry[] = revealEls.map((el) => {
+        const isCard = isCardEl(el);
+        pinnedReveals.add(el);
+        return { el, isCard };
+      });
 
-    // 初期状態を JS でも担保（CSS と二重・チラ見え防止）。
-    entries.forEach(({ el, isCard }) => setInitialState(el, isCard));
+      entries.forEach(({ el, isCard }) => setInitialState(el, isCard));
 
-    const total = entries.length;
-    // pin 区間長 = (total + 1) × STEP_DISTANCE_PX
-    // +1 余白: 最終要素が出てから pin 解除まで少し余白を取り、急遷移を避ける。
-    const basePinLength = (total + 1) * STEP_DISTANCE_PX;
+      const total = entries.length;
+      const sectionStep = Number(section.dataset.stepDistance) || STEP_DISTANCE_PX;
+      const pinLength = (total + 1) * sectionStep;
+      const thresholds = entries.map((_, i) => (i + 1) / (total + 1));
+      const shown = entries.map(() => false);
 
-    // Services のみ pin 末尾に STAIN_EXTRA_PX を足し、その区間をシミ専用にする。
-    //   全カードは reveal 区間（先頭 basePinLength）に圧縮して収め、残り（STAIN_EXTRA 相当）でシミが進む。
-    const isStainSection = section.id === 'services';
-    const pinLength = basePinLength + (isStainSection ? STAIN_EXTRA_PX : 0);
-    // revealRatio: reveal 区間（カード順次出現）が pin 全体に占める割合。
-    //   Services: basePinLength=3600（要素数 8 × 400 + 1 余白）、pinLength=6740。
-    //             → 3600/6740≒0.534。以降（0.534→1.0）が STAIN_EXTRA 区間＝シミ専用。
-    //   非 Services: 1（全区間が reveal）。
-    const revealRatio = basePinLength / pinLength;
+      const isAfterDevflow = devflowSection
+        ? Boolean(devflowSection.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING)
+        : false;
 
-    // 各要素が「出現済み」になる progress 閾値。
-    // 要素 i (0-indexed) は progress >= (i + 1) / (total + 1) で表示完了扱い。
-    // Services は閾値を revealRatio で圧縮し、全カードが reveal 区間内で出揃うようにする
-    //   （pin を伸ばしてもカードがシミ専用区間に食い込まず「全カード後にシミ開始」を保証）。
-    const thresholds = entries.map((_, i) => ((i + 1) / (total + 1)) * revealRatio);
+      const refreshPriority = isAfterDevflow
+        ? 60 - sectionIndex * 10
+        : 200 - sectionIndex * 30;
 
-    // 表示状態を覚えておくフラグ（双方向スクロール対応）
-    const shown = entries.map(() => false);
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${pinLength}`,
+        pin: true,
+        pinSpacing: true,
+        scrub: true,
+        invalidateOnRefresh: true,
+        refreshPriority,
+        onUpdate: (self) => {
+          const p = self.progress;
 
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: () => `+=${pinLength}`,
-      pin: true,
-      // scrub true: スクロール量で progress が連続的に動く。
-      // ただしアニメ自体は閾値またぎ時に gsap.to で別途再生（scrub に直接乗せない）→
-      // カードのポップ・反動が「進行度に張り付く」のではなく、閾値通過の瞬間に
-      // 1 度きり再生される（ボタンクリックでカード追加のようなトンッとした出現）。
-      scrub: true,
-      // anticipatePin は使わない。Works/DevFlow の横スク pin が直前にあるセクションでは
-      // 先読み補正が逆に位置ずれを引き起こすため。
-      invalidateOnRefresh: true,
-      // DOM 上から順に大きい priority。上のセクションを先に refresh し、
-      // その pin spacer を下のセクションの start に反映させる。
-      // 30 刻みで広く取り、横スク（horizontalZones.ts）等の中間値を挟めるようにする。
-      refreshPriority: 200 - sectionIndex * 30,
-      onUpdate: (self) => {
-        const p = self.progress;
-        entries.forEach(({ el, isCard }, i) => {
-          if (!shown[i] && p >= thresholds[i]) {
-            shown[i] = true;
-            playReveal(el, isCard);
-          } else if (shown[i] && p < thresholds[i] - 0.01) {
-            // 双方向: 上スクロールで progress が閾値を下回ったら初期状態に戻す
-            // （-0.01 はチャタリング防止のヒステリシス）
-            shown[i] = false;
-            setInitialState(el, isCard);
-          }
-        });
-
-        // Services のみ、reveal 区間後の STAIN_EXTRA 区間でシミを set 駆動。
-        // set 駆動を採用しているのは timeline tween との競合をゼロにするため。
-        if (isStainSection && stain) {
-          // シミ専用区間 progress（revealRatio〜1.0 を 0→1 に正規化）。p<revealRatio は 0。
-          const stainP = clamp01((p - revealRatio) / (1 - revealRatio));
-          // edge（--stain-r）: stainP 0→EDGE_END で 0%→220% 先行。以降 220% 保持。
-          const edge = stainP >= STAIN_EDGE_END ? 1 : stainP / STAIN_EDGE_END;
-          // fill（--stain-fill-opacity）: stainP FILL_START→FILL_END で 0→1。以降 1 保持。
-          let fill = 0;
-          if (stainP >= STAIN_FILL_END) fill = 1;
-          else if (stainP > STAIN_FILL_START)
-            fill = (stainP - STAIN_FILL_START) / (STAIN_FILL_END - STAIN_FILL_START);
-          gsap.set(stain, {
-            '--stain-r': `${edge * STAIN_R_MAX}%`,
-            '--stain-fill-opacity': fill,
+          entries.forEach(({ el, isCard }, i) => {
+            if (!shown[i] && p >= thresholds[i]) {
+              shown[i] = true;
+              playReveal(el, isCard);
+            } else if (shown[i] && p < thresholds[i] - 0.01) {
+              shown[i] = false;
+              setInitialState(el, isCard);
+            }
           });
-          // 侵食 progress 連動の works z 降格（侵食中だけ overlay 背面へ＝先走り防止の二重保険）。
-          if (works) {
-            if (stainP > 0 && stainP < 1) works.classList.add('is-stain-invading');
-            else works.classList.remove('is-stain-invading');
-          }
-        }
-      },
+        },
+      });
     });
-  });
 
-  // ───────────────────────────────────────────────
-  // (2) IO ベース単発出現（pin 対象外の data-reveal）
-  // ───────────────────────────────────────────────
-  // pin セクション内の data-reveal は除外（上で処理済み）。
-  // 領域 B / Hero / Works / DevFlow / Decor / WorkCard 等が対象。
-  // 横スクが効く幅(768px+)のときだけ scroller 配下を IO 除外（PC 横スク timeline 駆動と二重化させない）。
-  // SP(768px未満)はカードを IO 対象に残し、IO 単発フェードで表示する。
-  // reduced-motion 時は手前の早期 return に入るためここに到達しない。
-  const isWide = window.matchMedia('(min-width: 768px)').matches;
-  // TechStack は techstackReveal.ts の fixed overlay 演出に委譲しているため、
-  // PC + no-reduced-motion 時は overlay 内 reveal を IO 単発からも除外する。
-  const techstackWide = isWide && window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
-  const allReveal = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-reveal]')
-  );
-  // works__intro は horizontalZones.ts の timeline tween で駆動する（pinnedReveals に登録されない）ため、
-  // PC で IO 単発フェードを二重発火させないよう明示除外する。
-  // 横スク帯（.works__scroller 配下のカード）の IO 除外も PC のみ（SP は IO 単発フェード）。
+  const allReveal = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+
   const ioTargets = allReveal.filter(
     (el) =>
       !pinnedReveals.has(el) &&
-      !(isWide && el.closest('.works__scroller')) &&
-      !(isWide && el.closest('.works__intro')) &&
-      !(techstackWide && el.closest('[data-techstack-overlay]'))
+      !el.closest('.works__scroller') &&
+      !el.closest('.works__intro') &&
+      !el.closest('.devflow') &&
+      !el.closest('.techstack') &&
+      !el.closest('[data-techstack-overlay]')
   );
 
   if (ioTargets.length) {
-    ioTargets.forEach((el) => {
-      const isCard = isCardEl(el);
-      setInitialState(el, isCard);
-    });
+    ioTargets.forEach((el) => setInitialState(el, isCardEl(el)));
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -281,21 +167,35 @@ function setup() {
           }
         });
       },
-      {
-        // 中央帯やや早出し（IO は要素単位・section に縛られず素直に入域で発火）。
-        threshold: 0.08,
-        rootMargin: '0px 0px -8% 0px',
-      }
+      { threshold: 0.08, rootMargin: '0px 0px -8% 0px' }
     );
+
     ioTargets.forEach((el) => io.observe(el));
   }
 
-  // fonts/images ロード完了後の最終 refresh（要素位置確定後に start/end を再測定固定）。
+  const lateTargets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal-late]'));
+
+  if (lateTargets.length) {
+    lateTargets.forEach((el) => setInitialState(el, isCardEl(el)));
+
+    const ioLate = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            playReveal(el, isCardEl(el));
+            ioLate.unobserve(el);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -30% 0px' }
+    );
+
+    lateTargets.forEach((el) => ioLate.observe(el));
+  }
+
   ScrollTrigger.refresh();
 }
 
-if (document.readyState === 'complete') {
-  setup();
-} else {
-  window.addEventListener('load', setup, { once: true });
-}
+if (document.readyState === 'complete') setup();
+else window.addEventListener('load', setup, { once: true });

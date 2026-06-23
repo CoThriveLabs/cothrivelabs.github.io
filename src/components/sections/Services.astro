@@ -12,7 +12,7 @@ const services = [
   { title: 'WordPress 対応', body: '既存 WordPress サイトの制作・調整にも対応できます。' },
 ];
 ---
-<section class="services" id="services" data-bg="paper" data-step-section>
+<section class="services" id="services" data-bg="paper" data-step-section data-step-distance="500">
   {/* ちらほら視差装飾。pin セクション内は noReveal（順次出現カウントに装飾を混ぜない）。 */}
   <Decor char="saki" depth="mid" corner="bottom-left" noReveal />
   <div class="services__inner">
@@ -30,6 +30,12 @@ const services = [
     </ul>
   </div>
 </section>
+{/* シミ侵食駆動専用 sentinel。Services pin の trigger 外側（natural flow）に置く。
+    Why section 外: pin trigger の内側に置くと Services pin active 中も sentinel が
+    viewport に入り、Services 表示中にシミ侵食が走って S4 が飲み込まれて表示されないバグになる。
+    pin 解除後の natural flow 位置から sentinel が稼ぐスクロール量で shadow stain が完成する。
+    視覚不可視（1px width）。 */}
+<div class="stain-sentinel" data-stain-sentinel aria-hidden="true"></div>
 
 <style>
   .services {
@@ -77,5 +83,28 @@ const services = [
     font-size: 1.235rem;
     line-height: 1.85;
     color: var(--c-main-soft);
+  }
+  /* シミ侵食駆動専用 sentinel。CSS scroll-driven animation の view-timeline source。
+     view-timeline-name で名前付け → Base.astro の .coffee-stain::before/::after が参照。
+     sentinel の cover phase（viewport 下辺 → 上辺到達）を 0→1 progress として使う。
+     高さ = sentinel 自身の縦距離 → 滞在時間（侵食ペース）を決める。
+     SP は半量、reduce 時は 0 で縦スクロール無駄を消す（@supports 未サポート時も静止表示）。 */
+  .stain-sentinel {
+    width: 1px;
+    height: 800px;
+    margin: 0 auto;
+    pointer-events: none;
+    view-timeline-name: --stain-timeline;
+    view-timeline-axis: block;
+  }
+  @media (max-width: 767px) {
+    .stain-sentinel {
+      height: 400px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stain-sentinel {
+      height: 0;
+    }
   }
 </style>

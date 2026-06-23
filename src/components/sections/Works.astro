@@ -48,7 +48,7 @@ const works = [
   },
 ];
 ---
-<section class="works" id="works" data-bg="paper-warm">
+<section class="works" id="works">
   {/* ブロック1: 見出し+説明文。works 全体 1pin 統合のため data-step-section を持たず、
       reveal.ts (1) pin 対象から外して horizontalZones.ts の timeline tween で駆動を一元化。 */}
   <div class="works__intro" id="works-intro">
@@ -63,6 +63,13 @@ const works = [
       works 全体 1pin 統合により本物の見出しが pin 中画面に残り続けるため、複製見出しは持たない。 */}
   <div class="works__scroller">
     <div class="works__inner works__inner--scroller">
+      {/* PaperBg 駆動の sentinel。section 直付けだと前段 Services pin 中に section 全体が
+          viewport 中央 40% 帯に入った瞬間 --bg-current が paper-warm に切替り、
+          シミ侵食中の radial 外側から paper-warm が透ける。
+          sentinel を works__list 直前（横スク帯先頭）に置くことで、
+          シミ侵食完了 + Works pin 開始後に中央帯入域 → paper-warm 切替が遅延発火する。
+          視覚上は不可視（1px 透明マーカー）。 */}
+      <div class="works-sentinel" data-works-sentinel data-bg="paper-warm" aria-hidden="true"></div>
       <div class="works__list">
         {works.map((w) => (
           <WorkCard
@@ -84,10 +91,11 @@ const works = [
 <style>
   .works {
     padding: var(--space-snug) 1.5rem var(--space-base);
-    /* シミ侵食完了〜Works 見出しの真空区間（pinSpacing 余剰）を負 margin で詰める。
-       document スクロール量を短縮しつつ、演出 timeline / data-bg トリガー要素の相対位置は不変
-       （reveal.ts は invalidateOnRefresh で再計算）。 */
-    margin-top: calc(-200vh - 1000px);
+    /* Gotcha: 負 margin で前段 Services pin spacer に物理重ねしない。
+       ScrollTrigger は重なり pin の後発を active 化する瞬間に先発 pin を end state へ
+       強制 jump させる仕様があり、Services pin の onUpdate が呼ばれず scrub 逆再生も
+       発火しなくなる（上スクロール時にシミ侵食が縮小再生されない症状の根因）。
+       連続スクロール感は horizontalZones.ts の Works pin end 延長で吸収する。 */
   }
   .works__inner {
     max-width: 820px;
@@ -109,10 +117,21 @@ const works = [
     flex-direction: column;
     gap: 1.5rem;
   }
+  /* PaperBg 駆動専用の不可視マーカー。視覚に出さず IO trigger だけ担う。 */
+  .works-sentinel {
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
 
   /* 背景色は fixed 背景レイヤ（--bg-current）に委ね、works 自身は紙テクスチャ noise のみを重ねる。
      自前の background-color を持つとシミ侵食前から画面下端に色が透けて見える「先走り」が出るため。
-     SP でも noise は ON・reduce のみ除外。常時 z:10000 でシミ overlay(9999) の前面。 */
+     SP でも noise は ON・reduce のみ除外。
+     z:10000: シミ overlay (z:9999) より前面化。
+       - sentinel cover phase 中: keyframes で fill が 0→1 に伸び、Works はまだ画面下方 → 自然不可視
+       - sentinel 通過後: fill=1 で全画面シミ overlay + Works 自身がシミ色背景 + content が overlay の上に表示
+       - 後段 TechStack (sticky z:10001) / ComingSoon (sticky z:10002) より背面で順序整合
+       - ヘッダー (z:10004) より背面 */
   @media (prefers-reduced-motion: no-preference) {
     .works {
       position: relative;
@@ -120,17 +139,14 @@ const works = [
       background-image: var(--paper-noise-url);
       background-repeat: repeat;
     }
-    /* シミ侵食中は overlay(9999) 背面へ降格して overlay 側の塗りを優先させる。
-       侵食完了で z:10000 に復帰し、works の noise が overlay の上に来る。 */
-    .works.is-stain-invading {
-      z-index: 9998;
-    }
   }
 
-  /* SP は画面崩れ抑制のため負 margin を半量に留める */
-  @media (max-width: 767px) {
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    /* sentinel cover phase 中はシミ overlay (fill=1) と Works 背景の継ぎ目を消すため、
+       Works section 自身もシミ色を持って「コーヒーがこぼれた後」の世界観を維持する。
+       SP / reduce 時は cover transition 自体なし → CSS 既定の bg-current (paper-warm) のまま。 */
     .works {
-      margin-top: calc(-100vh - 500px);
+      background-color: var(--c-coffee-stain-soft);
     }
   }
 

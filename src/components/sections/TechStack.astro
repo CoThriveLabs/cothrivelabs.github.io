@@ -35,43 +35,36 @@ const categories = [
   },
 ];
 ---
-{/* TechStack を fixed overlay + scrollY 監視で「画面転移なく順次出現」させる構造。
-    sentinel wrapper（自然位置・高さ 2400px）がスクロール量を稼ぎ、その scrollY を
-    techstackReveal.ts が監視して overlay の is-active と内部要素の is-revealed を切替える。
-    pin を使わないので、上流セクションの refreshPriority 連鎖から切り離せる（順次出現の累積誤差防止）。
-    PaperBg 駆動は sentinel の data-bg に移譲。背景（シミ色+noise）も sentinel 側に集約し、
-    overlay は背景透明＝コンテンツだけが浮かんで見える形にする。 */}
-<div class="techstack-sentinel" data-techstack-sentinel data-bg="paper">
-  <section class="techstack" id="techstack" data-techstack-overlay>
-    {/* ちらほら視差装飾。pin セクション内は noReveal。
-        fixed overlay 化中は parallax の transform が壊れるため noParallax を立てる。 */}
-    <Decor char="saki" depth="back" corner="bottom-right" noReveal noParallax />
-    <div class="techstack__inner">
+{/* PaperBg 駆動は section 自身の data-bg。 */}
+<section class="techstack" id="techstack" data-bg="paper">
+  <Decor char="saki" depth="back" corner="bottom-right" />
+  <div class="techstack__inner">
+    <div class="techstack__heading">
       <SectionHeading
         title="技術スタック"
         lead="案件に合わせて、ご希望のスタックも、コストを抑えながら堅く作れる組み合わせも選べます。"
       />
-      <div class="techstack__grid">
-        {categories.map((cat) => (
-          <div class="techstack__cat" data-reveal>
-            <h3 class="techstack__cat-name">{cat.name}</h3>
-            <ul class="techstack__items">
-              {cat.items.map((it) => (
-                <li class="techstack__item">
-                  <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
-                  <span class="techstack__item-body">
-                    <span class="techstack__item-name">{it.name}</span>
-                    <span class="techstack__item-use">{it.use}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
     </div>
-  </section>
-</div>
+    <div class="techstack__grid">
+      {categories.map((cat) => (
+        <div class="techstack__cat" data-layered-reveal>
+          <h3 class="techstack__cat-name">{cat.name}</h3>
+          <ul class="techstack__items">
+            {cat.items.map((it) => (
+              <li class="techstack__item">
+                <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
+                <span class="techstack__item-body">
+                  <span class="techstack__item-name">{it.name}</span>
+                  <span class="techstack__item-use">{it.use}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
 
 <style>
   .techstack {
@@ -79,12 +72,31 @@ const categories = [
     /* 装飾の absolute 配置基点・はみ出し防止 */
     position: relative;
     overflow: hidden;
+    /* 制作物以降の薄シミ色+紙テクスチャ noise 背景（シミ全面維持の継続）。
+       color-mix 非対応向けに background-color ベタ値を前置きフォールバック。 */
+    background-color: var(--c-coffee-stain);
+    background-color: var(--c-coffee-stain-soft);
+    background-image: var(--paper-noise-url);
+    background-repeat: repeat;
   }
   .techstack__inner {
+    width: 100%;
     max-width: var(--max-w);
     margin: 0 auto;
     position: relative;
     z-index: 1;
+  }
+  /* layered-pin 内でも見出しは常時 opacity:1 で表示（GSAP set/timeline と二重保険）。 */
+  .techstack__heading {
+    position: relative;
+    z-index: 2;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+  .techstack__heading,
+  .techstack__heading :global([data-reveal]) {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
   }
   /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S7 限定で α=0.85 に上書き。
      S7 のみ濃く出して可読性確保（共通コンポは変えない）。 */
@@ -96,6 +108,7 @@ const categories = [
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    align-items: stretch;
   }
   @media (min-width: 640px) {
     .techstack__grid {
@@ -165,80 +178,20 @@ const categories = [
     color: rgba(58, 50, 48, 0.85);
   }
 
-  /* 制作物以降の「薄シミ色＋紙テクスチャ noise」背景（シミ全面維持の継続）。
-     SP でも ON・reduce のみ除外。常時 z:10000（シミ overlay より前面）。
-     既存の position:relative / overflow:hidden（装飾基点）はそのまま活かす。
-     color-mix 非対応向けに background-color ベタ値を前置きフォールバック。
-     PC + no-pref 時のみ後段の @media で overlay 化に上書きする。
-     SP / reduce では従来通りこのブロックの設定（背景 + z:10000）を維持。 */
-  @media (prefers-reduced-motion: no-preference) {
+  /* layered-pin panel 内で section を panel 一杯に広げ、中央配置でグリッドを置く。
+     重なり順は panel 側に一本化（section は z-index を持たない）。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .techstack {
-      position: relative;
-      z-index: 10000;
-      background-color: var(--c-coffee-stain);
-      background-color: var(--c-coffee-stain-soft);
-      background-image: var(--paper-noise-url);
-      background-repeat: repeat;
+      height: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      padding-block: clamp(3rem, 6vh, 5rem);
+    }
+    .techstack__inner {
+      max-height: 100%;
     }
   }
 
-  /* === fixed overlay + scrollY 監視 出現演出 ===
-     PC + no-reduced-motion のみ発動。SP / reduce 時は sentinel/overlay は static 扱いで
-     自然フローに戻り、reveal.ts (2) の IO 単発出現で表示される（既存挙動維持）。
-     上の @media (prefers-reduced-motion: no-preference) の背景設定を sentinel 側に移譲し、
-     overlay は背景透明にする。順序: 上の no-pref ブロック → このブロック（より具体的）で上書き。 */
-  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
-    .techstack-sentinel {
-      /* sentinel 高さ 2400px = reveal 区間（REVEAL_END 0.65 × 2400 = 1560px）+ cover 区間（840px）。
-         カードの順次表示も cover 演出も無理なく堪能できる長さに合わせている。 */
-      height: 2400px;
-      position: relative;
-      /* 背景（シミ色+noise）は sentinel 側で持つ → overlay は背景透明 */
-      background-color: var(--c-coffee-stain);
-      background-color: var(--c-coffee-stain-soft);
-      background-image: var(--paper-noise-url);
-      background-repeat: repeat;
-    }
-    .techstack[data-techstack-overlay] {
-      position: fixed;
-      inset: 0;
-      /* ComingSoon overlay より少し下に置く。is-active 中だけ表示なので衝突しない。 */
-      z-index: 10001;
-      display: grid;
-      place-items: center;
-      pointer-events: none;
-      opacity: 0;
-      visibility: hidden;
-      /* overlay の背景（sentinel と同じシミ色+noise）。is-active 時に画面全体を覆い、
-         下にある ComingSoon が透けて見えるのを防ぐ。is-active 解除時は visibility:hidden なので
-         sentinel との二重描画は起きない。 */
-      background-color: var(--c-coffee-stain);
-      background-color: var(--c-coffee-stain-soft);
-      background-image: var(--paper-noise-url);
-      background-repeat: repeat;
-    }
-    /* Gotcha: overlay の display:grid; place-items:center は grid item（.techstack__inner）を
-       natural width（コンテンツ最小幅）に縮める。すると内側 .techstack__grid の auto-fit が
-       「親の有効幅」を狭くしか取れずカードが縦並びになる。
-       inner を 100%幅にして max-width: var(--max-w) で中央寄せされた本来の幅を確保する。 */
-    .techstack[data-techstack-overlay] .techstack__inner {
-      width: 100%;
-    }
-    .techstack[data-techstack-overlay].is-active {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-    /* fixed 化中の内部要素は techstackReveal.ts が is-revealed を順次付与してフェードイン。
-       reveal.ts (1) pin 系列に乗らないので、CSS で初期非表示 → is-revealed で立ち上げ。 */
-    .techstack [data-reveal] {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
-    }
-    .techstack [data-reveal].is-revealed {
-      opacity: 1;
-      transform: none;
-    }
-  }
 </style>

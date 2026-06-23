@@ -135,13 +135,9 @@ const ogImageURL = Astro.site
     {/* Layered Pinning From Bottom: TechStack→ComingSoon を共通 container に重ね、
         前面パネルを yPercent:-100 で押し出す GSAP 公式パターン。 */}
     <script>import '../scripts/layeredPin.ts';</script>
-    {/* TechStack は fixed overlay + scrollY 監視で順次出現させる。
-        reveal pin チェーン末端の累積誤差による「先走り」を構造的に回避する独立 setup。 */}
+    {/* TechStack を pin + pinSpacing:false で固定し、ComingSoon が上から覆い被さる演出。
+        順次出現も同 ScrollTrigger の onUpdate で駆動。 */}
     <script>import '../scripts/techstackReveal.ts';</script>
-    {/* TechStack → ComingSoon cover transition。TechStack progress 0.65〜1.0 を cover 区間とし、
-        ComingSoon overlay を translateY(100vh → 0) で下からせり上げ。
-        pin 不使用・plain JS で sticky × pin の競合罠を構造的に回避。 */}
-    <script>import '../scripts/comingSoonCover.ts';</script>
     {/* グラデ背景切替。reveal.ts と別ファイル・別 IO instance。 */}
     <script>import '../scripts/bgGradient.ts';</script>
     {/* 横スク 2 ゾーン。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
@@ -206,8 +202,8 @@ const ogImageURL = Astro.site
 
     /* === コーヒーシミ演出 === */
     --c-coffee-stain: #8B6F4E;   /* シミ色（濃いめ）。背景/fill は color-mix で薄めて適用 */
-    --stain-r: 0%;               /* シミ半径（reveal.ts が scrub でアニメ） */
-    --stain-fill-opacity: 0;     /* シミ fill 層の不透明度。侵食完了で 0→1（四隅ベタ） */
+    --stain-r: 0%;               /* シミ半径。CSS scroll-driven animation が駆動。 */
+    --stain-fill-opacity: 0;     /* シミ fill 層の不透明度。侵食完了で 0→1（四隅ベタ）。 */
     /* 定着後の背景/fill 用の薄シミ色（紙色 30% 混色）。
        overlay fill と各セクション背景で同色にして継ぎ目を消す。 */
     --c-coffee-stain-soft: color-mix(in srgb, var(--c-coffee-stain) 70%, var(--c-paper));
@@ -233,6 +229,11 @@ const ogImageURL = Astro.site
   html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-h-scrolled);
+    /* view-timeline-name は祖先方向しか参照できないため、html 側で timeline-scope を宣言して
+       任意の子孫（Services 内の stain-sentinel）で定義された --stain-timeline を
+       兄弟ツリーの .coffee-stain（body 直下 fixed）から animation-timeline 経由で参照可能にする。
+       未サポート時は @supports (timeline-scope: ...) で animation 適用自体を抑止する。 */
+    timeline-scope: --stain-timeline;
   }
 
   body {
@@ -275,15 +276,19 @@ const ogImageURL = Astro.site
     z-index: 9999;
     pointer-events: none;
   }
-  /* edge: 侵食中の広がるにじみ（薄茶 soft radial・--stain-r 0%→220%）。
-     farthest-corner で四隅を半径基準にし、濃色終端 *0.85・透明 *1.05 でフェード帯を最小化。
-     色は soft（薄茶）に統一し fill・各セクション背景とピクセル一致させて継ぎ目を消す。 */
+  /* edge: 画面下辺中央起点の半円じわじわ侵食（薄茶 soft radial・--stain-r 0%→260%）。
+     画面外下側でこぼしたコーヒーが下から上に染み広がる演出。
+     center を `at 50% 100%` にして下辺中央起点、farthest-corner で対角（左上/右上）を半径基準にする。
+     濃色終端 *0.85・透明 *1.05 でフェード帯を最小化し fill 層への継ぎ目を消す。
+     Gotcha: terminal は transparent 固定。任意の色変数（例: --bg-current）を入れると
+     --stain-r:0% の初期状態で全 color-stop が 0% に重なり、最終 stop の色が全画面を塗りつぶす。
+     次セクション要素の透け先走りは「侵食中だけ次セクション側を不可視化」する責務分離で対処する。 */
   .coffee-stain::before {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      circle farthest-corner at 50% 50%,
+      circle farthest-corner at 50% 100%,
       var(--c-coffee-stain-soft) 0%,
       var(--c-coffee-stain-soft) calc(var(--stain-r) * 0.85),
       transparent calc(var(--stain-r) * 1.05)
@@ -301,6 +306,65 @@ const ogImageURL = Astro.site
     background-repeat: repeat;
     opacity: var(--stain-fill-opacity, 0);
     will-change: opacity;
+  }
+
+  /* === シミ駆動: CSS scroll-driven animation ===
+     view-timeline ベースで stain-sentinel の viewport 通過量に連動して
+     --stain-r / --stain-fill-opacity を駆動する。
+     上下スクロール双方向動作は CSS ネイティブ保証（JS ゼロ・状態管理ゼロ）。
+     @property で <percentage>/<number> 型を明示し、tween 補間を可能にする。
+     未サポートブラウザ（Safari 16-）では @supports が false → 静止状態で stain-r:0% 維持（演出無し・崩れなし）。
+     reduced-motion 時は media query で @supports ブロック内も無効化。 */
+  @property --stain-r {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
+  }
+  @property --stain-fill-opacity {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+  @supports (animation-timeline: scroll()) and (timeline-scope: --stain-timeline) {
+    @media (prefers-reduced-motion: no-preference) {
+      .coffee-stain::before {
+        animation: stain-spread linear both;
+        animation-timeline: --stain-timeline;
+        animation-range: cover 0% cover 100%;
+      }
+      .coffee-stain::after {
+        animation: stain-fill linear both;
+        animation-timeline: --stain-timeline;
+        animation-range: cover 0% cover 100%;
+      }
+    }
+  }
+  /* sentinel cover phase の前半でじわっと展開、後半以降は完全展開維持。
+     末端 1 維持により sentinel 通過後の Works 区間も全画面シミ overlay で覆われ、
+     Works 入域直前の「上端から下層が一瞬透ける」問題を防ぐ。
+     Works section 自身は z:10000（シミ overlay 9999 より前面）で content をシミの上に表示する。
+     逆スクロールは keyframes を逆再生して自然双方向動作。 */
+  @keyframes stain-spread {
+    0% {
+      --stain-r: 0%;
+    }
+    55% {
+      --stain-r: 260%;
+    }
+    100% {
+      --stain-r: 260%;
+    }
+  }
+  @keyframes stain-fill {
+    0% {
+      --stain-fill-opacity: 0;
+    }
+    65% {
+      --stain-fill-opacity: 1;
+    }
+    100% {
+      --stain-fill-opacity: 1;
+    }
   }
 
   /* fade-in 共通 */
