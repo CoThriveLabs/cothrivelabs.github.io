@@ -68,7 +68,7 @@ const categories = [
 
 <style>
   .techstack {
-    padding: var(--space-base) 1.5rem;
+    padding: calc(var(--space-base) * 0.6) 1.5rem;
     /* 装飾の absolute 配置基点・はみ出し防止 */
     position: relative;
     overflow: hidden;
@@ -187,7 +187,7 @@ const categories = [
       min-height: 100svh;
       display: flex;
       align-items: center;
-      padding-block: clamp(3rem, 6vh, 5rem);
+      padding-block: calc(var(--space-snug) * 0.6);
     }
     .techstack__inner {
       max-height: 100%;

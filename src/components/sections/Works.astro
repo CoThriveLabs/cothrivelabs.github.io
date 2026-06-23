@@ -90,7 +90,7 @@ const works = [
 
 <style>
   .works {
-    padding: var(--space-snug) 1.5rem var(--space-base);
+    padding: calc(var(--space-snug) * 0.6) 1.5rem calc(var(--space-base) * 0.6);
     /* Gotcha: 負 margin で前段 Services pin spacer に物理重ねしない。
        ScrollTrigger は重なり pin の後発を active 化する瞬間に先発 pin を end state へ
        強制 jump させる仕様があり、Services pin の onUpdate が呼ばれず scrub 逆再生も
@@ -110,7 +110,7 @@ const works = [
   .works__intro {
     position: relative;
     /* 他セクションと揃えて天井 padding を確保（見出しが上端に貼り付くのを防ぐ）。 */
-    padding-top: var(--space-base);
+    padding-top: calc(var(--space-base) * 0.6);
   }
   .works__list {
     display: flex;
@@ -160,7 +160,7 @@ const works = [
     /* 自然高（見出し+lead+padding）で画面上部固定領域。 */
     .works__intro {
       flex: 0 0 auto;
-      padding-top: var(--header-h-scrolled);
+      padding-top: 0;
     }
     /* 残りスペース全部を取り、その中で縦中央寄せ（カード帯を画面中央〜下に配置）。
        Gotcha: 横方向の中央配置ロジック（horizontalZones.ts の getStartX 等）は不可触・縦のみ調整。 */

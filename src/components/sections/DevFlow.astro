@@ -69,11 +69,11 @@ const steps = [
   .devflow {
     position: relative;
     z-index: 10000;
-    padding: 0 1.5rem var(--space-base);
+    padding: 0 1.5rem calc(var(--space-base) * 0.6);
   }
 
   .devflow__pin {
-    padding: var(--space-snug) 0 var(--space-base);
+    padding: calc(var(--space-snug) * 0.6) 0 0;
   }
 
   .devflow__inner {
@@ -143,8 +143,8 @@ const steps = [
     position: relative;
     z-index: 10000;
     max-width: 760px;
-    margin: var(--space-base) auto clamp(6rem, 18vh, 12rem);
-    padding: 1.5rem 0 0;
+    margin: 0.33rem auto clamp(6rem, 18vh, 12rem);
+    padding: 0;
   }
 
   .devflow__epilog-heading {
@@ -289,7 +289,7 @@ const steps = [
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      padding: var(--space-snug) 0 var(--space-base);
+      padding: calc(var(--space-snug) * 0.6) 0 0;
       overflow: hidden;
     }
 
