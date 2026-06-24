@@ -6,8 +6,7 @@ import WorkCard from '../WorkCard.astro';
 import { works } from '../../data/works';
 ---
 <section class="works" id="works">
-  {/* ブロック1: 見出し+説明文。works 全体 1pin 統合のため data-step-section を持たず、
-      reveal.ts (1) pin 対象から外して horizontalZones.ts の timeline tween で駆動を一元化。 */}
+  {/* 見出し+説明文ブロック。 */}
   <div class="works__intro" id="works-intro">
     <div class="works__inner works__inner--intro">
       <SectionHeading
@@ -16,15 +15,11 @@ import { works } from '../../data/works';
       />
     </div>
   </div>
-  {/* ブロック2: 横スク pin（horizontalZones.ts）。
-      works 全体 1pin 統合により本物の見出しが pin 中画面に残り続けるため、複製見出しは持たない。 */}
+  {/* カードリストブロック。 */}
   <div class="works__scroller">
     <div class="works__inner works__inner--scroller">
-      {/* PaperBg 駆動の sentinel。section 直付けだと前段 Services pin 中に section 全体が
-          viewport 中央 40% 帯に入った瞬間 --bg-current が paper-warm に切替り、
-          シミ侵食中の radial 外側から paper-warm が透ける。
-          sentinel を works__list 直前（横スク帯先頭）に置くことで、
-          シミ侵食完了 + Works pin 開始後に中央帯入域 → paper-warm 切替が遅延発火する。
+      {/* PaperBg 駆動の sentinel。works__list 直前に配置することで
+          シミ侵食完了後・カードリスト入域時に paper-warm 切替が発火する。
           視覚上は不可視（1px 透明マーカー）。 */}
       <div class="works-sentinel" data-works-sentinel data-bg="paper-warm" aria-hidden="true"></div>
       <div class="works__list">
@@ -39,11 +34,6 @@ import { works } from '../../data/works';
 <style>
   .works {
     padding: calc(var(--space-snug) * 0.6) 1.5rem calc(var(--space-base) * 0.6);
-    /* Gotcha: 負 margin で前段 Services pin spacer に物理重ねしない。
-       ScrollTrigger は重なり pin の後発を active 化する瞬間に先発 pin を end state へ
-       強制 jump させる仕様があり、Services pin の onUpdate が呼ばれず scrub 逆再生も
-       発火しなくなる（上スクロール時にシミ侵食が縮小再生されない症状の根因）。
-       連続スクロール感は horizontalZones.ts の Works pin end 延長で吸収する。 */
   }
   .works__inner {
     max-width: 820px;
@@ -54,16 +44,40 @@ import { works } from '../../data/works';
   .works :global(.section-heading__lead) {
     color: rgba(58, 50, 48, 0.85);
   }
-  /* 見出しブロックは z を持てる土台（works section は後段で z:10000 化）。 */
   .works__intro {
     position: relative;
-    /* 他セクションと揃えて天井 padding を確保（見出しが上端に貼り付くのを防ぐ）。 */
     padding-top: calc(var(--space-base) * 0.6);
   }
+  /* スクロールコンテナは .works__list 自身に統一（親 .works__scroller / .works__inner--scroller は
+     overflow: visible のまま）。親に overflow-x を持たせると list.scrollWidth が clientWidth と
+     一致して horizontal-wheel-drag.ts が即 return する。 */
   .works__list {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    /* scrollbar UI は隠す（横スクは JS + ネイティブ両対応） */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    /* テキスト選択防止: dragstart + pointermove preventDefault が一次防御。
+       user-select: none は念のための保険として残す（子の focus は壊れない） */
+    -webkit-user-select: none;
+    user-select: none;
+
+    /* 縦スワイプはネイティブの縦スクに譲り、横は JS（pointer events）で制御 */
+    touch-action: pan-y;
+
+    cursor: grab;
+  }
+  .works__list:active {
+    cursor: grabbing;
+  }
+  .works__list::-webkit-scrollbar {
+    display: none;
   }
   /* PaperBg 駆動専用の不可視マーカー。視覚に出さず IO trigger だけ担う。 */
   .works-sentinel {
@@ -74,12 +88,7 @@ import { works } from '../../data/works';
 
   /* 背景色は fixed 背景レイヤ（--bg-current）に委ね、works 自身は紙テクスチャ noise のみを重ねる。
      自前の background-color を持つとシミ侵食前から画面下端に色が透けて見える「先走り」が出るため。
-     SP でも noise は ON・reduce のみ除外。
-     z:10000: シミ overlay (z:9999) より前面化。
-       - sentinel cover phase 中: keyframes で fill が 0→1 に伸び、Works はまだ画面下方 → 自然不可視
-       - sentinel 通過後: fill=1 で全画面シミ overlay + Works 自身がシミ色背景 + content が overlay の上に表示
-       - 後段 TechStack (sticky z:10001) / ComingSoon (sticky z:10002) より背面で順序整合
-       - ヘッダー (z:10004) より背面 */
+     SP でも noise は ON・reduce のみ除外。 */
   @media (prefers-reduced-motion: no-preference) {
     .works {
       position: relative;
@@ -90,33 +99,32 @@ import { works } from '../../data/works';
   }
 
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-    /* sentinel cover phase 中はシミ overlay (fill=1) と Works 背景の継ぎ目を消すため、
-       Works section 自身もシミ色を持って「コーヒーがこぼれた後」の世界観を維持する。
-       SP / reduce 時は cover transition 自体なし → CSS 既定の bg-current (paper-warm) のまま。 */
+    /* sentinel cover phase 中はシミ overlay と Works 背景の継ぎ目を消すため、
+       Works section 自身もシミ色を持って「コーヒーがこぼれた後」の世界観を維持する。 */
     .works {
       background-color: var(--c-coffee-stain-soft);
     }
   }
 
-  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
-    /* works 全体を 1 pin 化（horizontalZones.ts）。pin 中の画面構成 = works 1 枚として確定。 */
+  /* PC: 横並びカードリスト。
+     - 子合計幅 < 親幅（PC ワイド）: justify-content: safe center で中央寄せ、横スクなし
+     - 子合計幅 > 親幅（タブレット）: ネイティブ overflow-x: auto で横スク
+     カード幅・gap は commit eac5435 当時と一致。 */
+  @media (min-width: 768px) {
     .works {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
-    /* 自然高（見出し+lead+padding）で画面上部固定領域。 */
     .works__intro {
       flex: 0 0 auto;
       padding-top: 0;
     }
-    /* 残りスペース全部を取り、その中で縦中央寄せ（カード帯を画面中央〜下に配置）。
-       Gotcha: 横方向の中央配置ロジック（horizontalZones.ts の getStartX 等）は不可触・縦のみ調整。 */
     .works__scroller {
       position: relative;
       padding-left: 0;
       padding-right: 0;
-      overflow: hidden;
+      overflow: visible;
       min-height: 0;
       flex: 1 1 auto;
       display: flex;
@@ -128,25 +136,49 @@ import { works } from '../../data/works';
       max-width: none;
       margin: 0;
       padding: 0 1.5rem;
-      /* flex 子として横幅が潰れないよう全幅を担保（縦中央寄せで shrink しても width 維持） */
       width: 100%;
     }
+    /* スクロールコンテナを list 自体に統一（SP/PC とも）。
+       overflow-x: auto は「子合計幅 > 親幅」のときだけスクロールバーが出る挙動。 */
     .works__list {
       flex-direction: row;
       flex-wrap: nowrap;
       gap: 2rem;
       will-change: transform;
+      scroll-behavior: auto;
+      justify-content: safe center;
     }
     /* Gotcha: Astro scoped CSS は別 component (WorkCard.astro) の DOM 要素に
        data-astro-cid を継承しないため、子セレクタ `.works__list > *` が WorkCard の
-       <article class="pf-card"> に当たらない。:global() で scope を抜けて直接当てる。
-       これを忘れると width 指定が当たらず flex item が default で縮み、
-       scrollWidth ≈ clientWidth で totalScroll ≈ 0 → 横スクが効かない。
-       clamp 化で中域も滑らかに（下限 280 / 中域 60vw / 上限 560）。 */
+       <article class="pf-card"> に当たらない。:global() で scope を抜けて直接当てる。 */
     .works__list > :global(.pf-card) {
       flex: 0 0 auto;
       width: clamp(196px, 42vw, 392px);
-      /* flex shrink 防止の念押し（flex 指定だけで効くが Safari 等で稀に override される保険） */
+      min-width: clamp(196px, 42vw, 392px);
+    }
+  }
+
+  /* SP / タブレット (< 768px): 横並び + 横スク。
+     カードサイズ感は PC と同じ clamp で旧仕様準拠。 */
+  @media (max-width: 767px) {
+    .works {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .works__inner--intro {
+      padding-inline: 1.5rem;
+    }
+    .works__list {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 1.5rem;
+      padding-inline: 1.5rem;
+      padding-block: 0.25rem;
+      scroll-behavior: auto;
+    }
+    .works__list > :global(.pf-card) {
+      flex: 0 0 auto;
+      width: clamp(196px, 42vw, 392px);
       min-width: clamp(196px, 42vw, 392px);
     }
   }
@@ -156,4 +188,6 @@ import { works } from '../../data/works';
   // What: PF カード「詳細」ボタン押下で <dialog> を開閉する制御スクリプト。
   // Why: Works.astro スコープで 1 度だけ読み込むことで、他ページのバンドルを膨らませない。
   import '../../scripts/pf-modal';
+  // What: 横スクロール帯上での wheel 縦→横変換とマウスドラッグスクロール。
+  import '../../scripts/horizontal-wheel-drag';
 </script>

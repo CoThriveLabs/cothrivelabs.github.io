@@ -11,21 +11,34 @@ const CARD_Y_PX = 200;
 const CARD_X_PX = -80;
 const CARD_ROT_DEG = -15;
 const CARD_SCALE = 0.8;
+const SLIDE_X_PX = 120;
+const SLIDE_X_DURATION_S = 0.8;
 
-type Entry = { el: HTMLElement; isCard: boolean };
+type RevealKind = 'text' | 'card' | 'slide-x';
+type Entry = { el: HTMLElement; kind: RevealKind };
 
-function isCardEl(el: HTMLElement): boolean {
-  return el.classList.contains('member-card') || el.dataset.reveal === 'card';
+function getKind(el: HTMLElement): RevealKind {
+  if (el.dataset.reveal === 'slide-x') return 'slide-x';
+  if (el.classList.contains('member-card') || el.dataset.reveal === 'card') return 'card';
+  return 'text';
 }
 
-function setInitialState(el: HTMLElement, isCard: boolean) {
-  if (isCard) {
+function setInitialState(el: HTMLElement, kind: RevealKind) {
+  if (kind === 'card') {
     gsap.set(el, {
       opacity: 0,
       y: CARD_Y_PX,
       x: CARD_X_PX,
       rotation: CARD_ROT_DEG,
       scale: CARD_SCALE,
+    });
+  } else if (kind === 'slide-x') {
+    gsap.set(el, {
+      opacity: 0,
+      x: SLIDE_X_PX,
+      y: 0,
+      rotation: 0,
+      scale: 1,
     });
   } else {
     gsap.set(el, {
@@ -48,8 +61,8 @@ function setVisibleState(el: HTMLElement) {
   });
 }
 
-function playReveal(el: HTMLElement, isCard: boolean) {
-  if (isCard) {
+function playReveal(el: HTMLElement, kind: RevealKind) {
+  if (kind === 'card') {
     gsap.to(el, {
       opacity: 1,
       x: 0,
@@ -58,6 +71,14 @@ function playReveal(el: HTMLElement, isCard: boolean) {
       scale: 1,
       duration: CARD_DURATION_S,
       ease: 'back.out(2.2)',
+      overwrite: true,
+    });
+  } else if (kind === 'slide-x') {
+    gsap.to(el, {
+      opacity: 1,
+      x: 0,
+      duration: SLIDE_X_DURATION_S,
+      ease: 'power3.out',
       overwrite: true,
     });
   } else {
@@ -96,12 +117,12 @@ function setup() {
       if (!revealEls.length) return;
 
       const entries: Entry[] = revealEls.map((el) => {
-        const isCard = isCardEl(el);
+        const kind = getKind(el);
         pinnedReveals.add(el);
-        return { el, isCard };
+        return { el, kind };
       });
 
-      entries.forEach(({ el, isCard }) => setInitialState(el, isCard));
+      entries.forEach(({ el, kind }) => setInitialState(el, kind));
 
       const total = entries.length;
       const sectionStep = Number(section.dataset.stepDistance) || STEP_DISTANCE_PX;
@@ -129,13 +150,13 @@ function setup() {
         onUpdate: (self) => {
           const p = self.progress;
 
-          entries.forEach(({ el, isCard }, i) => {
+          entries.forEach(({ el, kind }, i) => {
             if (!shown[i] && p >= thresholds[i]) {
               shown[i] = true;
-              playReveal(el, isCard);
+              playReveal(el, kind);
             } else if (shown[i] && p < thresholds[i] - 0.01) {
               shown[i] = false;
-              setInitialState(el, isCard);
+              setInitialState(el, kind);
             }
           });
         },
@@ -147,22 +168,19 @@ function setup() {
   const ioTargets = allReveal.filter(
     (el) =>
       !pinnedReveals.has(el) &&
-      !el.closest('.works__scroller') &&
-      !el.closest('.works__intro') &&
-      !el.closest('.devflow') &&
       !el.closest('.techstack') &&
       !el.closest('[data-techstack-overlay]')
   );
 
   if (ioTargets.length) {
-    ioTargets.forEach((el) => setInitialState(el, isCardEl(el)));
+    ioTargets.forEach((el) => setInitialState(el, getKind(el)));
 
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const el = entry.target as HTMLElement;
-            playReveal(el, isCardEl(el));
+            playReveal(el, getKind(el));
             io.unobserve(el);
           }
         });
@@ -176,14 +194,14 @@ function setup() {
   const lateTargets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal-late]'));
 
   if (lateTargets.length) {
-    lateTargets.forEach((el) => setInitialState(el, isCardEl(el)));
+    lateTargets.forEach((el) => setInitialState(el, getKind(el)));
 
     const ioLate = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const el = entry.target as HTMLElement;
-            playReveal(el, isCardEl(el));
+            playReveal(el, getKind(el));
             ioLate.unobserve(el);
           }
         });

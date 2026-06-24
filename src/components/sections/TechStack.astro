@@ -86,17 +86,22 @@ const categories = [
     position: relative;
     z-index: 1;
   }
-  /* layered-pin 内でも見出しは常時 opacity:1 で表示（GSAP set/timeline と二重保険）。 */
+  /* layered-pin 内では heading ラッパは常時表示。
+     内部 [data-reveal]（title / lead）は GSAP timeline で個別に scrub フェードインさせるため、
+     ここでは強制 opacity を当てない。SP / reduced-motion 時のみ強制表示で保護する。 */
   .techstack__heading {
     position: relative;
     z-index: 2;
     margin-bottom: clamp(2rem, 4vw, 3.5rem);
+    opacity: 1;
+    visibility: visible;
   }
-  .techstack__heading,
-  .techstack__heading :global([data-reveal]) {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transform: none !important;
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .techstack__heading :global([data-reveal]) {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
   }
   /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S7 限定で α=0.85 に上書き。
      S7 のみ濃く出して可読性確保（共通コンポは変えない）。 */

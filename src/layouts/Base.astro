@@ -135,14 +135,8 @@ const ogImageURL = Astro.site
     {/* Layered Pinning From Bottom: TechStack→ComingSoon を共通 container に重ね、
         前面パネルを yPercent:-100 で押し出す GSAP 公式パターン。 */}
     <script>import '../scripts/layeredPin.ts';</script>
-    {/* TechStack を pin + pinSpacing:false で固定し、ComingSoon が上から覆い被さる演出。
-        順次出現も同 ScrollTrigger の onUpdate で駆動。 */}
-    <script>import '../scripts/techstackReveal.ts';</script>
     {/* グラデ背景切替。reveal.ts と別ファイル・別 IO instance。 */}
     <script>import '../scripts/bgGradient.ts';</script>
-    {/* 横スク 2 ゾーン。S5 Works=ステップ送り / S6 DevFlow=scrub 連続。
-        768px+ かつ非 reduced-motion のみ pin 発動。SP/reduce は CSS 既定の縦積み。 */}
-    <script>import '../scripts/horizontalZones.ts';</script>
     {/* ちらほら視差装飾。`[data-parallax][data-depth]` を scrub 視差。
         blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止だが blur は維持。 */}
     <script>import '../scripts/parallax.ts';</script>
@@ -244,6 +238,19 @@ const ogImageURL = Astro.site
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* dialog.showModal() は body scroll を止めないため、開いている間は body 自体を固定する。
+     pf-modal / devflow-modal で共通 class を toggle する。 */
+  body.modal-open {
+    overflow: hidden;
+    touch-action: none;
+  }
+  /* iOS Safari の慣性スクロールが背後の html に伝播するのを防ぐ。
+     モーダル内側のスクロールコンテナで明示する。 */
+  .pf-modal__inner,
+  .devflow-modal__inner {
+    overscroll-behavior: contain;
   }
 
   /* 見出しはしっぽり明朝。本文は Zen Kaku Gothic New。 */
@@ -393,6 +400,10 @@ const ogImageURL = Astro.site
   .member-card[data-reveal] {
     transform: translateY(200px) translateX(-80px) rotate(-15deg) scale(0.8);
   }
+  /* 右からスライドイン初期: 画面右側 + フェード */
+  [data-reveal="slide-x"] {
+    transform: translateX(120px);
+  }
 
   /* フォーカス可視（キーボード操作時のみ） */
   a:focus-visible,
@@ -417,6 +428,9 @@ const ogImageURL = Astro.site
     }
     /* card 側の specificity が高いので reduce 時に明示的に打ち消す */
     .member-card[data-reveal] {
+      transform: none;
+    }
+    [data-reveal="slide-x"] {
       transform: none;
     }
     /* reduce 時はコーヒーシミ演出を完全オフ。

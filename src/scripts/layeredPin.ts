@@ -24,13 +24,13 @@ const setup = () => {
       techPanel.querySelectorAll<HTMLElement>('.techstack__cat[data-layered-reveal]')
     );
 
-    const headingReveals = gsap.utils.toArray<HTMLElement>(
-      techPanel.querySelectorAll<HTMLElement>('.techstack__heading, .techstack__heading [data-reveal]')
-    );
+    const headingTitle = techPanel.querySelector<HTMLElement>('.techstack__heading .section-heading__head');
+    const headingLead = techPanel.querySelector<HTMLElement>('.techstack__heading .section-heading__lead');
 
     gsap.set(techPanel, { zIndex: 1, yPercent: 0, autoAlpha: 1 });
     gsap.set(comingPanel, { zIndex: 2, yPercent: 100, autoAlpha: 1 });
-    gsap.set(headingReveals, { autoAlpha: 1, clearProps: 'transform' });
+    if (headingTitle) gsap.set(headingTitle, { autoAlpha: 0, y: 16 });
+    if (headingLead) gsap.set(headingLead, { autoAlpha: 0, y: 16 });
     gsap.set(cats, { autoAlpha: 0, y: 30 });
 
     const tl = gsap.timeline({
@@ -38,7 +38,7 @@ const setup = () => {
         id: 'layered-pin-techstack-comingsoon',
         trigger: container,
         start: 'top top',
-        end: () => `+=${Math.round(window.innerHeight * 2)}`,
+        end: () => `+=${Math.round(window.innerHeight * 3)}`,
         scrub: true,
         pin: true,
         pinSpacing: true,
@@ -48,15 +48,29 @@ const setup = () => {
       },
     });
 
-    if (cats.length > 0) {
-      tl.to(cats, {
-        autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.08, ease: 'power2.out',
+    // 進捗 0.0〜1.0 = 3 viewport 分。1 viewport ≒ 0.333。
+    // 順次発火: title → lead → (1 viewport 空き) → cats stagger → comingPanel
+    if (headingTitle) {
+      tl.to(headingTitle, {
+        autoAlpha: 1, y: 0, duration: 0.06, ease: 'power2.out',
       }, 0);
+    }
+    if (headingLead) {
+      tl.to(headingLead, {
+        autoAlpha: 1, y: 0, duration: 0.06, ease: 'power2.out',
+      }, 0.08);
+    }
+
+    if (cats.length > 0) {
+      // lead 完了(≒0.14) + 1 viewport(0.333) ≒ 0.47 から cats stagger を開始
+      tl.to(cats, {
+        autoAlpha: 1, y: 0, duration: 0.13, stagger: 0.08, ease: 'power2.out',
+      }, 0.47);
     }
 
     tl.to(comingPanel, {
-      yPercent: 0, duration: 0.65, ease: 'none',
-    }, cats.length > 0 ? 0.65 : 0);
+      yPercent: 0, duration: 0.20, ease: 'none',
+    }, cats.length > 0 ? 0.78 : 0);
 
     requestAnimationFrame(() => { ScrollTrigger.refresh(); });
 

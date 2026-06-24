@@ -65,8 +65,7 @@ const websiteJsonLd = {
       {/* コーヒーシミ侵食 overlay 層（position:fixed・z:9999）。
           侵食駆動は reveal.ts の Services pin（STAIN_EXTRA 区間）に統合。 */}
       <div class="coffee-stain" data-coffee-stain aria-hidden="true"></div>
-      {/* works 全体 1 pin 統合 + reveal を timeline tween で scrub 駆動（horizontalZones.ts）。
-          本物の見出し+説明文が pin 中ずっと画面上部に残り、その下でカード帯が右から流れる。 */}
+      {/* Works = 横並びカードリスト（≥1280px 横スクなし／それ未満 overflow-x: auto）、各カード data-reveal="slide-x" で IO 駆動の右からスライドイン演出。 */}
       <Works />
       <DevFlow />
       <div class="layered-pin-container">
