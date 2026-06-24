@@ -145,9 +145,9 @@ import { works } from '../../data/works';
        clamp 化で中域も滑らかに（下限 280 / 中域 60vw / 上限 560）。 */
     .works__list > :global(.pf-card) {
       flex: 0 0 auto;
-      width: clamp(280px, 60vw, 560px);
+      width: clamp(196px, 42vw, 392px);
       /* flex shrink 防止の念押し（flex 指定だけで効くが Safari 等で稀に override される保険） */
-      min-width: clamp(280px, 60vw, 560px);
+      min-width: clamp(196px, 42vw, 392px);
     }
   }
 </style>
