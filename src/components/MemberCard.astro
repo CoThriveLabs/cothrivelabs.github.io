@@ -52,7 +52,7 @@ const { name, role, tagline, color, image } = Astro.props;
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
     /* Gotcha: overflow: hidden/clip は preserve-3d を flatten し、子の translateZ が無効化される。
-       角丸 clip が必要な avatar は要素単体で overflow:hidden + border-radius:50% を持つので影響なし。 */
+       角丸 clip が必要な avatar は要素単体で overflow:hidden + border-radius を持つので影響なし。 */
     transition: box-shadow 0.3s var(--ease);
     transform-style: preserve-3d;
     will-change: transform;

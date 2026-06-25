@@ -101,6 +101,23 @@ const services = [
     .stain-sentinel {
       height: 400px;
     }
+    /* SP は明示的に 2 列固定（auto-fit の minmax 260px だと 1 列になる） */
+    .services__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+    /* SP 2 列化でカード幅が狭くなるため、内部要素を 0.9 倍に圧縮して窮屈感を和らげる。 */
+    .services__item {
+      padding: 0.99rem 0.9rem;
+    }
+    .services__title {
+      font-size: 0.9rem;
+      margin-bottom: 0.54rem;
+    }
+    .services__body {
+      font-size: 0.945rem;
+      line-height: 1.7;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .stain-sentinel {

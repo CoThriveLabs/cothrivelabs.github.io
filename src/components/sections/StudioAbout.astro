@@ -68,4 +68,10 @@ import Decor from '../Decor.astro';
       margin-top: -50vh;
     }
   }
+  /* SP 専用: 見出し天井余白を S3 (Members) と揃える。PC 値は触らない */
+  @media (max-width: 767px) {
+    .studio-about {
+      padding-top: calc(var(--space-base) * 0.6);
+    }
+  }
 </style>

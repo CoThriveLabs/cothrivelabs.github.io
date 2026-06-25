@@ -282,7 +282,7 @@ const steps = devflowSteps.map((s) => ({
   .devflow__body {
     margin: 0;
     font-family: var(--font-body);
-    font-size: 1.235rem;
+    font-size: 1.05rem;
     line-height: 1.8;
     color: rgba(58, 50, 48, 0.85);
   }
@@ -297,7 +297,7 @@ const steps = devflowSteps.map((s) => ({
 
   .devflow__epilog-heading {
     font-family: var(--font-head);
-    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+    font-size: 1.235rem;
     font-weight: 600;
     color: var(--c-main);
     margin: 0 0 0.75rem;
@@ -307,7 +307,7 @@ const steps = devflowSteps.map((s) => ({
   .devflow__epilog-lead,
   .devflow__epilog-summary {
     font-family: var(--font-body);
-    font-size: 1.235rem;
+    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
     color: rgba(58, 50, 48, 0.85);
     line-height: 1.85;
     margin: 0 0 1rem;
@@ -371,6 +371,11 @@ const steps = devflowSteps.map((s) => ({
   }
 
   @media (max-width: 767px) {
+    /* aside 上余白: カードリストの「詳細を見る」と「運用の前提」見出しの視覚分離を確保 */
+    .devflow__epilog {
+      margin-top: 3rem;
+    }
+
     .devflow__matrix {
       border-radius: var(--radius);
     }
@@ -548,7 +553,7 @@ const steps = devflowSteps.map((s) => ({
     z-index: 2;
     background: var(--c-paper);
     border: 1px solid var(--c-border);
-    border-radius: 999px;
+    border-radius: var(--radius);
     width: 36px;
     height: 36px;
     display: inline-flex;

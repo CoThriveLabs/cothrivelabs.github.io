@@ -159,7 +159,7 @@ import { works } from '../../data/works';
   }
 
   /* SP / タブレット (< 768px): 横並び + 横スク。
-     カードサイズ感は PC と同じ clamp で旧仕様準拠。 */
+     カードサイズは PC と同値（SP で過度に縮小するとカード内テキストが圧迫されるため）。 */
   @media (max-width: 767px) {
     .works {
       padding-left: 0;

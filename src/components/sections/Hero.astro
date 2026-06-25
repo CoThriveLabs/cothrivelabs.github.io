@@ -171,7 +171,7 @@ import HeroLogo from './HeroLogo.astro';
     width: 22px;
     height: 36px;
     border: 1.5px solid var(--c-main-mute);
-    border-radius: 999px;
+    border-radius: var(--radius);
     display: flex;
     justify-content: center;
     padding-top: 7px;
@@ -180,7 +180,7 @@ import HeroLogo from './HeroLogo.astro';
     width: 3px;
     height: 8px;
     background: var(--c-main-soft);
-    border-radius: 999px;
+    border-radius: var(--radius);
     animation: hero-scroll 1.8s var(--ease) infinite;
   }
   @keyframes hero-scroll {

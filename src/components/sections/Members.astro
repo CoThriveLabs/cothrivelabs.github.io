@@ -80,6 +80,27 @@ const members = [
     .members {
       margin-top: 50vh;
     }
+    /* SP 2 列化でカード幅が狭くなるため、MemberCard 内要素を 0.9 倍に圧縮。
+       :global で別 component のスコープを抜けて MemberCard の DOM に直接当てる。 */
+    .members :global(.member-card__tilt) {
+      padding: 1.8rem 1.35rem 1.575rem;
+    }
+    .members :global(.member-card__avatar) {
+      width: 108px;
+      height: 108px;
+      margin-bottom: 1.35rem;
+    }
+    .members :global(.member-card__name) {
+      font-size: 1.53rem;
+      margin-bottom: 0.405rem;
+    }
+    .members :global(.member-card__role) {
+      font-size: 1.035rem;
+      margin-bottom: 1.125rem;
+    }
+    .members :global(.member-card__tagline) {
+      font-size: 1.1115rem;
+    }
   }
   /* Members だけグランドコンテナ（--max-w: 1120px）より広い 1500px に拡張（2026-06-21 あめさん FB）。
      PC 1920px viewport の左右余白を使い切り、5列×2:3 カードを十分な幅で見せる。
@@ -95,8 +116,8 @@ const members = [
      1024px で 5 列だとカード 172px で窮屈、1280 から 5 列にする（さき判断）。 */
   .members__grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
   }
   @media (min-width: 480px) {
     .members__grid {

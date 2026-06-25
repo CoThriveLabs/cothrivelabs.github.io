@@ -274,7 +274,7 @@ const titleId = `${modalId}-title`;
     font-weight: 600;
     letter-spacing: 0.04em;
     padding: 0.15rem 0.55rem;
-    border-radius: 999px;
+    border-radius: var(--radius);
     background: var(--c-paper-deep);
     border: 1px solid var(--c-border);
     color: var(--c-main-mute);
@@ -305,7 +305,7 @@ const titleId = `${modalId}-title`;
     font-family: var(--font-body);
     font-size: 0.72rem;
     padding: 0.2rem 0.65rem;
-    border-radius: 999px;
+    border-radius: var(--radius);
     background: var(--c-paper-deep);
     border: 1px solid var(--c-border);
     color: var(--c-main-mute);
@@ -326,7 +326,7 @@ const titleId = `${modalId}-title`;
     justify-content: center;
     gap: 0.4rem;
     padding: 0.55rem 1.15rem;
-    border-radius: 999px;
+    border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;
@@ -379,6 +379,14 @@ const titleId = `${modalId}-title`;
   @media (max-width: 480px) {
     .pf-card__footer { flex-direction: column; }
     .pf-card__btn { width: 100%; }
+
+    .pf-card__challenge {
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .pf-card__challenge-label {
+      align-self: flex-start;
+    }
   }
 
   /* reduce-motion: hover の transform / scale を停止 */
@@ -482,7 +490,7 @@ const titleId = `${modalId}-title`;
   .pf-modal__close {
     background: transparent;
     border: 1px solid var(--c-border);
-    border-radius: 999px;
+    border-radius: var(--radius);
     width: 36px;
     height: 36px;
     display: inline-flex;
@@ -620,7 +628,7 @@ const titleId = `${modalId}-title`;
     align-items: center;
     gap: 0.4rem;
     padding: 0.55rem 1.15rem;
-    border-radius: 999px;
+    border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 600;
     text-decoration: none;

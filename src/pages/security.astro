@@ -4,12 +4,12 @@ import LegalPage from '../components/legal/LegalPage.astro';
 
 const pageTitle = 'セキュリティポリシー | Co-Thrive Labs';
 const pageDescription =
-  'Co-Thrive Labs（運営者: 倉西 斗夢）の情報セキュリティに関する基本方針と、OWASP Top 10 への対応・脆弱性報告窓口を定めるセキュリティポリシーです。';
+  'Co-Thrive Labs（運営者: 倉西斗夢（あめまみれ））の情報セキュリティに関する基本方針と、OWASP Top 10:2021 への対応・脆弱性報告窓口を定めるセキュリティポリシーです。';
 
 const meta = [
   { label: '対象サービス', value: 'cothrivelabs.com' },
   { label: '屋号', value: 'Co-Thrive Labs' },
-  { label: '運営者', value: '倉西 斗夢（個人事業主）' },
+  { label: '運営者', value: '倉西斗夢（あめまみれ）' },
   { label: '一般お問い合わせ', value: 'contact@cothrivelabs.com', href: 'mailto:contact@cothrivelabs.com' },
   { label: '脆弱性報告', value: 'contact@cothrivelabs.com（件名 [Security]）', href: 'mailto:contact@cothrivelabs.com?subject=%5BSecurity%5D' },
   { label: '制定日', value: '2026 年 6 月 30 日' },
@@ -19,18 +19,18 @@ const meta = [
 <Base title={pageTitle} description={pageDescription}>
   <LegalPage
     heading="セキュリティポリシー"
-    lead="情報資産の機密性・完全性・可用性を確保するため、Co-Thrive Labs の情報セキュリティに関する基本方針を定めます。"
+    lead="情報資産の機密性・完全性の確保に努めるため、Co-Thrive Labs の情報セキュリティに関する基本方針を定めます。"
     meta={meta}
   >
-    <p>Co-Thrive Labs（運営者: 倉西 斗夢。以下「当方」）は、当方が運営するウェブサイト cothrivelabs.com（以下「本サイト」）および受託業務の遂行において、利用者および顧客の情報資産を保護するため、以下のセキュリティポリシー（以下「本ポリシー」）を定めます。</p>
+    <p>Co-Thrive Labs（運営者: 倉西斗夢（あめまみれ）。以下「当方」）は、当方が運営するウェブサイト cothrivelabs.com（以下「本サイト」）および受託業務の遂行において、利用者および顧客の情報資産を保護するため、以下のセキュリティポリシー（以下「本ポリシー」）を定めます。</p>
 
     <h2>第 1 条（基本方針）</h2>
-    <p>当方は、情報資産の機密性、完全性、可用性を確保することを情報セキュリティの基本方針とし、関連法令・ガイドラインを遵守するとともに、継続的な改善に努めます。</p>
+    <p>当方は、情報資産の機密性、完全性の確保に努めることを情報セキュリティの基本方針とし、関連法令・ガイドラインを遵守するとともに、継続的な改善に努めます。</p>
     <p>参照する主なガイドライン:</p>
     <ul>
       <li>個人情報の保護に関する法律および個人情報保護委員会ガイドライン</li>
       <li>IPA「中小企業の情報セキュリティ対策ガイドライン」</li>
-      <li>OWASP Top 10（Web アプリケーションセキュリティの代表的リスク）</li>
+      <li><strong>OWASP Top 10:2021</strong>（Web アプリケーションセキュリティの代表的リスク）</li>
     </ul>
 
     <h2>第 2 条（対象範囲）</h2>
@@ -41,8 +41,8 @@ const meta = [
       <li>当方が業務遂行に用いるデバイス、アカウントおよびソフトウェア</li>
     </ol>
 
-    <h2>第 3 条（OWASP Top 10 への対応方針）</h2>
-    <p>当方は、本サイトおよび開発する Web アプリケーションについて、OWASP Top 10 に挙げられる代表的なリスクへの対応を行います。具体的な対応方針は以下のとおりです。</p>
+    <h2>第 3 条（OWASP Top 10:2021 への対応方針）</h2>
+    <p>当方は、本サイトおよび開発する Web アプリケーションについて、OWASP Top 10:2021 に挙げられる代表的なリスクへの対応を行います。具体的な対応方針は以下のとおりです。</p>
     <div class="legal-table-wrap">
       <table class="legal-table">
         <thead>
@@ -57,40 +57,40 @@ const meta = [
             <td>管理画面・認証必須リソースへの最小権限アクセス。サーバ側での認可確認</td>
           </tr>
           <tr>
-            <th>A02 セキュリティ設定の不備</th>
-            <td>フレームワーク既定の安全設定維持、不要機能・サンプルファイルの削除、エラーメッセージの最小開示</td>
-          </tr>
-          <tr>
-            <th>A03 サプライチェーン障害</th>
-            <td>依存パッケージの定期的なバージョン管理、脆弱性スキャン、信頼できる配布元のみ使用</td>
-          </tr>
-          <tr>
-            <th>A04 暗号化の失敗</th>
+            <th>A02 暗号化の失敗</th>
             <td>TLS 1.2 以上による通信暗号化、機微情報のハッシュ化・暗号化保管</td>
           </tr>
           <tr>
-            <th>A05 インジェクション</th>
+            <th>A03 インジェクション</th>
             <td>プリペアドステートメント・パラメータバインディング使用、入力値の検証・サニタイズ</td>
           </tr>
           <tr>
-            <th>A06 安全でない設計</th>
+            <th>A04 安全でない設計</th>
             <td>脅威モデリングを意識した設計、最小権限の原則、機微情報の不要な保持回避</td>
           </tr>
           <tr>
-            <th>A07 認証失敗</th>
+            <th>A05 セキュリティ設定の不備</th>
+            <td>フレームワーク既定の安全設定維持、不要機能・サンプルファイルの削除、エラーメッセージの最小開示</td>
+          </tr>
+          <tr>
+            <th>A06 脆弱で古くなったコンポーネント</th>
+            <td>依存パッケージの定期的なバージョン管理、脆弱性スキャン、信頼できる配布元のみ使用</td>
+          </tr>
+          <tr>
+            <th>A07 識別と認証の失敗</th>
             <td>強固なパスワードポリシー、多要素認証の活用、セッション管理の適正化</td>
           </tr>
           <tr>
-            <th>A08 ソフトウェア・データ整合性の失敗</th>
+            <th>A08 ソフトウェアとデータの整合性の不具合</th>
             <td>署名付きパッケージの利用、CI/CD パイプラインの保護、デプロイ成果物の検証</td>
           </tr>
           <tr>
-            <th>A09 ログ・監視の不備</th>
+            <th>A09 セキュリティログとモニタリングの失敗</th>
             <td>アクセスログ・エラーログの取得と適切な保管、異常検知時のアラート</td>
           </tr>
           <tr>
-            <th>A10 例外処理の不備</th>
-            <td>グローバル例外ハンドラの実装、エラー時の安全な失敗、機微情報の漏洩防止</td>
+            <th>A10 サーバーサイドリクエストフォージェリ（SSRF）</th>
+            <td>外部リソース取得時の URL 検証・許可リスト制御、内部ネットワークへの到達抑止、エラー時の安全な失敗</td>
           </tr>
         </tbody>
       </table>
@@ -127,7 +127,7 @@ const meta = [
     <p>本ポリシーに関するお問い合わせは、以下までご連絡ください。</p>
     <ul>
       <li>屋号: Co-Thrive Labs</li>
-      <li>運営者: 倉西 斗夢（個人事業主）</li>
+      <li>運営者: 倉西斗夢（あめまみれ）</li>
       <li>一般お問い合わせ: <a href="mailto:contact@cothrivelabs.com">contact@cothrivelabs.com</a></li>
       <li>脆弱性報告: <a href="mailto:contact@cothrivelabs.com?subject=%5BSecurity%5D">contact@cothrivelabs.com</a>（件名に [Security] を添えてください）</li>
     </ul>
