@@ -375,11 +375,8 @@ const titleId = `${modalId}-title`;
     outline-offset: 3px;
   }
 
-  /* SP */
-  @media (max-width: 480px) {
-    .pf-card__footer { flex-direction: column; }
-    .pf-card__btn { width: 100%; }
-
+  /* SP 全域: 課題タグは label と文章を縦並び（横並びだとカード幅が狭いと窮屈） */
+  @media (max-width: 767px) {
     .pf-card__challenge {
       flex-direction: column;
       gap: 0.3rem;
@@ -387,6 +384,11 @@ const titleId = `${modalId}-title`;
     .pf-card__challenge-label {
       align-self: flex-start;
     }
+  }
+  /* SP（狭幅）: フッターのボタンも縦並び・幅100% */
+  @media (max-width: 480px) {
+    .pf-card__footer { flex-direction: column; }
+    .pf-card__btn { width: 100%; }
   }
 
   /* reduce-motion: hover の transform / scale を停止 */

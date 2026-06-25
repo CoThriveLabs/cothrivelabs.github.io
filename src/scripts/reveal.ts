@@ -13,12 +13,23 @@ const CARD_ROT_DEG = -15;
 const CARD_SCALE = 0.8;
 const SLIDE_X_PX = 120;
 const SLIDE_X_DURATION_S = 0.8;
+const POP_SOFT_DURATION_S = 0.55;
+const POP_SOFT_Y_PX = 80;
+const POP_SOFT_X_PX = -30;
+const POP_SOFT_ROT_DEG = -6;
+const POP_SOFT_SCALE = 0.85;
+const PAPER_DURATION_S = 0.7;
+const PAPER_Y_PX = -30;
+const PAPER_ROT_DEG = 1.5;
+const PAPER_SCALE = 0.95;
 
-type RevealKind = 'text' | 'card' | 'slide-x';
+type RevealKind = 'text' | 'card' | 'slide-x' | 'pop-soft' | 'paper';
 type Entry = { el: HTMLElement; kind: RevealKind };
 
 function getKind(el: HTMLElement): RevealKind {
   if (el.dataset.reveal === 'slide-x') return 'slide-x';
+  if (el.dataset.reveal === 'pop-soft') return 'pop-soft';
+  if (el.dataset.reveal === 'paper') return 'paper';
   if (el.classList.contains('member-card') || el.dataset.reveal === 'card') return 'card';
   return 'text';
 }
@@ -39,6 +50,24 @@ function setInitialState(el: HTMLElement, kind: RevealKind) {
       y: 0,
       rotation: 0,
       scale: 1,
+    });
+  } else if (kind === 'pop-soft') {
+    // 立ち絵がぽんと飛び込む初期状態
+    gsap.set(el, {
+      opacity: 0,
+      y: POP_SOFT_Y_PX,
+      x: POP_SOFT_X_PX,
+      rotation: POP_SOFT_ROT_DEG,
+      scale: POP_SOFT_SCALE,
+    });
+  } else if (kind === 'paper') {
+    // 紙レイヤがぺたっと貼り付く初期状態
+    gsap.set(el, {
+      opacity: 0,
+      y: PAPER_Y_PX,
+      x: 0,
+      rotation: PAPER_ROT_DEG,
+      scale: PAPER_SCALE,
     });
   } else {
     gsap.set(el, {
@@ -79,6 +108,27 @@ function playReveal(el: HTMLElement, kind: RevealKind) {
       x: 0,
       duration: SLIDE_X_DURATION_S,
       ease: 'power3.out',
+      overwrite: true,
+    });
+  } else if (kind === 'pop-soft') {
+    gsap.to(el, {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      rotation: 0,
+      scale: 1,
+      duration: POP_SOFT_DURATION_S,
+      ease: 'back.out(1.6)',
+      overwrite: true,
+    });
+  } else if (kind === 'paper') {
+    gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      rotation: 0,
+      scale: 1,
+      duration: PAPER_DURATION_S,
+      ease: 'back.out(1.4)',
       overwrite: true,
     });
   } else {

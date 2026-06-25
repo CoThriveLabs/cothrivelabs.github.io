@@ -3,7 +3,6 @@
 // テキストは D7 適合・W1 統一（メンバー表記、人数は文言化しない）。
 import SectionHeading from '../SectionHeading.astro';
 import MemberCard from '../MemberCard.astro';
-import Decor from '../Decor.astro';
 
 const members = [
   {
@@ -44,9 +43,6 @@ const members = [
 ];
 ---
 <section class="members" id="members" data-bg="paper-warm" data-step-section>
-  {/* F4-e ちらほら視差装飾（設計書 §5.8 / タスク G）。
-      pin セクション内では noReveal で reveal.ts 管理外（順次出現カウントに装飾を混ぜない）。 */}
-  <Decor char="mituru" depth="front" corner="top-right" noReveal />
   <div class="members__inner">
     <SectionHeading
       title="メンバー紹介"
