@@ -3,11 +3,14 @@
 // C-DEEP 背景。各技術の公式配布ロゴ（simple-icons・CC0）をインライン SVG で表示。
 // SVG は currentColor 塗りで、item ごとのブランドカラーを CSS color で当てる。
 import SectionHeading from '../SectionHeading.astro';
-import Decor from '../Decor.astro';
 import astroLogo from '../../assets/tech-logos/astro.svg?raw';
+import nextjsLogo from '../../assets/tech-logos/nextdotjs.svg?raw';
+import typescriptLogo from '../../assets/tech-logos/typescript.svg?raw';
 import html5Logo from '../../assets/tech-logos/html5.svg?raw';
+import supabaseLogo from '../../assets/tech-logos/supabase.svg?raw';
 import cfWorkersLogo from '../../assets/tech-logos/cloudflareworkers.svg?raw';
 import fastapiLogo from '../../assets/tech-logos/fastapi.svg?raw';
+import vercelLogo from '../../assets/tech-logos/vercel.svg?raw';
 import claudeLogo from '../../assets/tech-logos/claude.svg?raw';
 import wordpressLogo from '../../assets/tech-logos/wordpress.svg?raw';
 
@@ -16,14 +19,18 @@ const categories = [
     name: 'フロントエンド',
     items: [
       { name: 'Astro', use: 'サイト・LP の土台。このサイトも Astro 製。', logo: astroLogo, color: '#BC52EE' },
+      { name: 'Next.js', use: '動的な Web アプリの土台。ぎじろっとで本番投入。', logo: nextjsLogo, color: '#000000' },
+      { name: 'TypeScript', use: '型でバグを早期発見。実装の安心感に。', logo: typescriptLogo, color: '#3178C6' },
       { name: 'HTML / CSS / JS', use: '素の Web 標準で軽く堅く作る。', logo: html5Logo, color: '#E34F26' },
     ],
   },
   {
     name: 'バックエンド・インフラ',
     items: [
-      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。', logo: cfWorkersLogo, color: '#F38020' },
+      { name: 'Supabase', use: 'DB・認証・ストレージをまとめて無料枠で。', logo: supabaseLogo, color: '#3FCF8E' },
       { name: 'FastAPI / SQLite', use: 'Sprout のような小さな API + DB。', logo: fastapiLogo, color: '#009688' },
+      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。', logo: cfWorkersLogo, color: '#F38020' },
+      { name: 'Vercel', use: 'Next.js の本番運用先。Preview URL も自動。', logo: vercelLogo, color: '#000000' },
     ],
   },
   {
@@ -37,7 +44,11 @@ const categories = [
 ---
 {/* PaperBg 駆動は section 自身の data-bg。 */}
 <section class="techstack" id="techstack" data-bg="paper">
-  <Decor char="saki" depth="back" corner="bottom-right" />
+  <div class="techstack__grains" aria-hidden="true">
+    <div class="techstack__grain techstack__grain--1"></div>
+    <div class="techstack__grain techstack__grain--2"></div>
+    <div class="techstack__grain techstack__grain--3"></div>
+  </div>
   <div class="techstack__inner">
     <div class="techstack__heading">
       <SectionHeading
@@ -78,6 +89,53 @@ const categories = [
     background-color: var(--c-coffee-stain-soft);
     background-image: var(--paper-noise-url);
     background-repeat: repeat;
+  }
+  .techstack__grains {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .techstack__grain {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(94, 64, 50, 0.10);
+    pointer-events: none;
+  }
+  .techstack__grain--1 {
+    top: 22%;
+    left: 8%;
+    width: 440px;
+    height: 440px;
+    animation: grain-float 7s ease-in-out infinite;
+  }
+  .techstack__grain--2 {
+    top: 48%;
+    left: 62%;
+    width: 520px;
+    height: 520px;
+    animation: grain-float 8.5s ease-in-out infinite -2.5s;
+  }
+  .techstack__grain--3 {
+    top: 68%;
+    left: 35%;
+    width: 360px;
+    height: 360px;
+    animation: grain-float 6.5s ease-in-out infinite -4s;
+  }
+  @keyframes grain-float {
+    0%, 100% { transform: translateY(0); }
+    50%     { transform: translateY(-8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .techstack__grain { animation: none; }
+  }
+  @media (max-width: 767px) {
+    .techstack__grain--1 { width: 220px; height: 220px; }
+    .techstack__grain--2 { width: 260px; height: 260px; }
+    .techstack__grain--3 { width: 180px; height: 180px; }
   }
   .techstack__inner {
     width: 100%;

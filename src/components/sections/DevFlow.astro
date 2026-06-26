@@ -1,6 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import SectionHeading from '../SectionHeading.astro';
 import { devflowSteps } from '../../data/devflow';
+import mituruFloating from '../../assets/decor/mituru-froating.png';
+import sakiFloating from '../../assets/decor/saki-froating.png';
 
 // What: カード表示は既存の no/title/who/body をそのまま出す。新規データ層に集約しつつ表示文言は不変。
 const steps = devflowSteps.map((s) => ({
@@ -20,6 +23,11 @@ const steps = devflowSteps.map((s) => ({
 ---
 
 <section class="devflow" id="devflow" data-bg="paper-deep" data-step-section>
+  <div class="devflow__grains" aria-hidden="true">
+    <div class="devflow__grain devflow__grain--1"></div>
+    <div class="devflow__grain devflow__grain--2"></div>
+    <div class="devflow__grain devflow__grain--3"></div>
+  </div>
   <div class="devflow__pin">
     <div class="devflow__inner">
       <SectionHeading title="開発フロー" lead="案件は6つの段を通します。テストは省略しない決まりです。" />
@@ -54,9 +62,15 @@ const steps = devflowSteps.map((s) => ({
   </div>
 
   <aside class="devflow__epilog" data-reveal-late data-bg="paper-deep">
-    <h3 class="devflow__epilog-heading">運用の前提 — 人が判断する部分・AI で自動化する部分・人と AI で協力する部分</h3>
+    <Image src={mituruFloating} alt="" class="devflow__floater devflow__floater--mituru" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
+    <Image src={sakiFloating} alt="" class="devflow__floater devflow__floater--saki" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
+    <h3 class="devflow__epilog-heading">運用の責任</h3>
+
     <p class="devflow__epilog-lead">
-      AI に書かせて終わり、ではありません。出力されたコードは必ず人が読み、設計書と仕様書に照らして採否を決めます。こすらぼでは、開発工程を以下の三分割で運用しています。
+      こすらぼでは、人・AI・協働、それぞれの役割分担を明確にしています。
+    </p>
+    <p class="devflow__epilog-lead">
+      AI に書かせて終わり、ではありません。出力されたコードは必ず人が読み、設計書や仕様書に照らして採否を判断します。
     </p>
 
     <table class="devflow__matrix">
@@ -81,10 +95,6 @@ const steps = devflowSteps.map((s) => ({
         </tr>
       </tbody>
     </table>
-
-    <p class="devflow__epilog-summary">
-      自動化していい部分と、人が判断する部分を分けて運用する。これが、こすらぼが「どう動くチームか」の前提です。AI を活用するからこそ、責任の所在を曖昧にしないことを大切にしています。
-    </p>
   </aside>
 
   {devflowSteps.map((s) => (
@@ -128,7 +138,54 @@ const steps = devflowSteps.map((s) => ({
     padding: 0 1.5rem calc(var(--space-base) * 0.6);
   }
 
+  /* セクション背景に散らすコーヒー粒。pin/epilog 等の content より背面（z:0） */
+  .devflow__grains {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* 3 つの粒は div 化 + border-radius:50% で確実に円に。floater より長周期・小振幅 */
+  .devflow__grain {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(94, 64, 50, 0.10);
+    pointer-events: none;
+  }
+  .devflow__grain--1 {
+    top: 25%;
+    left: 8%;
+    width: 400px;
+    height: 400px;
+    animation: grain-float 7s ease-in-out infinite;
+  }
+  .devflow__grain--2 {
+    top: 45%;
+    left: 65%;
+    width: 520px;
+    height: 520px;
+    animation: grain-float 8.5s ease-in-out infinite -2.5s;
+  }
+  .devflow__grain--3 {
+    top: 65%;
+    left: 35%;
+    width: 360px;
+    height: 360px;
+    animation: grain-float 6.5s ease-in-out infinite -4s;
+  }
+  @keyframes grain-float {
+    0%, 100% { transform: translateY(0); }
+    50%     { transform: translateY(-8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .devflow__grain { animation: none; }
+  }
+
   .devflow__pin {
+    position: relative;
+    z-index: 1;
     padding: calc(var(--space-snug) * 0.6) 0 0;
   }
 
@@ -287,44 +344,76 @@ const steps = devflowSteps.map((s) => ({
     color: rgba(58, 50, 48, 0.85);
   }
 
+  /* 紙レイヤ化: 半透明 paper + blur + 影 */
   .devflow__epilog {
     position: relative;
     z-index: 10000;
     max-width: 760px;
-    margin: 0.33rem auto clamp(6rem, 18vh, 12rem);
-    padding: 0 1.5rem;
+    margin: var(--space-snug) auto clamp(6rem, 18vh, 12rem);
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3.5vw, 4rem);
+    /* color-mix 未対応ブラウザ向けフォールバック */
+    background: rgba(255, 251, 243, 0.65);
+    background: color-mix(in srgb, var(--c-paper) 65%, transparent);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 50px rgba(70, 55, 40, 0.06);
+  }
+
+  /* epilog の左上 / 右下からはみ出すキャラ装飾。reveal 管理外で常時ふわふわ */
+  .devflow__floater {
+    position: absolute;
+    width: 200px;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+    opacity: 0.95;
+    animation: devflow-float 4.5s ease-in-out infinite;
+  }
+  .devflow__floater--mituru {
+    top: calc(-1 * clamp(4rem, 10vh, 8rem));
+    left: calc(-1 * clamp(10rem, 18vw, 20rem));
+  }
+  .devflow__floater--saki {
+    bottom: calc(-1 * clamp(4rem, 10vh, 8rem));
+    right: calc(-1 * clamp(10rem, 18vw, 20rem));
+    animation-delay: -1.5s;
+  }
+  @keyframes devflow-float {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50%     { transform: translateY(-12px) rotate(1deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .devflow__floater { animation: none; transform: none; }
   }
 
   .devflow__epilog-heading {
     font-family: var(--font-head);
-    font-size: 1.235rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--c-main);
-    margin: 0 0 0.75rem;
-    line-height: 1.6;
+    margin: 0 0 0.4rem;
+    line-height: 1.4;
   }
 
-  .devflow__epilog-lead,
-  .devflow__epilog-summary {
+  .devflow__epilog-lead {
     font-family: var(--font-body);
     font-size: clamp(1.05rem, 1.8vw, 1.25rem);
     color: rgba(58, 50, 48, 0.85);
-    line-height: 1.85;
-    margin: 0 0 1rem;
-  }
-
-  .devflow__epilog-summary {
-    margin-bottom: 0;
+    line-height: 2.1;
+    margin: 0 0 1.25rem;
   }
 
   .devflow__matrix {
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0 1.5rem;
-    background: color-mix(in srgb, var(--c-paper) 70%, transparent);
+    background: var(--c-paper);
     border: 1px solid var(--c-border);
     border-radius: var(--radius);
     overflow: hidden;
+    box-shadow: 0 8px 22px rgba(50, 35, 20, 0.05);
   }
 
   .devflow__matrix th,
@@ -338,10 +427,15 @@ const steps = devflowSteps.map((s) => ({
   }
 
   .devflow__matrix th {
-    background: color-mix(in srgb, var(--c-paper-deep) 80%, transparent);
+    background: color-mix(in srgb, var(--c-accent) 20%, var(--c-paper-deep));
     font-family: var(--font-head);
     font-weight: 600;
     color: var(--c-main);
+  }
+
+  .devflow__matrix th:first-child,
+  .devflow__matrix td:first-child {
+    border-right: 1px solid var(--c-border);
   }
 
   .devflow__matrix td:first-child {
@@ -371,10 +465,28 @@ const steps = devflowSteps.map((s) => ({
   }
 
   @media (max-width: 767px) {
-    /* aside 上余白: カードリストの「詳細を見る」と「運用の前提」見出しの視覚分離を確保 */
+    /* aside 上余白: カードリストの「詳細を見る」と見出しの視覚分離を確保。
+       紙レイヤ padding は SP で窮屈にならないよう縮小 */
     .devflow__epilog {
       margin-top: 3rem;
+      padding: 1.75rem 1.25rem;
     }
+
+    .devflow__floater {
+      width: 110px;
+    }
+    .devflow__floater--mituru {
+      top: -2rem;
+      left: -0.5rem;
+    }
+    .devflow__floater--saki {
+      bottom: -2rem;
+      right: -0.5rem;
+    }
+
+    .devflow__grain--1 { width: 200px; height: 200px; }
+    .devflow__grain--2 { width: 260px; height: 260px; }
+    .devflow__grain--3 { width: 180px; height: 180px; }
 
     .devflow__matrix {
       border-radius: var(--radius);
@@ -405,6 +517,11 @@ const steps = devflowSteps.map((s) => ({
       padding: 0.25rem 1rem;
       border-bottom: none;
       font-size: 1.235rem;
+    }
+
+    .devflow__matrix th:first-child,
+    .devflow__matrix td:first-child {
+      border-right: 0;
     }
 
     .devflow__matrix td:first-child {
@@ -442,7 +559,6 @@ const steps = devflowSteps.map((s) => ({
     }
 
     .devflow__pin {
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
