@@ -226,6 +226,9 @@ const ogImageURL = Astro.site
   html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-h-scrolled);
+    /* ページ横スクロール（装飾はみ出しによる右下の余白）を抑止。clip はスクロールコンテナを
+       作らないので縦スクロール・ScrollTrigger pin に影響しない。 */
+    overflow-x: clip;
     /* view-timeline-name は祖先方向しか参照できないため、html 側で timeline-scope を宣言して
        任意の子孫（Services 内の stain-sentinel）で定義された --stain-timeline を
        兄弟ツリーの .coffee-stain（body 直下 fixed）から animation-timeline 経由で参照可能にする。
@@ -241,6 +244,10 @@ const ogImageURL = Astro.site
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 各セクションの装飾（水玉・floater・葉）が負の位置や右端超えで viewport を
+       はみ出し横スクロール（右下の余白）を生むのを防ぐ。clip は overflow:hidden と違い
+       スクロールコンテナを作らないので ScrollTrigger の pin/sticky を壊さない。 */
+    overflow-x: clip;
   }
 
   /* dialog.showModal() は body scroll を止めないため、開いている間は body 自体を固定する。
@@ -340,12 +347,12 @@ const ogImageURL = Astro.site
       .coffee-stain::before {
         animation: stain-spread linear both;
         animation-timeline: --stain-timeline;
-        animation-range: cover 0% cover 100%;
+        animation-range: cover 20% cover 100%;
       }
       .coffee-stain::after {
         animation: stain-fill linear both;
         animation-timeline: --stain-timeline;
-        animation-range: cover 0% cover 100%;
+        animation-range: cover 20% cover 100%;
       }
     }
   }

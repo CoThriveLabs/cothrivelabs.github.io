@@ -98,6 +98,8 @@ const { name, role, tagline, color, image } = Astro.props;
     font-weight: 600;
     color: var(--c-main);
     transform: translateZ(30px);
+    /* 「あめまみれ」等の名前を 1 行で収める（途中改行させない） */
+    white-space: nowrap;
   }
   .member-card__role {
     margin: 0 0 1.25rem;

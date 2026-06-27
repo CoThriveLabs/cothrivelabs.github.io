@@ -133,6 +133,12 @@ const categories = [
     .techstack__grain { animation: none; }
   }
   @media (max-width: 767px) {
+    /* SP: layered-pin が効かないため、コーヒーシミ overlay(position:fixed; z:9999) に
+       覆われないよう Works / DevFlow と同じく前面へ。これが無いとシミ不透明区間で
+       見出し・カードがシミに隠れて「背景だけ」になる。 */
+    .techstack {
+      z-index: 10000;
+    }
     .techstack__grain--1 { width: 220px; height: 220px; }
     .techstack__grain--2 { width: 260px; height: 260px; }
     .techstack__grain--3 { width: 180px; height: 180px; }

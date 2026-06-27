@@ -385,10 +385,9 @@ const titleId = `${modalId}-title`;
       align-self: flex-start;
     }
   }
-  /* SP（狭幅）: フッターのボタンも縦並び・幅100% */
+  /* SP: カードを横長に広げたためフッターのボタンは横並びを維持（均等割付け） */
   @media (max-width: 480px) {
-    .pf-card__footer { flex-direction: column; }
-    .pf-card__btn { width: 100%; }
+    .pf-card__btn { flex: 1 1 0; }
   }
 
   /* reduce-motion: hover の transform / scale を停止 */

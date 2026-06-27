@@ -28,6 +28,8 @@ const steps = devflowSteps.map((s) => ({
     <div class="devflow__grain devflow__grain--2"></div>
     <div class="devflow__grain devflow__grain--3"></div>
   </div>
+  {/* SP 専用: みつるをセクション上部（説明文の下）に置く。PC は epilog 内の floater を使う。 */}
+  <Image src={mituruFloating} alt="" class="devflow__floater-top" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
   <div class="devflow__pin">
     <div class="devflow__inner">
       <SectionHeading title="開発フロー" lead="案件は6つの段を通します。テストは省略しない決まりです。" />
@@ -384,6 +386,10 @@ const steps = devflowSteps.map((s) => ({
     0%, 100% { transform: translateY(0) rotate(-1deg); }
     50%     { transform: translateY(-12px) rotate(1deg); }
   }
+  /* SP 専用のセクション上部みつる。PC では非表示（epilog 内 floater を使う）。 */
+  .devflow__floater-top {
+    display: none;
+  }
   @media (prefers-reduced-motion: reduce) {
     .devflow__floater { animation: none; transform: none; }
   }
@@ -475,13 +481,26 @@ const steps = devflowSteps.map((s) => ({
     .devflow__floater {
       width: 110px;
     }
+    /* SP: epilog 内みつるは隠し、セクション上部の floater-top に置換 */
     .devflow__floater--mituru {
-      top: -2rem;
-      left: -0.5rem;
+      display: none;
     }
     .devflow__floater--saki {
-      bottom: -2rem;
+      top: 90%;
+      bottom: auto;
       right: -0.5rem;
+    }
+    .devflow__floater-top {
+      display: block;
+      position: absolute;
+      top: 9%;
+      left: 1rem;
+      width: 110px;
+      height: auto;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      animation: devflow-float 4.5s ease-in-out infinite;
     }
 
     .devflow__grain--1 { width: 200px; height: 200px; }
