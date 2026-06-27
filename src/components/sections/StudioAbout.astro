@@ -99,10 +99,31 @@ import run2 from '../../assets/decor/run-2.png';
   }
 
   @media (max-width: 768px) {
-    /* SP は画面崩れ抑制のため半量に留める */
+    /* Hero pin spacer 補正は 768 で半量に（画面崩れ抑制） */
     .studio-about {
       margin-top: -50vh;
     }
+  }
+  /* 601-768px: saki-bar の列幅を詰めてテキストに幅を回す。立ち絵は画像を少し拡大し
+     figure を overflow:hidden で囲って PNG の透明縁（両端の余白）を約 1/3 まで削る。
+     これで本文が早く折り返さず、立ち絵の大きさは概ね維持される。 */
+  @media (min-width: 601px) and (max-width: 768px) {
+    .studio-about__body {
+      grid-template-columns: 28% 1fr;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .studio-about__figure {
+      overflow: hidden;
+    }
+    .studio-about__figure-img {
+      width: 125%;
+      max-width: none;
+      flex-shrink: 0;
+    }
+  }
+  /* saki-bar の 2 カラム → run-2 の縦並び SP レイアウトへの切替は 600px。
+     601-768px は saki-bar 立ち絵を維持する。 */
+  @media (max-width: 600px) {
     /* 縦並び: 立ち絵 → テキストの順、立ち絵は 60vw センター */
     .studio-about__body {
       grid-template-columns: 1fr;
@@ -111,7 +132,7 @@ import run2 from '../../assets/decor/run-2.png';
     .studio-about__figure-img {
       max-width: 60vw;
     }
-    /* SP では立ち絵を非表示にして紙面右上の小装飾に差し替え */
+    /* 立ち絵を非表示にして紙面右上の小装飾に差し替え */
     .studio-about__figure {
       display: none;
     }

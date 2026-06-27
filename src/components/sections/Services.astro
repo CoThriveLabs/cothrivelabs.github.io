@@ -169,6 +169,18 @@ const services = [
       left: 0.5rem;
     }
   }
+  /* タブレット帯（768-1147px）: ふわふわを少し小さく、ともみをカードグリッドの下へ逃がす。 */
+  @media (min-width: 768px) and (max-width: 1147px) {
+    .services__floater {
+      width: 180px;
+    }
+    .services {
+      padding-bottom: 18rem;
+    }
+    .services__floater--tomomi {
+      bottom: 1.5rem;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .stain-sentinel {
       height: 0;

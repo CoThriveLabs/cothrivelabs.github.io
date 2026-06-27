@@ -390,6 +390,33 @@ const steps = devflowSteps.map((s) => ({
   .devflow__floater-top {
     display: none;
   }
+  /* タブレット帯（768-1147px）: ふわふわを少し小さく、みつるを説明文の隣・さきをマトリクス下へ。 */
+  @media (min-width: 768px) and (max-width: 1147px) {
+    .devflow__floater {
+      width: 180px;
+    }
+    /* みつるはセクション上部（主説明文の隣）の floater-top に置換 */
+    .devflow__floater--mituru {
+      display: none;
+    }
+    .devflow__floater--saki {
+      top: 94%;
+      bottom: auto;
+      right: -1rem;
+    }
+    .devflow__floater-top {
+      display: block;
+      position: absolute;
+      top: 5%;
+      left: 0.5rem;
+      width: 180px;
+      height: auto;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      animation: devflow-float 4.5s ease-in-out infinite;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .devflow__floater { animation: none; transform: none; }
   }
@@ -493,7 +520,7 @@ const steps = devflowSteps.map((s) => ({
     .devflow__floater-top {
       display: block;
       position: absolute;
-      top: 9%;
+      top: 6%;
       left: 1rem;
       width: 110px;
       height: auto;
