@@ -127,6 +127,9 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
+    {/* Hero イントロ演出（開いた直後の順次フェードイン）。heroImmersion より前に登録し、
+        初期 opacity:0 を先にセットしてから scroll pin timeline を組ませる。 */}
+    <script>import '../scripts/heroIntro.ts';</script>
     {/* Hero 入り込み演出。refreshPriority:230 で Hero pin spacer を StudioAbout(200) より先に確定。 */}
     <script>import '../scripts/heroImmersion.ts';</script>
     {/* 出現アニメ（GSAP）。pin + scrub 順次出現モード（[data-step-section] 持つ section）と

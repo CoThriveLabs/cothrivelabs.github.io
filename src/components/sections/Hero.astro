@@ -3,13 +3,60 @@
 // 集合イラストはメンバーを個別 DOM レイヤー（L1/L2）に分割し、
 // data-hero-layer 属性 + will-change 予約で Hero 奥入り込み演出が乗る形にする。
 // 背景は紙 C2。スクロール誘導のみ。
-import { Picture } from 'astro:assets';
+import { Image, Picture } from 'astro:assets';
 import centerImg from '../../assets/hero/center.png';
 import tomomiImg from '../../assets/hero/tomomi.png';
 import ropiImg from '../../assets/hero/ropi.png';
+import codeEditor from '../../assets/hero/decor/code-editor.png';
+import codeList from '../../assets/hero/decor/code-list.png';
+import browserWindow from '../../assets/hero/decor/browser-window.png';
+import dashboardMonitor from '../../assets/hero/decor/dashboard-monitor.png';
+import laptopCode from '../../assets/hero/decor/laptop-code.png';
+import flowchart from '../../assets/hero/decor/flowchart.png';
+import networkNodes from '../../assets/hero/decor/network-nodes.png';
+import chartPie from '../../assets/hero/decor/chart-pie.png';
+import leavesBranch1 from '../../assets/hero/decor/leaves-branch-1.png';
+import leavesBranch2 from '../../assets/hero/decor/leaves-branch-2.png';
+import leavesBranch3 from '../../assets/hero/decor/leaves-branch-3.png';
+import leavesScatter from '../../assets/hero/decor/leaves-scatter.png';
+import leavesNetwork1 from '../../assets/hero/decor/leaves-network-1.png';
+import leavesNetwork2 from '../../assets/hero/decor/leaves-network-2.png';
 import HeroLogo from './HeroLogo.astro';
+
+type DecorItem = { src: ImageMetadata; cls: string; alt?: string };
+const decorItems: DecorItem[] = [
+  { src: leavesBranch1, cls: 'leaves-1' },
+  { src: leavesBranch2, cls: 'leaves-2' },
+  { src: leavesBranch3, cls: 'leaves-3' },
+  { src: leavesScatter, cls: 'leaves-scatter' },
+  { src: leavesNetwork1, cls: 'leaves-net-1' },
+  { src: leavesNetwork2, cls: 'leaves-net-2' },
+  { src: codeEditor, cls: 'code-editor' },
+  { src: codeList, cls: 'code-list' },
+  { src: browserWindow, cls: 'browser' },
+  { src: dashboardMonitor, cls: 'dashboard' },
+  { src: laptopCode, cls: 'laptop' },
+  { src: flowchart, cls: 'flowchart' },
+  { src: networkNodes, cls: 'network' },
+  { src: chartPie, cls: 'chart-pie' },
+];
 ---
 <section class="hero" id="hero">
+  {/* Web 系装飾 + 葉系装飾。viewport 全体にばら撒く。z-index は inner より下 */}
+  <div class="hero__decor" aria-hidden="true">
+    {decorItems.map((d) => (
+      <Image
+        src={d.src}
+        alt=""
+        loading="eager"
+        decoding="async"
+        class:list={['hero__decor-item', `hero__decor-item--${d.cls}`]}
+        data-hero-decor={d.cls}
+        widths={[200, 360, 500]}
+        sizes="320px"
+      />
+    ))}
+  </div>
   <div class="hero__inner">
     {/* 手書きロゴ（こすらぼ）: stroke-dashoffset お絵描きアニメ */}
     <div class="hero__logo">
@@ -18,13 +65,18 @@ import HeroLogo from './HeroLogo.astro';
 
     <h1 class="sr-only">Co-Thrive Labs（こすらぼ）</h1>
 
-    {/* S1 一行コピー。data-reveal は付けない（LCP/CLS 安定優先）。
-        Hero 入り込み演出 heroImmersion.ts の transform 対象は logo/art/L1/L2 のままで
-        tagline は独立（演出に巻き込まない）。 */}
-    <p class="hero__tagline">ー 人とAIで、確かなものを作るWeb開発スタジオ ー</p>
+    {/* S1 一行コピー。2 行構成（リード + 強調）。data-reveal は付けない（LCP/CLS 安定優先）。 */}
+    <p class="hero__tagline">
+      <span class="hero__tagline-l1">人とAIで、確かなものを作る</span>
+      <span class="hero__tagline-l2">Web開発スタジオ</span>
+    </p>
 
     {/* 集合イラスト: メンバーを個別レイヤーに分割（Hero 入り込み演出の前提構造） */}
     <div class="hero__art" role="img" aria-label="Co-Thrive Labs のメンバー 5 人の集合イラスト">
+      {/* キャラ背面の暖色楕円光。外 wrap=スクロール退場(heroImmersion)用 / 内=登場フェード(heroIntro)用 に分離。 */}
+      <div class="hero__glow-wrap" aria-hidden="true">
+        <div class="hero__glow"></div>
+      </div>
       {/* L2 中央・ゆっくり */}
       <div class="hero__layer hero__layer--l2" data-hero-layer="l2" aria-hidden="true">
         <Picture
@@ -105,15 +157,89 @@ import HeroLogo from './HeroLogo.astro';
     /* viewport 縦に追従させ、縦が狭い時の押し出しで art と重ならないよう連動 */
     margin-top: clamp(0.5rem, 1.5vh, 2rem);
   }
-  /* S1 一行コピー */
+  /* S1 一行コピー（2 行構成） */
   .hero__tagline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-family: var(--font-accent); /* Klee One */
-    font-size: clamp(1.365rem, 1.82vw, 1.495rem);
-    color: var(--c-main-soft);
     text-align: center;
     /* viewport 縦に追従させ、縦が狭い時に art と重ならないよう連動 */
-    margin-top: clamp(0.5rem, 1.5vh, 2rem);
+    margin: clamp(0.5rem, 1.5vh, 2rem) 0 0;
     line-height: 1.5;
+  }
+  .hero__tagline-l1 {
+    font-size: clamp(1.2rem, 1.6vw, 1.35rem);
+    color: var(--c-main-soft);
+  }
+  .hero__tagline-l2 {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    color: var(--c-main);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-top: 0.25rem;
+  }
+
+  /* Hero 周囲の装飾レイヤ（葉系 + web 系を viewport にばら撒く・hero__inner より背面） */
+  .hero__decor {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .hero__decor-item {
+    position: absolute;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.7;
+  }
+  /* 葉系（薄め・背景レイヤ） */
+  .hero__decor-item--leaves-1     { top: 70%; left: 1%;  width: 220px; opacity: 0.5; }
+  .hero__decor-item--leaves-2     { top: 10%; right: 1%; width: 240px; opacity: 0.55; }
+  .hero__decor-item--leaves-3     { top: 6%;  left: 1%;  width: 240px; opacity: 0.55; }
+  .hero__decor-item--leaves-scatter { top: 68%; right: 2%; width: 200px; opacity: 0.45; }
+  .hero__decor-item--leaves-net-1 { top: 34%; left: 12%; width: 280px; opacity: 0.55; }
+  .hero__decor-item--leaves-net-2 { top: 30%; right: 4%; width: 260px; opacity: 0.55; }
+  /* web 系（メンバーの周囲に散らす・1.44 倍サイズ） */
+  .hero__decor-item--code-editor { top: 22%; left: 8%;  width: 288px; }
+  .hero__decor-item--laptop      { top: 54%; left: 3%;  width: 288px; }
+  .hero__decor-item--browser     { top: 36%; left: 1%;  width: 259px; }
+  .hero__decor-item--code-list   { top: 72%; left: 10%; width: 288px; }
+  .hero__decor-item--flowchart   { top: 28%; right: 16%; width: 274px; }
+  .hero__decor-item--dashboard   { top: 54%; right: 9%; width: 288px; }
+  .hero__decor-item--network     { top: 72%; right: 17%; width: 274px; }
+  .hero__decor-item--chart-pie   { top: 74%; right: 4%; width: 288px; }
+  /* SP（max-width: 767px）: PC と同じ % 配置を維持し、幅だけ縮めて画面端に収める。
+     非表示にはせず、PC のレイアウト感をそのまま小さくする。 */
+  @media (max-width: 767px) {
+    .hero__decor-item--leaves-1     { top: 82%; width: 135px; }
+    .hero__decor-item--leaves-2     { top: 16%; right: -3%; width: 144px; }
+    .hero__decor-item--leaves-3     { width: 144px; }
+    .hero__decor-item--leaves-scatter { width: 126px; }
+    .hero__decor-item--leaves-net-1 { top: 40%; width: 165px; }
+    .hero__decor-item--leaves-net-2 { top: 38%; width: 156px; }
+    .hero__decor-item--code-editor  { left: 4%; width: 162px; }
+    .hero__decor-item--code-list    { width: 162px; }
+    .hero__decor-item--browser      { width: 150px; }
+    .hero__decor-item--dashboard    { width: 162px; }
+    .hero__decor-item--laptop       { top: 48%; left: -2%; width: 162px; }
+    .hero__decor-item--flowchart    { top: 36%; width: 156px; }
+    .hero__decor-item--network      { width: 156px; }
+    .hero__decor-item--chart-pie    { top: 80%; width: 162px; }
+  }
+  /* SP: ロゴを少し大きく + ロゴ/サブタイトルを少し下へ（transform で art を動かさず移動）。
+     translate を px 先指定にして scale の倍率影響を受けないようにする。 */
+  @media (max-width: 767px) {
+    .hero__logo {
+      transform: translateY(34px) scale(1.232);
+    }
+    .hero__tagline {
+      transform: translateY(54px);
+    }
   }
   /* SEO 用非表示 h1 */
   .sr-only {
@@ -138,6 +264,21 @@ import HeroLogo from './HeroLogo.astro';
     margin-top: 0;
     /* translateY + scale の再描画ヒント（layer の will-change と分離） */
     will-change: transform;
+  }
+  /* キャラ背面の楕円光: 背景(紙色 #FFFBF3)より一段暖かい光だまりで主役を浮かせる。
+     紙色と近い淡色だと差が出ないため、ややオレンジ寄りの暖色で「光が当たっている」感を作る。
+     左右 inset を負値にして横幅を約 2 倍に広げる（縦は維持）。L2(z1)/L1(z2) より背面（z-index:0）。
+     登場フェードは heroIntro.ts が opacity で制御（自身の opacity を持つことで art フェードと分離）。 */
+  .hero__glow-wrap {
+    position: absolute;
+    inset: 14% -38% 2%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 58%, rgba(255, 230, 188, 0.9), rgba(255, 232, 195, 0.45) 38%, rgba(255, 232, 195, 0) 70%);
   }
   /* 各レイヤーは枠全体に重ねる（3 枚が同一構図の透過 PNG で合わさり 1 枚絵になる） */
   .hero__layer {
@@ -215,15 +356,15 @@ import HeroLogo from './HeroLogo.astro';
       padding: var(--space-base) 1rem;
     }
     .hero__logo {
-      transform: scale(1.15);
-      margin-top: clamp(1rem, 3vh, 3rem);
+      transform: scale(1.05);
+      margin-top: calc(clamp(1rem, 3vh, 3rem) - 1rem);
       margin-bottom: 0;
     }
     .hero__tagline {
-      margin-top: clamp(1rem, 3vh, 3rem);
+      margin-top: calc(clamp(1rem, 3vh, 3rem) - 1rem);
     }
     .hero__art {
-      height: 70vh;
+      height: 64vh;
       max-width: min(1196px, 100vw);
       /* viewport 縦が狭い時は art の食い込みを浅くしてコピー文と分離 */
       margin-top: -6rem;
@@ -237,14 +378,14 @@ import HeroLogo from './HeroLogo.astro';
       padding: var(--space-base) 1rem;
     }
     .hero__logo {
-      transform: scale(1.3);
-      margin-top: clamp(1rem, 3vh, 3rem);
+      transform: scale(1.18);
+      margin-top: calc(clamp(1rem, 3vh, 3rem) - 1rem);
     }
     .hero__tagline {
-      margin-top: clamp(1rem, 3vh, 3rem);
+      margin-top: calc(clamp(1rem, 3vh, 3rem) - 1rem);
     }
     .hero__art {
-      height: 75vh;
+      height: 68vh;
       max-width: min(1196px, 100vw);
       /* viewport 縦が狭い時は art の食い込みを浅くしてコピー文と分離 */
       margin-top: -8rem;
@@ -261,9 +402,9 @@ import HeroLogo from './HeroLogo.astro';
     .hero__logo { transform: scale(1); }
   }
   @media (min-width: 1280px) and (max-height: 800px) {
-    .hero__logo { transform: scale(1.2); }
+    .hero__logo { transform: scale(1.1); }
   }
   @media (min-width: 1280px) and (max-height: 700px) {
-    .hero__logo { transform: scale(1.1); }
+    .hero__logo { transform: scale(1.02); }
   }
 </style>

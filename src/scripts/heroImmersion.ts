@@ -32,6 +32,8 @@ function setup() {
       const hero = document.querySelector<HTMLElement>('.hero');
       const heroLogo = document.querySelector<HTMLElement>('.hero__logo');
       const heroTagline = document.querySelector<HTMLElement>('.hero__tagline');
+      const heroDecor = document.querySelector<HTMLElement>('.hero__decor');
+      const heroGlowWrap = document.querySelector<HTMLElement>('.hero__glow-wrap');
       const heroArt = document.querySelector<HTMLElement>('.hero__art');
       const l1Pictures = document.querySelectorAll<HTMLElement>('.hero__layer--l1 > picture');
       const l2 = document.querySelector<HTMLElement>('.hero__layer--l2');
@@ -76,10 +78,15 @@ function setup() {
         },
       });
 
-      // ── ロゴ + tagline 退場 + イラスト中央寄せ + 少しズーム ──
-      // tagline はロゴと同タイミング・同 duration でフェードアウトさせる。
-      const stage0aTargets: HTMLElement[] = heroTagline ? [heroLogo, heroTagline] : [heroLogo];
-      tl.to(stage0aTargets, { autoAlpha: 0, ease: 'power1.in', duration: 0.4 }, 0);
+      // ── ロゴ + tagline + 周囲装飾 + 楕円光 退場 + イラスト中央寄せ + 少しズーム ──
+      // tagline / decor / glow-wrap はロゴと同タイミング・同 duration でフェードアウトさせる。
+      // decor は wrapper（opacity 常時 1）/ glow は glow-wrap（同）を対象にし、
+      // heroIntro が触る個別 item / 内側 glow の opacity と分離して visibility 競合を避ける。
+      const stage0aTargets: HTMLElement[] = [heroLogo];
+      if (heroTagline) stage0aTargets.push(heroTagline);
+      if (heroDecor) stage0aTargets.push(heroDecor);
+      if (heroGlowWrap) stage0aTargets.push(heroGlowWrap);
+      tl.to(stage0aTargets, { autoAlpha: 0, ease: 'power1.in', duration: 0.8 }, 0);
       tl.to(
         heroArt,
         { y: () => getArtCenterShift(), scale: 1.15, ease: 'power2.out', duration: 0.4 },
@@ -136,6 +143,7 @@ function setup() {
         gsap.set('.hero__layer--l1, .hero__layer--l2', { willChange: 'auto' });
         gsap.set('.hero__logo', { autoAlpha: 1 });
         if (heroTagline) gsap.set('.hero__tagline', { autoAlpha: 1 });
+        gsap.set('.hero__decor, .hero__glow-wrap', { autoAlpha: 1 });
         gsap.set('.hero__art', { y: 0, scale: 1 });
       };
     }

@@ -48,7 +48,15 @@ const maskId = 'hero-logo-wipe';
   .hero-logo__wipe {
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
+    /* reduced-motion 時は即描画開始（イントロ演出なし）。 */
     animation: hero-logo-draw 2.4s var(--ease) 0.3s forwards;
+  }
+  /* イントロ演出時はロゴ登場（heroIntro.ts の logo フェードイン 1.25s）に合わせて
+     手書き描画を遅らせ、「背景→装飾→メンバー→こすらぼ」の順序に揃える。 */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-logo__wipe {
+      animation-delay: 1.35s;
+    }
   }
   @keyframes hero-logo-draw {
     to {
