@@ -1,5 +1,5 @@
 ---
-// S4 受けられる案件。6 カテゴリ・「対応可」止め・誇張表現なし・価格は出さない。
+// 受けられる案件セクション。6 カテゴリ・「対応可」止め・誇張表現なし・価格は出さない。
 import { Image } from 'astro:assets';
 import SectionHeading from '../SectionHeading.astro';
 import ropiFloating from '../../assets/decor/ropi-froating.png';
@@ -29,13 +29,13 @@ const services = [
       ))}
     </ul>
   </div>
-  {/* 常時ふわふわ装飾。reveal/parallax 管理外、CSS keyframes のみで動かす（左上=ろぴ・右下=ともみ） */}
+  {/* 常時ふわふわ装飾。reveal/parallax 管理外、CSS keyframes のみで動かす（左上 / 右下のキャラ装飾 2 枚） */}
   <Image src={ropiFloating} alt="" class="services__floater services__floater--ropi" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
   <Image src={tomomiFloating} alt="" class="services__floater services__floater--tomomi" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
 </section>
 {/* シミ侵食駆動専用 sentinel。Services pin の trigger 外側（natural flow）に置く。
     Why section 外: pin trigger の内側に置くと Services pin active 中も sentinel が
-    viewport に入り、Services 表示中にシミ侵食が走って S4 が飲み込まれて表示されないバグになる。
+    viewport に入り、Services 表示中にシミ侵食が走って Services が飲み込まれて表示されないバグになる。
     pin 解除後の natural flow 位置から sentinel が稼ぐスクロール量で shadow stain が完成する。
     視覚不可視（1px width）。 */}
 <div class="stain-sentinel" data-stain-sentinel aria-hidden="true"></div>
@@ -99,12 +99,12 @@ const services = [
     opacity: 0.95;
     animation: services-float 4.5s ease-in-out infinite;
   }
-  /* ともみ: 右下 */
+  /* 右下キャラ装飾 */
   .services__floater--tomomi {
     bottom: clamp(2rem, 5vh, 5rem);
     right: clamp(1.5rem, 3vw, 4rem);
   }
-  /* ろぴ: 左上、半位相ずれで動きを互い違いに */
+  /* 左上キャラ装飾。半位相ずれで右下と動きを互い違いに */
   .services__floater--ropi {
     top: clamp(2rem, 5vh, 5rem);
     left: clamp(1.5rem, 3vw, 4rem);
@@ -135,7 +135,7 @@ const services = [
     .services :global(.section-heading) {
       margin-bottom: calc(var(--space-snug) / 3);
     }
-    /* SP: カード下に余白を作り、bottom 固定のともみをカードグリッドの下に逃がす（隠れ防止） */
+    /* SP: カード下に余白を作り、bottom 固定の右下装飾をカードグリッドの下に逃がす（隠れ防止） */
     .services {
       padding-bottom: 11rem;
     }
@@ -169,7 +169,7 @@ const services = [
       left: 0.5rem;
     }
   }
-  /* タブレット帯（768-1147px）: ふわふわを少し小さく、ともみをカードグリッドの下へ逃がす。 */
+  /* タブレット帯（768-1147px）: ふわふわを少し小さく、右下装飾をカードグリッドの下へ逃がす。 */
   @media (min-width: 768px) and (max-width: 1147px) {
     .services__floater {
       width: 180px;

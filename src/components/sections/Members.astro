@@ -1,6 +1,5 @@
 ---
-// S3 メンバー紹介（設計書 §4.2）。MemberCard × 5。役割明示優先・メンバーカラーは装飾のみ。
-// テキストは D7 適合・W1 統一（メンバー表記、人数は文言化しない）。
+// メンバー紹介セクション。MemberCard × 5。役割明示優先・メンバーカラーは装飾のみに使う。
 import SectionHeading from '../SectionHeading.astro';
 import MemberCard from '../MemberCard.astro';
 
@@ -65,11 +64,10 @@ const members = [
 <style>
   .members {
     padding: calc(var(--space-base) * 0.6) 1.5rem;
-    /* F4-e 装飾の absolute 配置基点・はみ出し防止（§5.8 / タスク G） */
+    /* 装飾の absolute 配置基点・はみ出し防止 */
     position: relative;
     overflow: hidden;
-    /* 2026-06-20 あめさん FB: S2 margin-top -100vh の連鎖シフトを部分相殺・見出しが見える時間確保 */
-    /* 2026-06-20 二回目 FB: 倍化 50vh→100vh / 25vh→50vh */
+    /* StudioAbout 側 margin-top:-100vh の連鎖シフトを部分相殺し、見出しが見える時間を確保する */
     margin-top: 100vh;
   }
   @media (max-width: 767px) {
@@ -98,18 +96,18 @@ const members = [
       font-size: 1.1115rem;
     }
   }
-  /* Members だけグランドコンテナ（--max-w: 1120px）より広い 1500px に拡張（2026-06-21 あめさん FB）。
-     PC 1920px viewport の左右余白を使い切り、5列×2:3 カードを十分な幅で見せる。
-     SP/タブレットは min() で viewport-4rem に縮むため安全。グランドコンテナ自体は触らない。 */
+  /* Members だけグランドコンテナ（--max-w: 1120px）より広い 1500px に拡張する。
+     PC 1920px viewport の左右余白を使い切り、5 列 × 2:3 カードを十分な幅で見せるため。
+     SP / タブレットは min() で viewport - 4rem に縮むため安全。グランドコンテナ自体は触らない。 */
   .members__inner {
     max-width: min(1500px, 100vw - 4rem);
     margin: 0 auto;
     position: relative;
     z-index: 1;
   }
-  /* M1（2026-06-21 みつる調査→さき三次→みつる実装）: 中域段階追加でカード潰れ回避。
+  /* 中域ブレイクポイントを段階的に挟んでカード潰れを回避する。
      ~479: 1列 / 480+: 2列 / 768+: 3列(3+2段) / 1024+: 4列(4+1段) / 1280+: 5列横並び。
-     1024px で 5 列だとカード 172px で窮屈、1280 から 5 列にする（さき判断）。 */
+     1024px で 5 列だとカード 172px で窮屈なので、5 列化は 1280 から。 */
   .members__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

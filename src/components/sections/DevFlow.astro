@@ -28,7 +28,7 @@ const steps = devflowSteps.map((s) => ({
     <div class="devflow__grain devflow__grain--2"></div>
     <div class="devflow__grain devflow__grain--3"></div>
   </div>
-  {/* SP 専用: みつるをセクション上部（説明文の下）に置く。PC は epilog 内の floater を使う。 */}
+  {/* SP 専用: キャラ装飾をセクション上部（説明文の下）に置く。PC は epilog 内の floater を使う。 */}
   <Image src={mituruFloating} alt="" class="devflow__floater-top" widths={[200, 300, 400]} sizes="240px" aria-hidden="true" />
   <div class="devflow__pin">
     <div class="devflow__inner">
@@ -119,7 +119,7 @@ const steps = devflowSteps.map((s) => ({
         <img
           class="devflow-modal__image"
           src={s.image}
-          alt=""
+          alt={`${s.title}の詳細図`}
         />
       </div>
     </dialog>
@@ -386,16 +386,16 @@ const steps = devflowSteps.map((s) => ({
     0%, 100% { transform: translateY(0) rotate(-1deg); }
     50%     { transform: translateY(-12px) rotate(1deg); }
   }
-  /* SP 専用のセクション上部みつる。PC では非表示（epilog 内 floater を使う）。 */
+  /* SP 専用のセクション上部キャラ装飾。PC では非表示（epilog 内 floater を使う）。 */
   .devflow__floater-top {
     display: none;
   }
-  /* タブレット帯（768-1147px）: ふわふわを少し小さく、みつるを説明文の隣・さきをマトリクス下へ。 */
+  /* タブレット帯（768-1147px）: ふわふわを少し小さく、上部装飾を説明文の隣・下部装飾をマトリクス下へ。 */
   @media (min-width: 768px) and (max-width: 1147px) {
     .devflow__floater {
       width: 180px;
     }
-    /* みつるはセクション上部（主説明文の隣）の floater-top に置換 */
+    /* epilog 内の上部装飾は隠し、セクション上部の floater-top に置換 */
     .devflow__floater--mituru {
       display: none;
     }
@@ -508,7 +508,7 @@ const steps = devflowSteps.map((s) => ({
     .devflow__floater {
       width: 110px;
     }
-    /* SP: epilog 内みつるは隠し、セクション上部の floater-top に置換 */
+    /* SP: epilog 内の上部装飾は隠し、セクション上部の floater-top に置換 */
     .devflow__floater--mituru {
       display: none;
     }
@@ -595,8 +595,7 @@ const steps = devflowSteps.map((s) => ({
 
   /* PC: 横並びカードリスト。
      - 子合計幅 < 親幅（PC ワイド）: justify-content: safe center で中央寄せ、横スクなし
-     - 子合計幅 > 親幅（タブレット）: ネイティブ overflow-x: auto で横スク
-     カード幅・gap は commit eac5435 当時と一致。 */
+     - 子合計幅 > 親幅（タブレット）: ネイティブ overflow-x: auto で横スク */
   @media (min-width: 768px) {
     .devflow {
       padding-left: 0;

@@ -289,7 +289,7 @@ export const leCielEtoile: WorkDetail = {
   summary:
     '2 版の良いとこ取りで v2 を作り直し、Canvas 星空背景と縦積みエディトリアル Hero で銀座モダンフレンチの世界観を表現した静的サイト。',
   tags: ['HTML/CSS/JS', 'Canvas 星空', 'パララックス'],
-  primaryLink: { label: '見る', url: '/works/le-ciel-etoile/', external: false },
+  primaryLink: { label: '見る', url: 'https://le-ciel-etoile.cothrivelabs.com', external: true },
 
   tagline: '設計書→実装の分離プロセスで仕上げた、三言語タイポと Canvas 星空の銀座フレンチ',
 
@@ -402,7 +402,7 @@ export const jukumate: WorkDetail = {
   summary:
     '「保護者日次レポート + AI チャットボットでの学習可視化」を訴求する縦長 LP。塾長視点の Solution を 1 スクロールで体験できるよう、本ページめくり SVG 装飾とスクロール pin 演出を組み合わせました。',
   tags: ['Astro', 'GSAP', 'Cloudflare Workers'],
-  primaryLink: { label: '見る', url: '/works/jukumate/', external: false },
+  primaryLink: { label: '見る', url: 'https://jukumate.pages.dev/', external: true },
 
   tagline: 'AI プロンプト設計 + 多層レート制御 + セールスファネル設計',
 

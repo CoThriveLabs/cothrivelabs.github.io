@@ -1,6 +1,6 @@
 ---
-// S10 Footer。法的書面 4 件リンク・note/X「準備中」。
-// 領域 B・C-DEEP 実背景（濃色フッタ）。
+// サイトフッタ。法的書面 4 件リンク・note/X「準備中」表示。
+// 通常スクロール領域・C-DEEP 実背景（濃色フッタ）。
 const year = new Date().getFullYear();
 const legal = [
   { label: 'プライバシーポリシー', href: '/privacy' },
@@ -11,7 +11,7 @@ const legal = [
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
-    {/* S10 納品基準ブロック。Footer 最上段・法的書面より上に配置。
+    {/* 納品基準ブロック。Footer 最上段・法的書面より上に配置。
         半透明カード + border + 角丸の単一カラム。 */}
     <section class="site-footer__pledge" aria-labelledby="site-footer-pledge-heading">
       <h3 id="site-footer-pledge-heading">納品基準</h3>
@@ -24,7 +24,7 @@ const legal = [
         <p class="site-footer__tagline">こすらぼ — AI と共に育つスタジオ</p>
       </div>
       <nav class="site-footer__links" aria-label="外部リンク">
-        <a href="https://github.com/CoThriveLabs" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/CoThriveLabs" target="_blank" rel="noopener noreferrer">GitHub</a>
         <span class="site-footer__pending">note<span class="site-footer__badge">準備中</span></span>
         <span class="site-footer__pending">X<span class="site-footer__badge">準備中</span></span>
       </nav>
@@ -64,7 +64,7 @@ const legal = [
     max-width: var(--max-w);
     margin: 0 auto;
   }
-  /* S10 納品基準ブロック。Footer C-DEEP 実背景の上で var(--c-paper) 系で 11:1 余裕クリア。 */
+  /* 納品基準ブロック。Footer C-DEEP 実背景の上で var(--c-paper) 系で 11:1 余裕クリア。 */
   .site-footer__pledge {
     margin: 0 0 2rem;
     padding: 1.5rem 1.75rem;

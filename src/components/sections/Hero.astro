@@ -190,31 +190,37 @@ const decorItems: DecorItem[] = [
     pointer-events: none;
     overflow: hidden;
   }
+  /* 遠近 3 層: 個別 item で opacity / z-index / filter を明示。
+     背景(z1 / α0.25-0.40 / blur 0.5-1px) → 中景(z2 / α0.30-0.40 / blur 1px) → 前景(z3 / α0.50-0.70 / 鮮明)。
+     右下 chart-pie と左上 code-editor は section 端ぎりぎりに置き「画面外へ続く」遠近感を作る。 */
   .hero__decor-item {
     position: absolute;
     height: auto;
     pointer-events: none;
     user-select: none;
-    opacity: 0.7;
   }
-  /* 葉系（薄め・背景レイヤ） */
-  .hero__decor-item--leaves-1     { top: 70%; left: 1%;  width: 220px; opacity: 0.5; }
-  .hero__decor-item--leaves-2     { top: 10%; right: 1%; width: 240px; opacity: 0.55; }
-  .hero__decor-item--leaves-3     { top: 6%;  left: 1%;  width: 240px; opacity: 0.55; }
-  .hero__decor-item--leaves-scatter { top: 68%; right: 2%; width: 200px; opacity: 0.45; }
-  .hero__decor-item--leaves-net-1 { top: 34%; left: 12%; width: 280px; opacity: 0.55; }
-  .hero__decor-item--leaves-net-2 { top: 30%; right: 4%; width: 260px; opacity: 0.55; }
-  /* web 系（メンバーの周囲に散らす・1.44 倍サイズ） */
-  .hero__decor-item--code-editor { top: 22%; left: 8%;  width: 288px; }
-  .hero__decor-item--laptop      { top: 54%; left: 3%;  width: 288px; }
-  .hero__decor-item--browser     { top: 36%; left: 1%;  width: 259px; }
-  .hero__decor-item--code-list   { top: 72%; left: 10%; width: 288px; }
-  .hero__decor-item--flowchart   { top: 28%; right: 16%; width: 274px; }
-  .hero__decor-item--dashboard   { top: 54%; right: 9%; width: 288px; }
-  .hero__decor-item--network     { top: 72%; right: 17%; width: 274px; }
-  .hero__decor-item--chart-pie   { top: 74%; right: 4%; width: 288px; }
-  /* SP（max-width: 767px）: PC と同じ % 配置を維持し、幅だけ縮めて画面端に収める。
-     非表示にはせず、PC のレイアウト感をそのまま小さくする。 */
+  /* === 背景レイヤ z:1（葉系・PC 値は SP の 1.2 倍ベース） === */
+  .hero__decor-item--leaves-3     { top: 8%;  left: 2%;  width: 240px; opacity: 0.45; z-index: 1; }
+  .hero__decor-item--leaves-2     { top: 14%; right: 0%; width: 240px; opacity: 0.47; z-index: 1; }
+  .hero__decor-item--leaves-1     { top: 76%; left: 2%;  width: 216px; opacity: 0.40; z-index: 1; }
+  .hero__decor-item--leaves-scatter { top: 78%; right: 1%; width: 264px; opacity: 0.40; z-index: 1; }
+  /* === 中景レイヤ z:2（薄い IT・UI 系・blur 0.5px） === */
+  .hero__decor-item--browser     { top: 40%; left: 4%;  width: 230px; opacity: 0.45; z-index: 2; filter: blur(0.5px); }
+  .hero__decor-item--code-list   { top: 74%; left: 12%; width: 240px; opacity: 0.40; z-index: 2; filter: blur(0.5px); }
+  .hero__decor-item--flowchart   { top: 28%; right: 13%; width: 220px; opacity: 0.45; z-index: 2; filter: blur(0.5px); }
+  .hero__decor-item--network     { top: 76%; right: 22%; width: 290px; opacity: 0.40; z-index: 2; filter: blur(0.4px); }
+  /* === 前景レイヤ z:3（濃いめ IT・主要モチーフ + leaves-network） === */
+  .hero__decor-item--code-editor { top: 24%; left: 4%;  width: 330px; opacity: 0.70; z-index: 3; }
+  .hero__decor-item--laptop      { top: 56%; left: 7%;  width: 310px; opacity: 0.75; z-index: 3; }
+  .hero__decor-item--dashboard   { top: 54%; right: 7%; width: 300px; opacity: 0.70; z-index: 3; }
+  /* 右下 chart-pie: 一番大きく・濃く・右端ぎりぎりで「画面外へ続く」演出 */
+  .hero__decor-item--chart-pie   { top: 74%; right: 0%; width: 370px; opacity: 0.75; z-index: 3; }
+  /* leaves-network: 前景に格上げ（blur なし・葉ノード線を主役級に・PC 1.2 倍） */
+  .hero__decor-item--leaves-net-1 { top: 38%; left: 14%; width: 288px; opacity: 0.55; z-index: 3; }
+  .hero__decor-item--leaves-net-2 { top: 32%; right: 3%; width: 264px; opacity: 0.55; z-index: 3; }
+
+  /* SP（max-width: 767px）: PC と同じ階層構造（opacity / z-index / blur）を継承し、
+     幅だけ縮めて画面端に収める。レイアウト感は PC を保ったままサイズダウン。 */
   @media (max-width: 767px) {
     .hero__decor-item--leaves-1     { top: 82%; width: 135px; }
     .hero__decor-item--leaves-2     { top: 16%; right: -3%; width: 144px; }
@@ -222,14 +228,14 @@ const decorItems: DecorItem[] = [
     .hero__decor-item--leaves-scatter { width: 126px; }
     .hero__decor-item--leaves-net-1 { top: 40%; width: 165px; }
     .hero__decor-item--leaves-net-2 { top: 38%; width: 156px; }
-    .hero__decor-item--code-editor  { left: 4%; width: 162px; }
+    .hero__decor-item--code-editor  { left: 4%; width: 180px; }
     .hero__decor-item--code-list    { width: 162px; }
     .hero__decor-item--browser      { width: 150px; }
     .hero__decor-item--dashboard    { width: 162px; }
-    .hero__decor-item--laptop       { top: 48%; left: -2%; width: 162px; }
-    .hero__decor-item--flowchart    { top: 36%; width: 156px; }
-    .hero__decor-item--network      { width: 156px; }
-    .hero__decor-item--chart-pie    { top: 80%; width: 162px; }
+    .hero__decor-item--laptop       { top: 48%; left: -2%; width: 172px; }
+    .hero__decor-item--flowchart    { top: 36%; width: 150px; }
+    .hero__decor-item--network      { width: 175px; }
+    .hero__decor-item--chart-pie    { top: 80%; right: -2%; width: 200px; }
   }
   /* SP: ロゴを少し大きく + ロゴ/サブタイトルを少し下へ（transform で art を動かさず移動）。
      translate を px 先指定にして scale の倍率影響を受けないようにする。 */
