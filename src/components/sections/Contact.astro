@@ -1,7 +1,12 @@
 ---
-// S9 連絡先。問い合わせフォームの骨格（送信挙動は未実装）。
+// S9 連絡先。問い合わせフォーム + Turnstile + Resend 経由のメール送信。
 // 領域 B・C2 実背景。SLA は範囲表現「平日 1〜2 営業日以内」。
+// 送信処理は src/scripts/contactForm.ts（クライアント側）→
+//   Cloudflare Worker (api.cothrivelabs.com/contact) → Resend の流れ。
 import SectionHeading from '../SectionHeading.astro';
+
+// Build time に注入される公開キー（PUBLIC_ プレフィックスのみクライアントに露出）。
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 ---
 <section class="contact" id="contact">
   <div class="contact__inner">
@@ -9,24 +14,83 @@ import SectionHeading from '../SectionHeading.astro';
       title="連絡先"
       lead="ご相談・お見積もりはこちらから。平日 1〜2 営業日以内にお返事します。"
     />
-    <form class="contact__form" data-phase5-pending>
+    <form class="contact__form" novalidate>
       <div class="contact__field">
         <label class="contact__label" for="contact-name">お名前</label>
-        <input class="contact__input" id="contact-name" type="text" name="name" autocomplete="name" required />
+        <input
+          class="contact__input"
+          id="contact-name"
+          type="text"
+          name="name"
+          autocomplete="name"
+          required
+        />
       </div>
       <div class="contact__field">
         <label class="contact__label" for="contact-email">メールアドレス</label>
-        <input class="contact__input" id="contact-email" type="email" name="email" autocomplete="email" required />
+        <input
+          class="contact__input"
+          id="contact-email"
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+        />
       </div>
       <div class="contact__field">
         <label class="contact__label" for="contact-message">ご相談内容</label>
-        <textarea class="contact__textarea" id="contact-message" name="message" rows="5" required></textarea>
+        <textarea
+          class="contact__textarea"
+          id="contact-message"
+          name="message"
+          rows="5"
+          placeholder="ご相談内容をお書きください。準備中のリストへの先行お声がけも歓迎します。"
+          required
+        ></textarea>
       </div>
+
+      {/* Turnstile widget。送信ボタンの直上に置き、Tab 順を
+          name → email → message → Turnstile → 送信ボタン に保つ。
+          data-appearance="always" で常時可視（CTA 直前で視認性最大化）。 */}
+      <div class="contact__field contact__turnstile">
+        <div
+          class="cf-turnstile"
+          data-sitekey={turnstileSiteKey}
+          data-theme="light"
+          data-appearance="always"
+        ></div>
+      </div>
+
       <button class="contact__button" type="submit">送信する</button>
+
+      <p class="contact__consent">
+        送信することで、<a href="/privacy">プライバシーポリシー</a>に同意したものとみなします。
+      </p>
       <p class="contact__note">いただいた内容は、ご相談への対応にのみ使用します。</p>
+      {/* 送信結果（成功/失敗/レート制限）の文言を aria-live で読み上げ。
+          初期は空文字。contactForm.ts がここに文言を書き込む。 */}
+      <p
+        class="contact__status"
+        data-contact-status
+        aria-live="polite"
+        role="status"
+      ></p>
     </form>
   </div>
 </section>
+
+{/* Turnstile widget スクリプト。Contact が存在するページでのみ読み込む。
+    async + defer で LCP に影響なし。CSP / SRI は Cloudflare 自社ドメインのため不要。 */}
+<script
+  src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  async
+  defer
+></script>
+
+{/* フォーム送信ハンドラ。Astro が ts → js にバンドルし、PUBLIC_* env を埋め込む。 */}
+<script>
+  import '../../scripts/contactForm.ts';
+</script>
 
 <style>
   .contact {
@@ -73,6 +137,12 @@ import SectionHeading from '../SectionHeading.astro';
     outline: 2px solid var(--c-accent);
     outline-offset: 1px;
   }
+  /* Turnstile widget は 300x65 程度の固定サイズが返るため、
+     375px viewport でも横はみ出ししないよう左寄せ + overflow 防止。 */
+  .contact__turnstile {
+    min-height: 65px;
+    overflow-x: auto;
+  }
   .contact__button {
     align-self: flex-start;
     padding: 0.85rem 2rem;
@@ -90,11 +160,40 @@ import SectionHeading from '../SectionHeading.astro';
     background: var(--c-accent-dark);
     transform: translateY(-1px);
   }
+  .contact__button:disabled {
+    background: var(--c-main-mute);
+    cursor: wait;
+    transform: none;
+  }
+  .contact__consent {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--c-main-mute);
+  }
+  .contact__consent a {
+    color: var(--c-accent);
+    text-underline-offset: 3px;
+  }
   .contact__note {
     margin: 0;
     font-family: var(--font-body);
     font-size: 1.04rem;
     line-height: 1.7;
     color: var(--c-main-mute);
+  }
+  /* 送信結果文言。初期は空 = 視覚的に何も無いが aria-live で更新を通知。
+     長文（ネットワーク不通文言）でも折返し可能。 */
+  .contact__status {
+    margin: 0;
+    min-height: 1.5em;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--c-main);
+    word-break: break-word;
+  }
+  .contact__status:empty {
+    display: none;
   }
 </style>

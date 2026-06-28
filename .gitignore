@@ -56,3 +56,13 @@ public/*.bak
 
 # 検証残骸 (一時ファイル・CDP eval 系・2026-06-20 fb-v2 Phase 4 後整理)
 .tmp-*
+
+# Cloudflare Worker (contact form) のローカル成果物
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars
+
+# Worker の内部運用ドキュメント（公開ミラー対象外）。
+# SETUP.md は worker/docs/ に集約済み。worker/SETUP.md は旧位置のスタブで削除予定。
+worker/docs/
+worker/SETUP.md
