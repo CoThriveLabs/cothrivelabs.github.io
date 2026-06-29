@@ -57,6 +57,10 @@ public/*.bak
 # 検証残骸 (一時ファイル・CDP eval 系・2026-06-20 fb-v2 Phase 4 後整理)
 .tmp-*
 
+# dev server のローカルログ・旧 dist のローカルコピー（接尾辞付きで dist/ ルール対象外）
+.dev-log.txt
+dist_old_*/
+
 # Cloudflare Worker (contact form) のローカル成果物
 worker/node_modules/
 worker/.wrangler/

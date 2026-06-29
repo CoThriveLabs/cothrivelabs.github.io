@@ -63,6 +63,8 @@ const navItems = [
 
 <script>
   // 左ロゴ + 右ハンバーガー → 全画面オーバーレイ。focus trap / ESC / スクロールロック対応。
+  import { instantRevealSection } from '../../scripts/instantReveal';
+
   const header = document.getElementById('site-header');
   const toggle = header?.querySelector<HTMLButtonElement>('.site-header__toggle');
   const overlay = document.getElementById('site-nav-overlay');
@@ -87,8 +89,57 @@ const navItems = [
     setOpen(!header!.classList.contains('is-open'));
   });
 
-  // オーバーレイ内リンククリックで閉じる（アンカー遷移は通常通り発火）。
-  overlayLinks?.forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  // オーバーレイ内リンククリックで閉じる + 同一ページ内 hash 遷移なら target セクションの
+  // アニメを即時最終状態へ。Why: step-section pin scrub / layered-pin は top top 着地で
+  // progress 0 のまま固まる（手動スクロールしないと中身が見えない）。
+  // 別ページ遷移（works 詳細 → /#xxx）と #hero（heroImmersion 全体 pin を壊さない）は除外。
+  overlayLinks?.forEach((a) =>
+    a.addEventListener('click', (ev) => {
+      setOpen(false);
+      const href = a.getAttribute('href') || '';
+      const m = href.match(/#([^#]+)$/);
+      if (!m) return;
+      const id = m[1];
+      const onHome = location.pathname === '/' || location.pathname === '/index.html';
+      if (!onHome) return;
+      if (id === 'hero') return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      ev.preventDefault();
+      const { recommendedScrollY } = instantRevealSection(target);
+      // rAF 2 段で kill 後の layout / ScrollTrigger.refresh 完了を待ってから測る。
+      // layered-pin 配下は instantReveal の推奨 scrollY を、それ以外は固定ヘッダー
+      // (64px / SP 56px) 分のオフセット付きで section の top を使う。
+      // scrollTo 後にも残るズレ（refresh タイミングで scrollY が動いて計算が古くなる）
+      // を rAF でもう一度補正する。
+      const headerH = window.matchMedia('(max-width: 640px)').matches ? 56 : 64;
+      let attempts = 0;
+      const settle = () => {
+        if (recommendedScrollY !== undefined) return;
+        attempts++;
+        const after = target.getBoundingClientRect();
+        const delta = after.top - headerH;
+        if (Math.abs(delta) > 1 && attempts < 5) {
+          window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'auto' });
+          requestAnimationFrame(settle);
+        }
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          let top: number;
+          if (recommendedScrollY !== undefined) {
+            top = recommendedScrollY;
+          } else {
+            const rect = target.getBoundingClientRect();
+            top = Math.max(0, window.scrollY + rect.top - headerH);
+          }
+          window.scrollTo({ top, behavior: 'auto' });
+          history.pushState(null, '', href);
+          requestAnimationFrame(settle);
+        });
+      });
+    })
+  );
 
   // ESC で閉じる。
   document.addEventListener('keydown', (e) => {
