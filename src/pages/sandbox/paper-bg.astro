@@ -1,0 +1,235 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// 紙テクスチャ背景 7 パターン比較用 sandbox。
+// 各パターンは SVG feTurbulence + feColorMatrix を inline data URI 化し、
+// background-image に repeat で重ねる（Footer.astro と同方式）。
+// feColorMatrix の意味:
+//   出力 R/G/B = ノイズ色 (r,g,b) の定数、A = ノイズ alpha 成分 × α係数。
+//   → 一定色のグレインをアルファ濃淡で表現する。
+
+// data URI 用 SVG を生成。タイル幅は 160px 固定。
+// 文字列内の # と % は URL エンコードが必要（%23 / %25）。
+function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
+  const [r, g, b] = rgb;
+  const matrix = `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  0 0 0 ${alpha} 0`;
+  return (
+    "data:image/svg+xml;utf8," +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<filter id='n'>" +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${numOctaves}' seed='${seed}'/>` +
+    `<feColorMatrix values='${matrix}'/>` +
+    "</filter>" +
+    "<rect width='100%25' height='100%25' filter='url(%23n)'/>" +
+    "</svg>"
+  ).replaceAll("#", "%23");
+}
+
+// 単層パターン（A / B / C / B1 / B2 / B3）
+const patterns = [
+  {
+    id: "A",
+    bg: "#f4ede0",
+    note: "既存 Footer 系・薄め",
+    layers: [{ baseFrequency: 0.92, numOctaves: 2, seed: 3, alpha: 0.07, rgb: [0.3, 0.22, 0.12] }],
+    meta: "baseFreq 0.92 / octaves 2 / α 0.07 / noise rgb(0.30,0.22,0.12)",
+    recommended: false,
+  },
+  {
+    id: "B",
+    bg: "#f0e7d4",
+    note: "中グレイン（オリジナル）",
+    layers: [{ baseFrequency: 0.65, numOctaves: 2, seed: 7, alpha: 0.11, rgb: [0.28, 0.2, 0.1] }],
+    meta: "baseFreq 0.65 / octaves 2 / α 0.11 / noise rgb(0.28,0.20,0.10)",
+    recommended: false,
+  },
+  {
+    id: "C",
+    bg: "#ece1c8",
+    note: "粗繊維・和紙風",
+    layers: [{ baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] }],
+    meta: "baseFreq 0.35 / octaves 3 / α 0.14 / noise rgb(0.32,0.24,0.14)",
+    recommended: false,
+  },
+  {
+    id: "D",
+    bg: "#efe5cf",
+    note: "雲ムラ＋微細グレイン 2 層",
+    layers: [
+      { baseFrequency: 0.018, numOctaves: 2, seed: 2, alpha: 0.18, rgb: [0.28, 0.2, 0.1] },
+      { baseFrequency: 0.85, numOctaves: 2, seed: 5, alpha: 0.08, rgb: [0.3, 0.22, 0.1] },
+    ],
+    meta: "層1: baseFreq 0.018 / α 0.18（雲ムラ） + 層2: baseFreq 0.85 / α 0.08（微細グレイン）",
+    recommended: false,
+  },
+  {
+    id: "B1",
+    bg: "#f5ecdd",
+    note: "やや白め",
+    layers: [{ baseFrequency: 0.65, numOctaves: 2, seed: 7, alpha: 0.1, rgb: [0.28, 0.2, 0.1] }],
+    meta: "baseFreq 0.65 / octaves 2 / α 0.10 / noise rgb(0.28,0.20,0.10)",
+    recommended: false,
+  },
+  {
+    id: "B2",
+    bg: "#f9f2e6",
+    note: "白め中間",
+    layers: [{ baseFrequency: 0.65, numOctaves: 2, seed: 7, alpha: 0.11, rgb: [0.26, 0.18, 0.08] }],
+    meta: "baseFreq 0.65 / octaves 2 / α 0.11 / noise rgb(0.26,0.18,0.08)",
+    recommended: true,
+  },
+  {
+    id: "B3",
+    bg: "#fcf7ec",
+    note: "かなり白（既存 Hero 同等）",
+    layers: [{ baseFrequency: 0.65, numOctaves: 2, seed: 7, alpha: 0.12, rgb: [0.24, 0.16, 0.06] }],
+    meta: "baseFreq 0.65 / octaves 2 / α 0.12 / noise rgb(0.24,0.16,0.06)",
+    recommended: false,
+  },
+];
+
+// 各パターンに data URI 配列を付与
+const rendered = patterns.map((p) => ({
+  ...p,
+  urls: p.layers.map((l) => makeNoiseSvg(l)),
+}));
+---
+
+<Base title="紙テクスチャ背景 7 パターン比較 — Sandbox（非公開）">
+  <Fragment slot="head-extra">
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="paper-sandbox">
+    {
+      rendered.map((p) => (
+        <section
+          class="panel"
+          style={{
+            backgroundColor: p.bg,
+            backgroundImage: p.urls.map((u) => `url("${u}")`).join(", "),
+          }}
+        >
+          <div class="panel-inner">
+            <div class="label-row">
+              <span class="pid">PATTERN {p.id}</span>
+              {p.recommended && <span class="badge">採用候補</span>}
+            </div>
+            <p class="meta">
+              <span class="bg-chip" style={{ backgroundColor: p.bg }} />
+              背景色 {p.bg}　/　{p.note}
+            </p>
+            <p class="meta-detail">{p.meta}</p>
+
+            <div class="sample">
+              <h2 class="sample-h1">Co-Thrive Labs</h2>
+              <p class="sample-h2">AI 社員 4 人で運営する個人開発スタジオ</p>
+              <p class="sample-body">
+                私たちは少人数で、ひとつひとつの作品にじっくり向き合う開発スタジオです。
+                <br />
+                技術とデザインの両面から、使う人の暮らしにそっと馴染むものづくりを大切にしています。
+                <br />
+                小さなチームだからこそ届けられる、丁寧で温かい体験を目指しています。
+              </p>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+  </main>
+</Base>
+
+<style>
+  .paper-sandbox {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .panel {
+    width: 100vw;
+    min-height: 70vh;
+    background-repeat: repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+    box-sizing: border-box;
+  }
+  .panel-inner {
+    max-width: var(--max-w);
+    width: 100%;
+    margin: 0 auto;
+  }
+  .label-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+  .pid {
+    font-family: var(--font-en);
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    font-weight: 800;
+    letter-spacing: var(--ls-tight);
+    color: #2a2a2a;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--color-accent);
+    color: #fff;
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.35em 0.9em;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(201, 123, 94, 0.45);
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 0.25rem;
+    font-family: var(--font-jp);
+    font-size: 0.95rem;
+    color: var(--color-text-sub);
+  }
+  .bg-chip {
+    display: inline-block;
+    width: 1.1em;
+    height: 1.1em;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  .meta-detail {
+    margin: 0 0 2.5rem;
+    font-family: var(--font-en);
+    font-size: 0.85rem;
+    color: var(--color-text-mute);
+  }
+  .sample {
+    max-width: 720px;
+  }
+  .sample-h1 {
+    font-family: var(--font-en);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800;
+    letter-spacing: var(--ls-tight);
+    color: var(--color-text);
+    margin: 0 0 0.5rem;
+    line-height: 1.05;
+  }
+  .sample-h2 {
+    font-family: var(--font-jp);
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0 0 1.5rem;
+  }
+  .sample-body {
+    font-family: var(--font-jp);
+    font-size: 1rem;
+    line-height: 1.9;
+    color: var(--color-text-sub);
+    margin: 0;
+  }
+</style>

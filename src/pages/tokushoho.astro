@@ -1,0 +1,91 @@
+---
+import Base from '../layouts/Base.astro';
+import LegalPage from '../components/legal/LegalPage.astro';
+
+const pageTitle = '特定商取引法に基づく表記 | Co-Thrive Labs';
+const pageDescription = 'Co-Thrive Labs の特定商取引法に基づく表記。';
+
+const meta = [
+  { label: '対象サービス', value: 'cothrivelabs.com' },
+  { label: '屋号', value: 'Co-Thrive Labs' },
+  { label: '運営者', value: '倉西斗夢（あめまみれ）' },
+  { label: '連絡先', value: 'contact@cothrivelabs.com', href: 'mailto:contact@cothrivelabs.com' },
+  { label: '制定日', value: '2026 年 6 月 30 日' },
+  { label: '最終改定日', value: '2026 年 6 月 30 日' },
+];
+---
+<Base title={pageTitle} description={pageDescription}>
+  <LegalPage
+    heading="特定商取引法に基づく表記"
+    lead="本サイトは申込受付機能を持たない問い合わせ専用サイトであり、特定商取引法上の通信販売には該当しません。下記は当方が継続的に行う受託業務に関する事業者情報を、利用者の便宜のため任意で開示するものです。"
+    meta={meta}
+  >
+    <h2>事業者情報（参考情報）</h2>
+    <p>以下の表は、受託業務をご検討いただく利用者の便宜のため、当方が任意で開示する参考情報です。本サイト上で役務の販売・申込受付は行っておりません。</p>
+    <div class="legal-table-wrap">
+      <table class="legal-table">
+        <tbody>
+          <tr>
+            <th>屋号</th>
+            <td>Co-Thrive Labs</td>
+          </tr>
+          <tr>
+            <th>運営者</th>
+            <td>倉西斗夢（あめまみれ）</td>
+          </tr>
+          <tr>
+            <th>所在地</th>
+            <td>請求があった場合、遅滞なく開示します。下記連絡先までご請求ください。</td>
+          </tr>
+          <tr>
+            <th>電話番号</th>
+            <td>請求があった場合、遅滞なく開示します。下記連絡先までご請求ください。</td>
+          </tr>
+          <tr>
+            <th>メールアドレス</th>
+            <td><a href="mailto:contact@cothrivelabs.com">contact@cothrivelabs.com</a></td>
+          </tr>
+          <tr>
+            <th>役務の内容</th>
+            <td>Web サイト制作、AI 業務自動化、その他デジタルプロダクト開発に関する受託業務</td>
+          </tr>
+          <tr>
+            <th>役務の対価（参考情報）</th>
+            <td>お問い合わせ後、業務内容・要件に応じて個別にお見積りいたします。お見積書記載の金額が役務の対価となります。</td>
+          </tr>
+          <tr>
+            <th>対価以外に必要な費用（参考情報）</th>
+            <td>業務に必要な第三者サービス利用料、出張交通費等が発生する場合は、事前にお見積書にて提示します。事前提示なしに追加費用を請求することはありません。</td>
+          </tr>
+          <tr>
+            <th>支払方法（参考情報）</th>
+            <td>銀行振込（運営者指定口座）</td>
+          </tr>
+          <tr>
+            <th>支払時期（参考情報）</th>
+            <td>個別契約書または見積書に定める時期。原則として納品月の翌月末日までの後払いとしますが、案件規模により着手金・分割払いを設定する場合があります。詳細は契約締結時に取り決めます。</td>
+          </tr>
+          <tr>
+            <th>役務の提供時期（参考情報）</th>
+            <td>個別契約書または見積書に定める時期。お問い合わせから着手・納品までのスケジュールは案件ごとに個別にご提示します。</td>
+          </tr>
+          <tr>
+            <th>キャンセル・解除（参考情報）</th>
+            <td>業務委託契約締結後のキャンセルおよび契約解除は、個別契約書に定める条件に従います。契約締結前のお問い合わせ・見積り依頼の取消しは無料です。</td>
+          </tr>
+          <tr>
+            <th>役務の瑕疵に関する責任（参考情報）</th>
+            <td>納品物に契約不適合があった場合は、個別契約書に定める保証期間内において、無償で修正対応いたします。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>本表記は、当方が継続的・反復的に役務提供を行う場合に備えて掲載するものです。本サイトはお問い合わせ受付段階のため、現時点で特定の役務を本サイト上で販売または申込受付を行っておりません。</p>
+
+    <div class="legal-stamp">
+      <p>制定日: 2026 年 6 月 30 日</p>
+      <p>最終改定日: 2026 年 6 月 30 日</p>
+    </div>
+  </LegalPage>
+</Base>

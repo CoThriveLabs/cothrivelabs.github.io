@@ -35,6 +35,14 @@ jobs:
         run: npm ci
 
       - name: Build with Astro
+        # Contact form needs the Turnstile site key and the Worker API URL
+        # baked into the client bundle. Values are non-sensitive (public site
+        # key + public endpoint URL) so they live in Actions Variables, not
+        # Secrets. Missing values leave the form in a non-functional state but
+        # do not break the build.
+        env:
+          PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
+          PUBLIC_CONTACT_API_URL: ${{ vars.PUBLIC_CONTACT_API_URL }}
         run: npm run build
 
       - name: Upload artifact

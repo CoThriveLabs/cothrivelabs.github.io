@@ -1,0 +1,154 @@
+---
+// S2 スタジオ概要。未登記のため「スタジオ」表記で統一。
+// data-bg は paper-warm（背景色トリガー）。
+import { Image } from 'astro:assets';
+import SectionHeading from '../SectionHeading.astro';
+import sakiBar from '../../assets/decor/saki-bar.png';
+import run2 from '../../assets/decor/run-2.png';
+---
+<section class="studio-about" id="studio-about" data-bg="paper-warm" data-step-section>
+  <div class="studio-about__inner">
+    <SectionHeading title="こすらぼ（Co-Thrive Labs）とは" align="left" />
+
+    <div class="studio-about__body">
+      <div class="studio-about__figure" aria-hidden="true" data-reveal="pop-soft">
+        {/* 立ち絵は装飾扱い（指差し方向＝右カラム本文へ誘導）。alt 空 + aria-hidden で支援技術から除外 */}
+        <Image src={sakiBar} alt="" class="studio-about__figure-img" widths={[280, 420, 560]} sizes="(max-width: 768px) 60vw, 35vw" />
+      </div>
+      <div class="studio-about__lead" data-reveal="paper">
+        {/* SP 限定の右上小装飾（PC では display:none） */}
+        <Image src={run2} alt="" class="studio-about__run-icon" widths={[120, 180, 240]} sizes="130px" />
+        {/* リード文（敬体・3 段落構造） */}
+        <p>
+          こすらぼ（Co-Thrive Labs）は、あめまみれ（人間）と AIエージェント4体で動かしている小さなスタジオです。ひとりでは抱えきれなかった「企画・設計・実装・テスト」を 5 人で役割分担し、フルスタックで開発を進めていきます。
+        </p>
+        <p>
+          AIが得意なことをAIに任せ、AIが不得意なことや、人間がやるべきことを人間が担当することで、開発の効率化と品質向上を両立しています。
+        </p>
+        <p>
+          具体的な開発の進め方は「開発フロー」へ。納品基準やお問い合わせ前の確認事項は、ページ下部にまとめています。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .studio-about {
+    padding: calc(var(--space-base) * 0.6) 1.5rem var(--space-loose);
+    position: relative;
+    overflow: hidden;
+    /* Hero pin spacer の真空区間を詰めるための負 margin。
+       S2 を Hero 直後に吸い寄せて document スクロール量を短縮（演出 timeline 相対位置は不変）。 */
+    margin-top: -100vh;
+  }
+  .studio-about__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  /* 2 カラム: 左 35% 立ち絵 / 右 65% テキスト紙面 */
+  .studio-about__body {
+    display: grid;
+    grid-template-columns: 35% 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center;
+    /* 見出し直後の本文ブロックを詰める */
+    margin-top: -2rem;
+  }
+  .studio-about__figure {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .studio-about__figure-img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+    /* PNG の透過縁を背景に馴染ませる柔らかい接地影 */
+    filter: drop-shadow(0 12px 18px rgba(70, 55, 40, 0.12));
+  }
+  /* 右カラム紙面: 既存 paper トーンを半透明化して浮かせる */
+  .studio-about__lead {
+    /* color-mix 未対応ブラウザ向けフォールバック（#FFFBF3 ≒ var(--c-paper) のα55%相当） */
+    background: rgba(255, 251, 243, 0.55);
+    background: color-mix(in srgb, var(--c-paper) 55%, transparent);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 50px rgba(70, 55, 40, 0.06);
+    padding: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3.5vw, 4rem);
+    max-width: 780px;
+    /* run-icon の absolute 配置基点 */
+    position: relative;
+  }
+  /* PC ではアイコン非表示（SP media query で表示） */
+  .studio-about__run-icon {
+    display: none;
+  }
+  .studio-about__lead p {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-body);
+    font-size: clamp(1.235rem, 2.08vw, 1.365rem);
+    line-height: 2.1;
+    color: rgba(58, 50, 48, 0.85);
+  }
+  .studio-about__lead p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    /* Hero pin spacer 補正は 768 で半量に（画面崩れ抑制） */
+    .studio-about {
+      margin-top: -50vh;
+    }
+  }
+  /* 601-768px: saki-bar の列幅を詰めてテキストに幅を回す。立ち絵は画像を少し拡大し
+     figure を overflow:hidden で囲って PNG の透明縁（両端の余白）を約 1/3 まで削る。
+     これで本文が早く折り返さず、立ち絵の大きさは概ね維持される。 */
+  @media (min-width: 601px) and (max-width: 768px) {
+    .studio-about__body {
+      grid-template-columns: 28% 1fr;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .studio-about__figure {
+      overflow: hidden;
+    }
+    .studio-about__figure-img {
+      width: 125%;
+      max-width: none;
+      flex-shrink: 0;
+    }
+  }
+  /* saki-bar の 2 カラム → run-2 の縦並び SP レイアウトへの切替は 600px。
+     601-768px は saki-bar 立ち絵を維持する。 */
+  @media (max-width: 600px) {
+    /* 縦並び: 立ち絵 → テキストの順、立ち絵は 60vw センター */
+    .studio-about__body {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .studio-about__figure-img {
+      max-width: 60vw;
+    }
+    /* 立ち絵を非表示にして紙面右上の小装飾に差し替え */
+    .studio-about__figure {
+      display: none;
+    }
+    .studio-about__lead {
+      padding: 1.75rem 1.5rem;
+    }
+    .studio-about__run-icon {
+      display: block;
+      position: absolute;
+      top: -52px;
+      right: -8px;
+      width: 130px;
+      height: auto;
+      pointer-events: none;
+      user-select: none;
+      z-index: 1;
+    }
+  }
+</style>

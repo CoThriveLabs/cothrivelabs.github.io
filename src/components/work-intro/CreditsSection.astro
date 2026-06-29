@@ -9,7 +9,7 @@ const { links } = Astro.props;
 <section class="wi-credits">
   <div class="wi-credits__inner" data-fade>
     <p class="wi-credits__logo">Co-Thrive Labs</p>
-    <p class="wi-credits__tagline">AI 4 人と作る共生型 開発カンパニー</p>
+    <p class="wi-credits__tagline">AIエージェント4体と作る共生型 開発スタジオ</p>
     {links.length > 0 && (
       <ul class="wi-credits__links">
         {links.map((l) => (
@@ -33,8 +33,8 @@ const { links } = Astro.props;
 <style>
   .wi-credits {
     padding: clamp(3rem, 6vw, 5rem) 1.5rem;
-    background: var(--color-bg-soft);
-    border-top: 1px solid var(--color-border);
+    background: var(--c-paper-deep);
+    border-top: 1px solid var(--c-border);
   }
   .wi-credits__inner {
     max-width: 760px;
@@ -43,16 +43,16 @@ const { links } = Astro.props;
   }
   .wi-credits__logo {
     margin: 0 0 0.4rem;
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 1.4rem;
     font-weight: 800;
     letter-spacing: var(--ls-tight);
-    color: var(--color-primary);
+    color: var(--c-main);
   }
   .wi-credits__tagline {
     margin: 0 0 2rem;
     font-size: 0.85rem;
-    color: var(--color-text-mute);
+    color: var(--c-main-mute);
     letter-spacing: 0.02em;
   }
   .wi-credits__links {
@@ -65,7 +65,7 @@ const { links } = Astro.props;
     gap: 1rem 1.5rem;
   }
   .wi-credits__links a {
-    color: var(--color-accent);
+    color: var(--c-accent);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
@@ -73,7 +73,7 @@ const { links } = Astro.props;
     transition: border-color 0.2s var(--ease);
   }
   .wi-credits__links a:hover {
-    border-bottom-color: var(--color-accent);
+    border-bottom-color: var(--c-accent);
   }
   .wi-credits__back {
     display: inline-flex;
@@ -81,7 +81,7 @@ const { links } = Astro.props;
     gap: 0.4rem;
     padding: 0.6rem 1.2rem;
     border-radius: 999px;
-    background: var(--color-accent);
+    background: var(--c-accent);
     color: #fff;
     text-decoration: none;
     font-size: 0.88rem;
@@ -89,7 +89,7 @@ const { links } = Astro.props;
     transition: background 0.2s var(--ease), transform 0.2s var(--ease);
   }
   .wi-credits__back:hover {
-    background: var(--color-accent-dark);
+    background: var(--c-accent-dark);
     transform: translateX(-2px);
   }
 </style>

@@ -1,0 +1,208 @@
+---
+// サイトフッタ。法的書面 4 件リンク・note/X「準備中」表示。
+// 通常スクロール領域・C-DEEP 実背景（濃色フッタ）。
+const year = new Date().getFullYear();
+const legal = [
+  { label: 'プライバシーポリシー', href: '/privacy' },
+  { label: '利用規約', href: '/terms' },
+  { label: '特定商取引法に基づく表記', href: '/tokushoho' },
+  { label: 'セキュリティポリシー', href: '/security' },
+];
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    {/* 納品基準ブロック。Footer 最上段・法的書面より上に配置。
+        半透明カード + border + 角丸の単一カラム。 */}
+    <section class="site-footer__pledge" aria-labelledby="site-footer-pledge-heading">
+      <h3 id="site-footer-pledge-heading">納品基準</h3>
+      <p>動かなくなったときに直せること、半年後に他人が触れること、鍵や顧客データを守れること。この三つを満たさないコードは納品しません。</p>
+    </section>
+
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <p class="site-footer__logo">Co-Thrive Labs</p>
+        <p class="site-footer__tagline">こすらぼ — AI と共に育つスタジオ</p>
+      </div>
+      <nav class="site-footer__links" aria-label="外部リンク">
+        <a href="https://github.com/CoThriveLabs" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="site-footer__pending">note<span class="site-footer__badge">準備中</span></span>
+        <span class="site-footer__pending">X<span class="site-footer__badge">準備中</span></span>
+      </nav>
+    </div>
+
+    <nav class="site-footer__legal" aria-label="法的書面">
+      {legal.map((l) => (
+        <a class="site-footer__legal-item" href={l.href}>{l.label}</a>
+      ))}
+    </nav>
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__copyright">© {year} Co-Thrive Labs. All rights reserved.</p>
+      <p class="site-footer__craft">
+        Made with
+        <svg class="site-footer__craft-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M2.5 5.5 H11 V9 a3 3 0 0 1 -3 3 H5.5 a3 3 0 0 1 -3 -3 Z" stroke="currentColor" stroke-width="1.1" fill="none"/>
+          <path d="M11 6.5 H12.5 a1.5 1.5 0 0 1 0 3 H11" stroke="currentColor" stroke-width="1.1" fill="none"/>
+          <path d="M4.5 2.2 Q4 3 4.5 3.8 M7 2.2 Q6.5 3 7 3.8" stroke="currentColor" stroke-width="1" fill="none" opacity="0.7"/>
+        </svg>
+        in Tokyo
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* position/z-index は .coffee-stain (fixed, z:9999) を覆い、Footer 隠蔽を防ぐ。 */
+  .site-footer {
+    position: relative;
+    z-index: 10000;
+    padding: calc(var(--space-base) * 0.6) 1.5rem 2.5rem;
+    background: linear-gradient(180deg, #2a2320 0%, #1f1a18 100%);
+    color: #d6d3cb;
+  }
+  .site-footer__inner {
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  /* 納品基準ブロック。Footer C-DEEP 実背景の上で var(--c-paper) 系で 11:1 余裕クリア。 */
+  .site-footer__pledge {
+    margin: 0 0 2rem;
+    padding: 1.5rem 1.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+  }
+  .site-footer__pledge h3 {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--c-paper);
+  }
+  .site-footer__pledge p {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 1.235rem;
+    line-height: 1.85;
+    color: #d6d3cb;
+  }
+  @media (max-width: 640px) {
+    .site-footer__pledge {
+      padding: 1.25rem 1.25rem;
+    }
+    .site-footer__pledge p {
+      font-size: 1.235rem;
+    }
+  }
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .site-footer__logo {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-accent);
+    font-size: 0.95rem;
+    letter-spacing: 0.2em;
+    color: #f4f1e8;
+    font-weight: 600;
+  }
+  .site-footer__tagline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 1.066rem;
+    color: #9a978f;
+  }
+  .site-footer__links {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .site-footer__links a {
+    color: #d6d3cb;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.25s var(--ease);
+  }
+  .site-footer__links a:hover {
+    color: var(--c-accent);
+  }
+  .site-footer__pending,
+  .site-footer__legal-item.is-soon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #7a786f;
+    font-size: 0.88rem;
+    cursor: default;
+  }
+  .site-footer__badge {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius);
+    background: rgba(192, 108, 93, 0.22);
+    color: #e0a08c;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    padding: 1.5rem 0;
+    margin-bottom: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .site-footer__legal-item {
+    font-size: 0.82rem;
+    color: #b8b5ad;
+    text-decoration: none;
+  }
+  a.site-footer__legal-item:hover {
+    color: var(--c-accent);
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .site-footer__copyright {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #7a786f;
+  }
+  .site-footer__craft {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    letter-spacing: 0.04em;
+    color: #7a786f;
+  }
+  .site-footer__craft-icon {
+    display: block;
+    transform: translateY(0.5px);
+    opacity: 0.85;
+  }
+
+  /* SP 用 BP 640px（他セクションと統一） */
+  @media (max-width: 640px) {
+    .site-footer__bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

@@ -1,0 +1,265 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// フォント比較 sandbox（noindex）。SIL OFL 1.1 ライセンスの和文フォント 3 種類を
+// 紙テクスチャ背景上に並べ、見出し/小見出し/本文/キャッチに適用して実物比較する。
+// ロードは Fontsource（@fontsource/*）の CSS import。Astro 6.3.2 の Fonts API は
+// 現状 experimental のため、安定動作優先で Fontsource を採用。
+
+// 必要ウェイトのみ import
+import '@fontsource/shippori-mincho/400.css';
+import '@fontsource/shippori-mincho/600.css';
+import '@fontsource/shippori-mincho/800.css';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+import '@fontsource/klee-one/400.css';
+import '@fontsource/klee-one/600.css';
+
+// 紙テクスチャ背景（paper-bg-v2.astro と同一の noise 値で統一）
+const NOISE = { baseFrequency: 0.35, numOctaves: 3, seed: 11, alpha: 0.14, rgb: [0.32, 0.24, 0.14] };
+function makeNoiseSvg({ baseFrequency, numOctaves, seed, alpha, rgb }) {
+  const [r, g, b] = rgb;
+  const matrix = `0 0 0 0 ${r}  0 0 0 0 ${g}  0 0 0 0 ${b}  0 0 0 ${alpha} 0`;
+  return (
+    "data:image/svg+xml;utf8," +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'>" +
+    "<filter id='n'>" +
+    `<feTurbulence type='fractalNoise' baseFrequency='${baseFrequency}' numOctaves='${numOctaves}' seed='${seed}'/>` +
+    `<feColorMatrix values='${matrix}'/>` +
+    "</filter>" +
+    "<rect width='100%25' height='100%25' filter='url(%23n)'/>" +
+    "</svg>"
+  ).replaceAll("#", "%23");
+}
+const noiseUrl = makeNoiseSvg(NOISE);
+const C2_BG = "#f9f2e6";
+
+const fonts = [
+  {
+    id: "FONT 1",
+    role: "見出し用",
+    name: "しっぽり明朝",
+    enName: "Shippori Mincho",
+    pkg: "@fontsource/shippori-mincho",
+    license: "SIL OFL 1.1",
+    stack: "'Shippori Mincho', serif",
+    headWeight: 800,
+    subWeight: 600,
+    note: "築地活版系の上品なオールド明朝。信頼感・和の格を出したい見出し向き。",
+  },
+  {
+    id: "FONT 2",
+    role: "本文用",
+    name: "Zen Kaku Gothic New",
+    enName: "Zen Kaku Gothic New",
+    pkg: "@fontsource/zen-kaku-gothic-new",
+    license: "SIL OFL 1.1",
+    stack: "'Zen Kaku Gothic New', sans-serif",
+    headWeight: 700,
+    subWeight: 500,
+    bodyWeight: 400,
+    note: "現代的で可読性の高い角ゴシック。長文・本文の主力。",
+  },
+  {
+    id: "FONT 3",
+    role: "アクセント用",
+    name: "Klee One",
+    enName: "Klee One",
+    pkg: "@fontsource/klee-one",
+    license: "SIL OFL 1.1",
+    stack: "'Klee One', cursive",
+    headWeight: 600,
+    subWeight: 600,
+    bodyWeight: 400,
+    note: "手書き楷書風。キャッチや手描きロゴ近傍に少量使うと人の手の温度感が出る。",
+  },
+];
+---
+
+<Base title="フォント比較 — しっぽり明朝 / Zen Kaku Gothic New / Klee One（Sandbox・非公開）">
+  <Fragment slot="head-extra">
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="font-sandbox">
+    {
+      fonts.map((f) => (
+        <section
+          class="font-block"
+          style={{
+            backgroundColor: C2_BG,
+            backgroundImage: `url("${noiseUrl}")`,
+            fontFamily: f.stack,
+          }}
+        >
+          <div class="block-inner">
+            <header class="block-head">
+              <span class="font-id">{f.id}</span>
+              <span class="font-role">{f.role}</span>
+              <h2 class="font-name" style={{ fontWeight: f.subWeight }}>{f.name}</h2>
+              <p class="font-meta">
+                {f.enName}　/　{f.pkg}　/　{f.license}
+              </p>
+              <p class="font-note">{f.note}</p>
+            </header>
+
+            <div class="specimen">
+              <p class="spec-label">大見出し（h1）</p>
+              <h1 class="sample-h1" style={{ fontWeight: f.headWeight }}>こすらぼ</h1>
+              <p class="sample-en" style={{ fontWeight: f.subWeight }}>Co-Thrive Labs</p>
+
+              <p class="spec-label">小見出し（h2）</p>
+              <p class="sample-h2" style={{ fontWeight: f.subWeight }}>
+                AI 4 人と運営する個人開発スタジオ
+              </p>
+
+              <p class="spec-label">本文（body）</p>
+              <p class="sample-body" style={{ fontWeight: f.bodyWeight ?? 400 }}>
+                私たちは少人数で、ひとつひとつの作品にじっくり向き合う開発スタジオです。<br />
+                技術とデザインの両面から、使う人の暮らしにそっと馴染むものづくりを大切にしています。<br />
+                小さなチームだからこそ届けられる、丁寧で温かい体験を目指しています。
+              </p>
+
+              <p class="spec-label">キャッチコピー風</p>
+              <p class="sample-catch" style={{ fontWeight: f.headWeight }}>
+                「キャッチコピーを置くとこんな感じ」
+              </p>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+
+    <footer class="sandbox-foot">
+      <p>
+        ロード方式: <strong>Fontsource（@fontsource/*）</strong>を CSS import で self-host。
+        Astro 6.3.2 の Fonts API は現状 experimental（要フラグ）のため、試作では確実に動く Fontsource を採用。
+        背景は paper-bg-v2 と同一の C2 紙テクスチャ（#f9f2e6 + feTurbulence noise baseFreq 0.35 / α 0.14）。
+      </p>
+    </footer>
+  </main>
+</Base>
+
+<style>
+  .font-sandbox {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .font-block {
+    width: 100vw;
+    min-height: 70vh;
+    background-repeat: repeat;
+    display: flex;
+    align-items: center;
+    padding: 4rem 1.5rem;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(42, 42, 42, 0.08);
+  }
+  .block-inner {
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .block-head {
+    margin-bottom: 2.5rem;
+  }
+  .font-id {
+    font-family: var(--font-en);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--color-accent);
+  }
+  .font-role {
+    font-family: var(--font-jp);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-left: 0.75rem;
+    padding: 0.15em 0.7em;
+    border-radius: 999px;
+    background: rgba(107, 142, 90, 0.14);
+    color: var(--color-primary-dark);
+  }
+  .font-name {
+    margin: 0.6rem 0 0.4rem;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: var(--color-text);
+    line-height: 1.2;
+  }
+  .font-meta {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-en);
+    font-size: 0.82rem;
+    color: var(--color-text-mute);
+    letter-spacing: 0.01em;
+  }
+  .font-note {
+    margin: 0;
+    font-family: var(--font-jp);
+    font-size: 0.9rem;
+    color: var(--color-text-sub);
+    line-height: 1.7;
+  }
+  .specimen {
+    border-top: 1px dashed rgba(42, 42, 42, 0.18);
+    padding-top: 1.75rem;
+  }
+  .spec-label {
+    margin: 1.6rem 0 0.35rem;
+    font-family: var(--font-en);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-mute);
+  }
+  .spec-label:first-child {
+    margin-top: 0;
+  }
+  .sample-h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1.1;
+    color: var(--color-text);
+    /* font-family は section の inline style から継承 */
+  }
+  .sample-en {
+    margin: 0.2rem 0 0;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--color-text-sub);
+    letter-spacing: 0.02em;
+  }
+  .sample-h2 {
+    margin: 0;
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    line-height: 1.4;
+    color: var(--color-text);
+  }
+  .sample-body {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.95;
+    color: var(--color-text-sub);
+  }
+  .sample-catch {
+    margin: 0;
+    font-size: clamp(1.3rem, 3.5vw, 2rem);
+    line-height: 1.4;
+    color: var(--color-primary-dark);
+  }
+  .sandbox-foot {
+    background: #2a2a2a;
+    color: #e8e4dc;
+    padding: 2rem 1.5rem;
+  }
+  .sandbox-foot p {
+    max-width: 880px;
+    margin: 0 auto;
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  .sandbox-foot strong {
+    color: #fff;
+  }
+</style>

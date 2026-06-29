@@ -1,11 +1,10 @@
 ---
-// 動的ルート: /works/{slug}/
-// Phase 1: Hero / What / Why / Meta / Credits までを実装。
-// Phase 2 で Hotspot、Phase 3 で DownloadSection を追加予定。
+// 動的ルート: /works/{slug}/。
+// 作品ごとの紹介ページ。Hero / What / Why / Hotspot / DownloadSection / Meta / Credits の組み合わせ。
 
 import type { Work } from '../../types/work';
 import Base from '../../layouts/Base.astro';
-import Footer from '../../components/Footer.astro';
+import Footer from '../../components/sections/Footer.astro';
 import Hero from '../../components/work-intro/Hero.astro';
 import WhatSection from '../../components/work-intro/WhatSection.astro';
 import WhySection from '../../components/work-intro/WhySection.astro';

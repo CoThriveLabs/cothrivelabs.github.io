@@ -1,0 +1,20 @@
+{
+  "name": "cothrivelabs-contact",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloudflare Worker for the Co-Thrive Labs contact form (Turnstile verification + Resend delivery).",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240620.0",
+    "typescript": "^5.5.4",
+    "wrangler": "^4.105.0"
+  }
+}

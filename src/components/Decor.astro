@@ -1,0 +1,119 @@
+---
+// ちらほらイラスト装飾コンポーネント。
+// 各セクションに 1-3 個ばら撒く背景装飾。3 段視差で奥行きを出す。
+//
+// 責務分離:
+//   - blur と基本サイズは CSS（data-depth）。
+//   - scrub 視差速度は parallax.ts。
+//   - 出現フェードは reveal.ts(B) が `data-reveal` を拾って処理。
+// aria-hidden で読み上げ対象外、z-index でコンテンツより下に。
+import { Image } from 'astro:assets';
+import ropi from '../assets/decor/ropi-froating.png';
+import mituru from '../assets/decor/mituru-froating.png';
+import saki from '../assets/decor/saki-froating.png';
+import tomomi from '../assets/decor/tomomi-froating.png';
+
+type Char = 'ropi' | 'mituru' | 'saki' | 'tomomi';
+type Depth = 'front' | 'mid' | 'back';
+type Corner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export interface Props {
+  char: Char;
+  depth: Depth;
+  corner: Corner;
+  // セクション内の絶対位置調整（vw/vh/px の文字列）。未指定時 corner デフォルト。
+  offsetX?: string;
+  offsetY?: string;
+  // サイズ（デフォルトは depth で変動）
+  size?: string;
+  // pin + scrub セクション内（[data-step-section]）に置くときは true。
+  // reveal.ts の順次出現カウントに装飾が混ざるのを防ぐ。
+  noReveal?: boolean;
+  // fixed overlay セクション内に置くときは true。
+  // parallax.ts が position:fixed 中の transform yPercent を上書きして表示が壊れるため
+  // data-parallax を出さないようにする。
+  noParallax?: boolean;
+}
+
+const { char, depth, corner, offsetX, offsetY, size, noReveal = false, noParallax = false } = Astro.props;
+
+const IMAGES: Record<Char, ImageMetadata> = { ropi, mituru, saki, tomomi };
+const img = IMAGES[char];
+
+// depth 別デフォルトサイズ（back ほど大きく＝奥行き）。
+const DEFAULT_SIZE: Record<Depth, string> = {
+  front: '80px',
+  mid: '120px',
+  back: '180px',
+};
+const finalSize = size ?? DEFAULT_SIZE[depth];
+
+// corner 別デフォルトオフセット。
+const CORNER_POS: Record<Corner, { top?: string; bottom?: string; left?: string; right?: string }> = {
+  'top-left':     { top: '8%',    left: '4%' },
+  'top-right':    { top: '12%',   right: '5%' },
+  'bottom-left':  { bottom: '10%', left: '6%' },
+  'bottom-right': { bottom: '8%',  right: '4%' },
+};
+const pos = CORNER_POS[corner];
+
+// 任意の offset で上書き
+const styleParts: string[] = [
+  `--decor-size: ${finalSize}`,
+  pos.top ? `top: ${offsetY ?? pos.top}` : '',
+  pos.bottom ? `bottom: ${offsetY ?? pos.bottom}` : '',
+  pos.left ? `left: ${offsetX ?? pos.left}` : '',
+  pos.right ? `right: ${offsetX ?? pos.right}` : '',
+].filter(Boolean);
+const styleStr = styleParts.join('; ');
+---
+<Image
+  src={img}
+  alt=""
+  width={240}
+  height={240}
+  loading="lazy"
+  decoding="async"
+  class:list={['decor', { 'decor--no-reveal': noReveal }]}
+  data-parallax={noParallax ? undefined : ''}
+  data-depth={depth}
+  data-reveal={noReveal ? undefined : ''}
+  aria-hidden="true"
+  style={styleStr}
+/>
+
+<style>
+  .decor {
+    position: absolute;
+    width: var(--decor-size);
+    height: auto;
+    /* コンテンツより下、紙背景より上 */
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    /* GPU 合成（parallax.ts の yPercent と reveal.ts の opacity を高速合成） */
+    will-change: transform, opacity;
+  }
+  /* data-reveal を持つ装飾は reveal.ts が opacity を立ち上げる前のチラ見えを防ぐため
+     初期 opacity:0（Base.astro :global [data-reveal] でも担保されるが念のため）。 */
+  .decor[data-reveal] {
+    opacity: 0;
+  }
+  /* blur は CSS で静的（reduce 時も維持して奥行きは保つ）。 */
+  .decor[data-depth='front'] { filter: none; opacity: 0.85; }
+  .decor[data-depth='mid']   { filter: blur(3px);  opacity: 0.55; }
+  .decor[data-depth='back']  { filter: blur(10px); opacity: 0.35; }
+
+  /* noReveal 指定時（pin セクション内に置かれる装飾・data-reveal なし）は
+     reveal.ts 管理外。depth 別の opacity 指定が直接生きる（上の .decor[data-reveal] が
+     当たらないため初期 opacity:0 にならず、depth 別の最終値で常時表示）。 */
+
+  /* reduce 時の opacity 立ち上げ（reveal.ts が transform: none の上書きで即可視化するが、
+     reveal が動かないケースの保険として CSS でも opacity を立ち上げる）。
+     reveal.ts の reduce 分岐は opacity:1 / y:0 に gsap.set するため二重設定で問題なし。 */
+  @media (prefers-reduced-motion: reduce) {
+    .decor[data-depth='front'] { opacity: 0.85; }
+    .decor[data-depth='mid']   { opacity: 0.55; }
+    .decor[data-depth='back']  { opacity: 0.35; }
+  }
+</style>

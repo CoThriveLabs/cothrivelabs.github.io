@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate D2: Cを真円弧(A command)で描き直し+同心円上に〇4つ -->
+  <!-- 円: 中心(31,32) 半径19.72。開口右側80度、Cは残り280度の真円弧 -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <path d="M46.54 19.86 A19.72 19.72 0 1 0 46.54 44.14"
+        stroke="#F8F6F0" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <circle cx="48.08" cy="22.14" r="2.9" fill="#C97B5E"/>
+  <circle cx="50.42" cy="28.58" r="2.9" fill="#C97B5E"/>
+  <circle cx="50.42" cy="35.42" r="2.9" fill="#C97B5E"/>
+  <circle cx="48.08" cy="41.86" r="2.9" fill="#C97B5E"/>
+</svg>

@@ -1,0 +1,105 @@
+---
+// S8 案件受託案内。受付フォーム本体は S9 連絡先に集約し、ここからは
+// 視線誘導のテキストリンク 1 本のみを出す（CTA 単一化）。
+// 領域 B・C-DEEP 実背景。価格は「応相談」のみ・誇張保証 NG。
+---
+{/* sticky スタッキング: ComingSoon は parent box 内で sticky:top0 で TechStack を覆う。
+    TechStack (z:10001) の上に z:10002 で重なり、双方向動作はブラウザ任せ。
+    JS 不要・状態管理ゼロで「半 A + 半 B」が物理的に発生しない。 */}
+<section class="coming-soon" id="coming-soon">
+  <div class="coming-soon__inner">
+    {/* outcome-driven ヘッドライン */}
+    <h2 class="coming-soon__headline">
+      Web 制作・LP・業務効率化のご相談、はじめませんか
+    </h2>
+    <p class="coming-soon__sub">現在準備中・先行のお声がけを受付中です。</p>
+
+    {/* social proof（実数のみ・誇張なし・制作物セクションと整合） */}
+    <p class="coming-soon__proof">
+      制作実績を公開中です（Sprout / LE CIEL / JukuMate / gizirotto の 4 件）。
+    </p>
+
+    {/* 期間明示（具体時期未確定なので範囲表現） */}
+    <p class="coming-soon__period">
+      準備が整い次第、正式に受付を開始します。
+    </p>
+
+    {/* S9 連絡先フォームへの視線誘導（このセクション唯一の CTA。
+        他リンクはここに置かない＝CTA 6 要素⑥ 邪魔排除の維持）。 */}
+    <p class="coming-soon__handoff">
+      <a href="#contact" class="coming-soon__handoff-link">
+        ご相談はこちら（下のフォームへ）
+        <span aria-hidden="true">↓</span>
+      </a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .coming-soon {
+    padding: calc(var(--space-loose) * 0.6) 1.5rem;
+    background: var(--c-paper-deep);
+    position: relative;
+    /* 不透明背景必須: sticky で TechStack を覆うため、下層が透けてはいけない。 */
+  }
+  .coming-soon__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+  .coming-soon__headline {
+    margin: 0 0 0.85rem;
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);
+    font-weight: 800;
+    line-height: 1.4;
+    color: var(--c-main);
+  }
+  .coming-soon__sub {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-body);
+    font-size: 1.235rem;
+    color: var(--c-main-soft);
+  }
+  .coming-soon__proof,
+  .coming-soon__period {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-body);
+    font-size: 1.235rem;
+    color: var(--c-main-mute);
+  }
+  .coming-soon__handoff {
+    margin: 2rem 0 0;
+  }
+  .coming-soon__handoff-link {
+    font-family: var(--font-accent);
+    font-size: 1.1rem;
+    color: var(--c-accent);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.25s var(--ease);
+  }
+  .coming-soon__handoff-link:hover,
+  .coming-soon__handoff-link:focus-visible {
+    color: var(--c-accent-dark);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* layered-pin panel 内で section を panel 一杯に広げ、コンテンツを中央配置。
+     重なり順は panel 側 (z:2) に一本化（section は z-index を持たない）。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .coming-soon {
+      height: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding-block: clamp(1.8rem, 3.6vh, 3rem);
+    }
+  }
+</style>

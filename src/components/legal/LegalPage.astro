@@ -1,0 +1,248 @@
+---
+// 法的書面 4 ページ共通の静的レイアウト。
+// Hero / シミ overlay 等の演出は持たず、純粋に読み物 UI として組む。
+// メタ情報カードを上部に、その後に本文 slot を流す。
+import Footer from '../sections/Footer.astro';
+
+interface MetaItem {
+  label: string;
+  value: string;
+  href?: string;
+}
+
+interface Props {
+  heading: string;
+  lead?: string;
+  meta: MetaItem[];
+}
+
+const { heading, lead, meta } = Astro.props;
+---
+<main class="legal-page">
+  <div class="legal-page__inner">
+    <header class="legal-page__header">
+      <p class="legal-page__eyebrow">Co-Thrive Labs</p>
+      <h1 class="legal-page__title">{heading}</h1>
+      {lead && <p class="legal-page__lead">{lead}</p>}
+    </header>
+
+    <aside class="legal-meta" aria-label="メタ情報">
+      <dl class="legal-meta__list">
+        {meta.map((item) => (
+          <div class="legal-meta__row">
+            <dt class="legal-meta__key">{item.label}</dt>
+            <dd class="legal-meta__val">
+              {item.href
+                ? <a href={item.href} class="legal-meta__link">{item.value}</a>
+                : item.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+
+    <article class="legal-body">
+      <slot />
+    </article>
+  </div>
+</main>
+<Footer />
+
+<style>
+  .legal-page {
+    background: var(--c-paper);
+    color: var(--c-main);
+    padding: calc(var(--header-h) + 2.5rem) 1.25rem var(--space-base);
+    min-height: 100vh;
+  }
+  .legal-page__inner {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .legal-page__header {
+    margin-bottom: 2rem;
+  }
+  .legal-page__eyebrow {
+    margin: 0 0 0.6rem;
+    font-family: var(--font-accent);
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    color: var(--c-accent);
+  }
+  .legal-page__title {
+    margin: 0 0 1rem;
+    font-family: var(--font-head);
+    font-size: clamp(1.7rem, 4.2vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+  .legal-page__lead {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--c-main-soft);
+    line-height: 1.85;
+  }
+
+  .legal-meta {
+    margin: 0 0 2.5rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .legal-meta__list {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(7.5rem, max-content) 1fr;
+    column-gap: 1.25rem;
+    row-gap: 0.55rem;
+    font-size: 0.92rem;
+  }
+  .legal-meta__row {
+    display: contents;
+  }
+  .legal-meta__key {
+    margin: 0;
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--c-main);
+  }
+  .legal-meta__val {
+    margin: 0;
+    color: var(--c-main-soft);
+    word-break: break-word;
+  }
+  .legal-meta__link {
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal-meta__link:hover {
+    color: var(--c-accent-dark);
+  }
+
+  .legal-body {
+    font-family: var(--font-body);
+    font-size: 0.96rem;
+    line-height: 1.95;
+    color: var(--c-main);
+  }
+  .legal-body :global(h2) {
+    margin: 2.5rem 0 0.9rem;
+    padding-top: 0.4rem;
+    font-family: var(--font-head);
+    font-size: 1.18rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--c-main);
+    border-top: 1px solid var(--c-border);
+    padding-top: 1.4rem;
+  }
+  .legal-body :global(h2:first-child) {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+  }
+  .legal-body :global(h3) {
+    margin: 1.8rem 0 0.6rem;
+    font-family: var(--font-head);
+    font-size: 1.02rem;
+    font-weight: 700;
+  }
+  .legal-body :global(p) {
+    margin: 0 0 1rem;
+  }
+  .legal-body :global(ol),
+  .legal-body :global(ul) {
+    margin: 0 0 1.2rem;
+    padding-left: 1.5rem;
+  }
+  .legal-body :global(li) {
+    margin-bottom: 0.35rem;
+  }
+  .legal-body :global(a) {
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal-body :global(a:hover) {
+    color: var(--c-accent-dark);
+  }
+  .legal-body :global(strong) {
+    font-weight: 700;
+  }
+  .legal-body :global(.legal-stamp) {
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--c-border);
+    font-size: 0.86rem;
+    color: var(--c-main-mute);
+  }
+  .legal-body :global(.legal-stamp p) {
+    margin: 0.2rem 0;
+  }
+
+  /* 表（特商法表記用）。横スクロール許容 */
+  .legal-body :global(.legal-table-wrap) {
+    overflow-x: auto;
+    margin: 0 0 1.5rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .legal-body :global(.legal-table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .legal-body :global(.legal-table th),
+  .legal-body :global(.legal-table td) {
+    padding: 0.9rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--c-border);
+    vertical-align: top;
+  }
+  .legal-body :global(.legal-table tr:last-child th),
+  .legal-body :global(.legal-table tr:last-child td) {
+    border-bottom: none;
+  }
+  .legal-body :global(.legal-table th) {
+    width: 11rem;
+    background: rgba(58, 50, 48, 0.04);
+    font-weight: 700;
+    color: var(--c-main);
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .legal-body :global(.legal-table th) {
+      width: 8rem;
+      white-space: normal;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .legal-page {
+      padding: calc(var(--header-h) + 1.5rem) 1rem 4rem;
+    }
+    .legal-meta {
+      padding: 1rem 1.1rem;
+    }
+    .legal-meta__list {
+      grid-template-columns: 1fr;
+      row-gap: 0.15rem;
+    }
+    .legal-meta__row {
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+    .legal-meta__key {
+      font-size: 0.8rem;
+      color: var(--c-main-mute);
+    }
+    .legal-meta__val {
+      font-size: 0.95rem;
+    }
+  }
+</style>

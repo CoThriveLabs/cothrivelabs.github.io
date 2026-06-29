@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Co-Thrive Labs logo candidate C: 同心円上に大きめ〇(r=3.7)で開口をしっかり閉じる -->
+  <rect width="64" height="64" rx="14" fill="#6B8E5A"/>
+  <path d="M48 22 Q40 14 30 16 Q16 18 14 32 Q14 46 28 48 Q40 50 48 42"
+        stroke="#F8F6F0" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <circle cx="49.16" cy="24.29" r="3.7" fill="#C97B5E"/>
+  <circle cx="50.55" cy="29.36" r="3.7" fill="#C97B5E"/>
+  <circle cx="50.55" cy="34.64" r="3.7" fill="#C97B5E"/>
+  <circle cx="49.16" cy="39.71" r="3.7" fill="#C97B5E"/>
+</svg>

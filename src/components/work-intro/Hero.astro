@@ -1,5 +1,5 @@
 ---
-// 作品紹介ヒーロー: タイトル + サブタイトル + キャッチコピー + ヒーロー画像 + 戻るリンク
+// 作品紹介ヒーロー。タイトル + サブタイトル + キャッチコピー + ヒーロー画像 + 戻るリンク。
 export interface Props {
   title: string;
   subtitle: string;
@@ -32,7 +32,7 @@ const { title, subtitle, tagline, hero_image } = Astro.props;
   .wi-hero {
     position: relative;
     padding: calc(var(--header-h) + 3rem) 1.5rem 4rem;
-    background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
+    background: linear-gradient(180deg, var(--c-paper-deep) 0%, var(--c-paper) 100%);
     min-height: 80vh;
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@ const { title, subtitle, tagline, hero_image } = Astro.props;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    color: var(--color-accent);
+    color: var(--c-accent);
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
@@ -53,7 +53,7 @@ const { title, subtitle, tagline, hero_image } = Astro.props;
     transition: background 0.2s var(--ease), transform 0.2s var(--ease);
   }
   .wi-hero__back:hover {
-    background: rgba(201, 123, 94, 0.08);
+    background: rgba(192, 108, 93, 0.08);
     transform: translateX(-2px);
   }
   .wi-hero__inner {
@@ -67,33 +67,33 @@ const { title, subtitle, tagline, hero_image } = Astro.props;
   }
   .wi-hero__eyebrow {
     margin: 0 0 1rem;
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.78rem;
     letter-spacing: 0.28em;
-    color: var(--color-primary);
+    color: var(--c-main);
     font-weight: 600;
     text-transform: uppercase;
   }
   .wi-hero__title {
     margin: 0 0 1rem;
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: var(--fs-h1);
     line-height: 1.1;
     letter-spacing: var(--ls-tight);
-    color: var(--color-text);
+    color: var(--c-main);
   }
   .wi-hero__tagline {
     margin: 0;
     font-size: clamp(1rem, 1.8vw, 1.18rem);
     line-height: 1.85;
-    color: var(--color-text-sub);
+    color: var(--c-main-soft);
   }
   .wi-hero__media {
     position: relative;
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--c-border);
     background: #fff;
   }
   .wi-hero__image {

@@ -18,5 +18,10 @@ export default defineConfig({
     // 出力は <page>/index.html 形式（Pages との相性が良い）
     format: 'directory',
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // 作業用ルート（/index-v2）と実験用（/sandbox/*）は noindex 扱い → sitemap からも除外。
+      filter: (page) => !page.includes('/index-v2') && !page.includes('/sandbox'),
+    }),
+  ],
 });

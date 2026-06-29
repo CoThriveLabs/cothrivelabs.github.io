@@ -29,7 +29,7 @@ const { paragraphs, stack = [] } = Astro.props;
 <style>
   .wi-what {
     padding: clamp(3rem, 6vw, 5rem) 1.5rem;
-    background: var(--color-bg);
+    background: var(--c-paper);
   }
   .wi-what__inner {
     max-width: 880px;
@@ -41,26 +41,26 @@ const { paragraphs, stack = [] } = Astro.props;
     gap: 0.9rem;
     margin: 0 0 2rem;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--c-border);
   }
   .wi-section-title__num {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--color-accent);
+    color: var(--c-accent);
     letter-spacing: var(--ls-tight);
   }
   .wi-section-title__text {
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: clamp(1.4rem, 3vw, 1.85rem);
-    color: var(--color-text);
+    color: var(--c-main);
     line-height: 1.3;
   }
   .wi-what__body p {
     margin: 0 0 1.2rem;
     font-size: 1rem;
     line-height: 1.95;
-    color: var(--color-text);
+    color: var(--c-main);
   }
   .wi-what__body p:last-child {
     margin-bottom: 0;
@@ -68,14 +68,14 @@ const { paragraphs, stack = [] } = Astro.props;
   .wi-what__stack {
     margin-top: 2.25rem;
     padding-top: 1.5rem;
-    border-top: 1px dashed var(--color-border);
+    border-top: 1px dashed var(--c-border);
   }
   .wi-what__stack-label {
     display: block;
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.72rem;
     letter-spacing: 0.24em;
-    color: var(--color-primary);
+    color: var(--c-main);
     font-weight: 600;
     text-transform: uppercase;
     margin-bottom: 0.75rem;
@@ -89,13 +89,13 @@ const { paragraphs, stack = [] } = Astro.props;
     gap: 0.45rem;
   }
   .wi-tag {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.78rem;
     padding: 0.3rem 0.8rem;
     border-radius: 999px;
-    background: var(--color-bg-soft);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-sub);
+    background: var(--c-paper-deep);
+    border: 1px solid var(--c-border);
+    color: var(--c-main-soft);
     font-weight: 500;
     letter-spacing: 0.04em;
   }

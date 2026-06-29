@@ -142,7 +142,7 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
 <style>
   .wi-download {
     padding: clamp(3rem, 6vw, 5rem) 1.5rem;
-    background: var(--color-bg);
+    background: var(--c-paper);
   }
   .wi-download__inner {
     max-width: 880px;
@@ -154,19 +154,19 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     gap: 0.9rem;
     margin: 0 0 1.5rem;
     padding-bottom: 0.85rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--c-border);
   }
   .wi-section-title__num {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--color-accent);
+    color: var(--c-accent);
     letter-spacing: var(--ls-tight);
   }
   .wi-section-title__text {
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: clamp(1.4rem, 3vw, 1.85rem);
-    color: var(--color-text);
+    color: var(--c-main);
     line-height: 1.3;
   }
 
@@ -176,25 +176,25 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     align-items: baseline;
     gap: 0.85rem;
     margin: 0 0 1rem;
-    color: var(--color-text-sub);
+    color: var(--c-main-soft);
     font-size: 0.92rem;
   }
   .wi-download__version-num {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--c-main);
     font-size: 1rem;
     letter-spacing: 0.04em;
   }
   .wi-download__version-date {
-    color: var(--color-text-mute);
+    color: var(--c-main-mute);
     font-size: 0.85rem;
   }
   .wi-download__notes {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    color: var(--color-accent);
+    color: var(--c-accent);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.88rem;
@@ -202,7 +202,7 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     transition: border-color 0.2s var(--ease, ease);
   }
   .wi-download__notes:hover {
-    border-bottom-color: var(--color-accent);
+    border-bottom-color: var(--c-accent);
   }
 
   .wi-download__disclaimer {
@@ -212,8 +212,8 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     margin: 0 0 1.75rem;
     padding: 0.55rem 0.9rem;
     border-radius: 6px;
-    background: rgba(201, 123, 94, 0.08);
-    color: var(--color-accent-dark, #a25a3f);
+    background: rgba(192, 108, 93, 0.08);
+    color: var(--c-accent-dark);
     font-size: 0.85rem;
     line-height: 1.5;
   }
@@ -234,19 +234,19 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     gap: 0.85rem;
     padding: 0.95rem 1.15rem;
     background: #fff;
-    border: 1.5px solid var(--color-border);
+    border: 1.5px solid var(--c-border);
     border-radius: 10px;
-    color: var(--color-text);
+    color: var(--c-main);
     text-decoration: none;
     transition: border-color 0.2s var(--ease, ease), transform 0.2s var(--ease, ease), box-shadow 0.2s var(--ease, ease);
   }
   .wi-dl-btn:hover {
-    border-color: var(--color-accent);
+    border-color: var(--c-accent);
     transform: translateY(-2px);
     box-shadow: var(--shadow-sm, 0 4px 12px rgba(0, 0, 0, 0.06));
   }
   .wi-dl-btn:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--c-accent);
     outline-offset: 2px;
   }
 
@@ -257,14 +257,14 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     display: none;
     padding: 0.18rem 0.55rem;
     border-radius: 999px;
-    background: var(--color-accent, #C97B5E);
+    background: var(--c-accent);
     color: #fff;
-    font-family: var(--font-jp);
+    font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     line-height: 1.3;
-    box-shadow: 0 2px 6px rgba(201, 123, 94, 0.35);
+    box-shadow: 0 2px 6px rgba(192, 108, 93, 0.35);
   }
 
   .wi-dl-btn__icon {
@@ -273,12 +273,12 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     justify-content: center;
     width: 36px;
     height: 36px;
-    color: var(--color-text-sub);
+    color: var(--c-main-soft);
   }
   .wi-dl-btn--windows .wi-dl-btn__icon { color: #0078d4; }
   .wi-dl-btn--macos   .wi-dl-btn__icon { color: #444; }
   .wi-dl-btn--linux   .wi-dl-btn__icon { color: #d6a13a; }
-  .wi-dl-btn--source  .wi-dl-btn__icon { color: var(--color-primary); }
+  .wi-dl-btn--source  .wi-dl-btn__icon { color: var(--c-main); }
 
   .wi-dl-btn__main {
     display: flex;
@@ -287,54 +287,54 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     min-width: 0;
   }
   .wi-dl-btn__os-label {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.7rem;
     letter-spacing: 0.18em;
-    color: var(--color-text-mute);
+    color: var(--c-main-mute);
     text-transform: uppercase;
     font-weight: 600;
   }
   .wi-dl-btn__label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--c-main);
     line-height: 1.35;
   }
   .wi-dl-btn__size {
-    font-family: var(--font-en);
+    font-family: var(--font-accent);
     font-size: 0.78rem;
-    color: var(--color-text-mute);
+    color: var(--c-main-mute);
     letter-spacing: 0.04em;
     flex-shrink: 0;
   }
 
   /* --- 推奨ボタン強調 --- */
   .wi-dl-btn.is-recommended {
-    border-color: var(--color-accent);
+    border-color: var(--c-accent);
     background: linear-gradient(180deg, #fff 0%, #fef7f3 100%);
-    box-shadow: 0 0 0 4px rgba(201, 123, 94, 0.12), 0 6px 16px rgba(201, 123, 94, 0.15);
+    box-shadow: 0 0 0 4px rgba(192, 108, 93, 0.12), 0 6px 16px rgba(192, 108, 93, 0.15);
     transform: translateY(-1px);
   }
   .wi-dl-btn.is-recommended .wi-dl-btn__badge {
     display: inline-block;
   }
   .wi-dl-btn.is-recommended .wi-dl-btn__label {
-    color: var(--color-accent-dark, #a25a3f);
+    color: var(--c-accent-dark);
   }
 
   /* --- インストール手順 details --- */
   .wi-download__install {
     margin-top: 1rem;
     padding: 0.85rem 1.1rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--c-border);
     border-radius: 8px;
-    background: var(--color-bg-soft);
+    background: var(--c-paper-deep);
   }
   .wi-download__install summary {
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--c-main);
     list-style: none;
     display: flex;
     align-items: center;
@@ -342,7 +342,7 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
   }
   .wi-download__install summary::before {
     content: '▸';
-    color: var(--color-accent);
+    color: var(--c-accent);
     transition: transform 0.2s var(--ease, ease);
     display: inline-block;
   }
@@ -353,7 +353,7 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
     margin: 0.85rem 0 0;
     font-size: 0.9rem;
     line-height: 1.85;
-    color: var(--color-text-sub);
+    color: var(--c-main-soft);
   }
 
   /* --- レスポンシブ --- */
@@ -362,7 +362,7 @@ const osIconLabel: Record<WorkDownloadOS, string> = {
       grid-template-columns: 1fr;
     }
     .wi-dl-btn.is-recommended {
-      box-shadow: 0 0 0 3px rgba(201, 123, 94, 0.14), 0 4px 10px rgba(201, 123, 94, 0.18);
+      box-shadow: 0 0 0 3px rgba(192, 108, 93, 0.14), 0 4px 10px rgba(192, 108, 93, 0.18);
     }
   }
   @media (max-width: 414px) {

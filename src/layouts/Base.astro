@@ -1,9 +1,29 @@
 ---
-import Header from '../components/Header.astro';
+// フォント: Fontsource self-host（Astro 6 Fonts API は experimental のため不採用）。
+// 見出し=しっぽり明朝 600/800 / 本文=Zen Kaku Gothic New 400/500/700 / アクセント=Klee One 600。
+import '@fontsource/shippori-mincho/600.css';
+import '@fontsource/shippori-mincho/800.css';
+import '@fontsource/zen-kaku-gothic-new/400.css';
+import '@fontsource/zen-kaku-gothic-new/500.css';
+import '@fontsource/zen-kaku-gothic-new/700.css';
+import '@fontsource/klee-one/600.css';
+
+// LCP テキスト用 preload（本文 Zen Kaku Gothic New 400・日本語/ラテン）。
+// ?url で Vite のハッシュ済みパスを取得し、本番ビルドでも整合する形で <link preload> する。
+import zenJa400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-japanese-400-normal.woff2?url';
+import zenLatin400 from '@fontsource/zen-kaku-gothic-new/files/zen-kaku-gothic-new-latin-400-normal.woff2?url';
+
+import Header from '../components/sections/Header.astro';
+// 紙テクスチャ noise を共通モジュールから取得し --paper-noise-url（:root）に注入。
+// PaperBg / シミ色背景 / シミ overlay fill が同じ粒を参照して質感統一。
+import { paperNoiseUrl } from '../lib/paperNoise';
 const {
-  title = 'Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集',
-  description = 'AI 社員 4 人とオーナー 1 人で運営する個人 AI 会社「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用した共生型開発を実践しています。',
+  title = 'Co-Thrive Labs（こすらぼ）— AIエージェント4体と作る作品集',
+  description = 'AIエージェント4体とオーナーで運営する個人 AI スタジオ「こすらぼ（Co-Thrive Labs）」のポートフォリオ。Claude Code を活用し、AI と人間が共に育つ開発を実践しています。',
   ogImage = '/og-image.png',
+  // トップ（index.astro）は自前で <Header /> を置くため Base 既定の Header を抑止する。
+  // works 詳細など他ページは hideHeader 未指定 → Base 既定の新 Header（ルート相対アンカー）を表示。
+  hideHeader = false,
 } = Astro.props;
 // canonical URL（Astro.site が未設定の場合は pathname のみ）
 const canonicalURL = Astro.site
@@ -15,7 +35,8 @@ const ogImageURL = Astro.site
 ---
 
 <!doctype html>
-<html lang="ja">
+<!-- --paper-noise-url を :root(=html) に注入。PaperBg / シミ系が共通参照。 -->
+<html lang="ja" style={`--paper-noise-url: url("${paperNoiseUrl}");`}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -28,7 +49,7 @@ const ogImageURL = Astro.site
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    <meta name="theme-color" content="#6B8E5A" />
+    <meta name="theme-color" content="#f9f2e6" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -45,19 +66,16 @@ const ogImageURL = Astro.site
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageURL} />
 
-    <!-- フォント -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
-    />
+    <!-- フォント: self-host（Fontsource を frontmatter で CSS import）。
+         LCP テキスト用に本文 Zen Kaku Gothic New 400 を preload。FOIT は font-display: swap で回避。 -->
+    <link rel="preload" as="font" type="font/woff2" href={zenJa400} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={zenLatin400} crossorigin />
 
     <!-- ページ固有の head 追加（JSON-LD 等）。構造化データはホームページのみに入れる -->
     <slot name="head-extra" />
   </head>
   <body>
-    <Header />
+    {!hideHeader && <Header />}
     <slot />
     <script is:inline>
       // scroll で要素が見えたら fade-in
@@ -109,35 +127,92 @@ const ogImageURL = Astro.site
         // ハンバーガーメニュー開閉処理は Header.astro に集約済み（重複防止）
       });
     </script>
+    {/* Hero イントロ演出（開いた直後の順次フェードイン）。heroImmersion より前に登録し、
+        初期 opacity:0 を先にセットしてから scroll pin timeline を組ませる。 */}
+    <script>import '../scripts/heroIntro.ts';</script>
+    {/* Hero 入り込み演出。refreshPriority:230 で Hero pin spacer を StudioAbout(200) より先に確定。 */}
+    <script>import '../scripts/heroImmersion.ts';</script>
+    {/* 出現アニメ（GSAP）。pin + scrub 順次出現モード（[data-step-section] 持つ section）と
+        IO ベース単発出現モードの二系統。 */}
+    <script>import '../scripts/reveal.ts';</script>
+    {/* Layered Pinning From Bottom: TechStack→ComingSoon を共通 container に重ね、
+        前面パネルを yPercent:-100 で押し出す GSAP 公式パターン。 */}
+    <script>import '../scripts/layeredPin.ts';</script>
+    {/* グラデ背景切替。reveal.ts と別ファイル・別 IO instance。 */}
+    <script>import '../scripts/bgGradient.ts';</script>
+    {/* ちらほら視差装飾。`[data-parallax][data-depth]` を scrub 視差。
+        blur は CSS 静的・出現は reveal.ts 委譲・reduce 時は視差停止だが blur は維持。 */}
+    <script>import '../scripts/parallax.ts';</script>
+    {/* ちらほら装飾「葉っぱそよ風アニメ」。`[data-leaf]` を GSAP timeline で独立ループ。
+        reduce 時は no-op（静止表示）。parallax.ts と属性別なので干渉なし。 */}
+    <script>import '../scripts/leafBreeze.ts';</script>
+    {/* 技スタ→ComingSoon「下から覆い被さる」単発演出。
+        coffeeStain.ts より前に登録し、coffeeStain の最終 refresh（rAF×2）で測ってもらう。 */}
+    <script>import '../scripts/coverTransition.ts';</script>
+    {/* コーヒーシミ章替わり演出（侵食→四隅ベタ→全面維持の片道）。
+        ScrollTrigger 最終 refresh をここで集約する。 */}
+    <script>import '../scripts/coffeeStain.ts';</script>
+    {/* メンバーカード カーソル追従 tilt。強さ: ±15deg / ±30px・戻し: 0.6s。
+        inner `.member-card__tilt` に閉じて reveal.ts のポップ tween と干渉ゼロ。
+        pointer:fine 偽 / reduce 真で無効化。 */}
+    <script>import '../scripts/memberCardTilt.ts';</script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    --color-primary: #6B8E5A;
-    --color-primary-dark: #547046;
-    --color-accent: #C97B5E;
-    --color-accent-dark: #B0664B;
-    --color-text: #2a2a2a;
-    --color-text-sub: #555;
-    --color-text-mute: #888;
-    --color-bg: #ffffff;
-    --color-bg-soft: #f8f6f0;
-    --color-border: #e8e4dc;
-    --font-jp: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
-    --font-en: 'Inter', system-ui, -apple-system, sans-serif;
-    --radius: 14px;
-    --shadow-sm: 0 2px 8px rgba(42, 42, 42, 0.04);
-    --shadow-md: 0 8px 24px rgba(42, 42, 42, 0.08);
-    --shadow-lg: 0 16px 40px rgba(42, 42, 42, 0.12);
-    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    /* === 配色 === */
+    --c-paper:        #FFFBF3;               /* ベース紙 C2（背景 70%・白寄せでベージュらしさを抑える） */
+    --c-paper-warm:   #f9f2e6;               /* C-WARM（シミ周辺で茶色に馴染むベージュ） */
+    --c-paper-deep:   #F2EBDA;               /* C-DEEP（S2/S6/S7/S10 帯・グラデ濃色側） */
+    --c-main:         #3A3230;               /* ココアブラウン（文字・枠線 70-80%） */
+    --c-main-soft:    rgba(58, 50, 48, 0.7); /* 本文 */
+    --c-main-mute:    rgba(58, 50, 48, 0.6); /* 補助テキスト */
+    --c-border:       rgba(58, 50, 48, 0.18);/* 枠線 */
+    --c-accent:       #C06C5D;               /* テラコッタ（リンク・CTA 5-10%） */
+    --c-accent-dark:  #A85847;               /* hover */
 
-    /* Phase 3.5 追加トークン */
+    /* === メンバーカラー（キャラ装飾のみ・本文/CTA に使わない） === */
+    --m-ame:    #D87FA0;  /* ピンク */
+    --m-saki:   #6B8E5A;  /* みどり */
+    --m-ropi:   #8A6FBF;  /* むらさき */
+    --m-mitsuru:#5B89C2;  /* あお */
+    --m-tomomi: #E0A867;  /* オレンジ */
+
+    /* === フォント === */
+    --font-head:   'Shippori Mincho', 'Hiragino Mincho ProN', serif;
+    --font-body:   'Zen Kaku Gothic New', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+    --font-accent: 'Klee One', 'Hiragino Kaku Gothic ProN', sans-serif;
+
+    /* === レイアウト === */
+    --max-w: 1120px;
+    --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+    /* グラデ背景切替の transition 時間。長めにとって「やわらかフェード」感を出す。 */
+    --bg-transition: 1500ms;
+    /* グラデ背景切替が書き換える唯一の変数。初期値 C2 で JS 未実行でも崩れない（プログレッシブ）。 */
+    --bg-current: var(--c-paper);
+
+    /* === 余白トークン（意図的に不揃いな余白） === */
+    --space-loose: clamp(8rem, 22vh, 18rem);   /* PC 約 18rem / SP 約 8rem */
+    --space-base:  clamp(5.5rem, 15vh, 12rem); /* PC 約 12rem / SP 約 5.5rem */
+    --space-snug:  clamp(3.5rem, 9vh, 7.5rem); /* PC 約 7.5rem / SP 約 3.5rem */
+
+    /* === コーヒーシミ演出 === */
+    --c-coffee-stain: #8B6F4E;   /* シミ色（濃いめ）。背景/fill は color-mix で薄めて適用 */
+    --stain-r: 0%;               /* シミ半径。CSS scroll-driven animation が駆動。 */
+    --stain-fill-opacity: 0;     /* シミ fill 層の不透明度。侵食完了で 0→1（四隅ベタ）。 */
+    /* 定着後の背景/fill 用の薄シミ色（紙色 30% 混色）。
+       overlay fill と各セクション背景で同色にして継ぎ目を消す。 */
+    --c-coffee-stain-soft: color-mix(in srgb, var(--c-coffee-stain) 70%, var(--c-paper));
+
+    /* === 実用トークン（shadow は brown 基調） === */
+    --radius: 8px;
+    --shadow-sm: 0 2px 8px rgba(58, 50, 48, 0.05);
+    --shadow-md: 0 8px 24px rgba(58, 50, 48, 0.09);
+    --shadow-lg: 0 16px 40px rgba(58, 50, 48, 0.13);
     --fs-h1: clamp(2.4rem, 6vw, 4.2rem);
     --fs-h2: clamp(1.8rem, 4vw, 2.8rem);
-    --fs-section-num: clamp(3rem, 10vw, 7rem);
     --ls-tight: -0.02em;
-    --max-w: 1120px;
     --header-h: 72px;
     --header-h-scrolled: 56px;
   }
@@ -151,22 +226,46 @@ const ogImageURL = Astro.site
   html {
     scroll-behavior: smooth;
     scroll-padding-top: var(--header-h-scrolled);
+    /* ページ横スクロール（装飾はみ出しによる右下の余白）を抑止。clip はスクロールコンテナを
+       作らないので縦スクロール・ScrollTrigger pin に影響しない。 */
+    overflow-x: clip;
+    /* view-timeline-name は祖先方向しか参照できないため、html 側で timeline-scope を宣言して
+       任意の子孫（Services 内の stain-sentinel）で定義された --stain-timeline を
+       兄弟ツリーの .coffee-stain（body 直下 fixed）から animation-timeline 経由で参照可能にする。
+       未サポート時は @supports (timeline-scope: ...) で animation 適用自体を抑止する。 */
+    timeline-scope: --stain-timeline;
   }
 
   body {
     margin: 0;
-    font-family: var(--font-jp);
-    color: var(--color-text);
-    background: var(--color-bg);
+    font-family: var(--font-body);
+    color: var(--c-main);
+    background: var(--c-paper);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 各セクションの装飾（水玉・floater・葉）が負の位置や右端超えで viewport を
+       はみ出し横スクロール（右下の余白）を生むのを防ぐ。clip は overflow:hidden と違い
+       スクロールコンテナを作らないので ScrollTrigger の pin/sticky を壊さない。 */
+    overflow-x: clip;
   }
 
-  /* 和文見出しは Noto Sans JP を優先（L-1 対応）。
-     英字のみのクラス（.section-num / .footer-logo 等）は個別に Inter を当てる。 */
+  /* dialog.showModal() は body scroll を止めないため、開いている間は body 自体を固定する。
+     pf-modal / devflow-modal で共通 class を toggle する。 */
+  body.modal-open {
+    overflow: hidden;
+    touch-action: none;
+  }
+  /* iOS Safari の慣性スクロールが背後の html に伝播するのを防ぐ。
+     モーダル内側のスクロールコンテナで明示する。 */
+  .pf-modal__inner,
+  .devflow-modal__inner {
+    overscroll-behavior: contain;
+  }
+
+  /* 見出しはしっぽり明朝。本文は Zen Kaku Gothic New。 */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-jp);
+    font-family: var(--font-head);
     font-weight: 700;
     letter-spacing: 0.01em;
   }
@@ -181,6 +280,110 @@ const ogImageURL = Astro.site
     display: block;
   }
 
+  /* === コーヒーシミ overlay ===
+     位置: fixed・z:9999・pointer-events なし。
+     edge/fill の 2 層（疑似要素）に分離:
+       ::before(edge) = 侵食中の「広がるにじみ」（radial・--stain-r で 0→220%）。
+       ::after(fill)  = 四隅まで完全シミ色のベタ（薄シミ色＋紙テクスチャ noise）。
+                        侵食完了で --stain-fill-opacity 0→1 で不透明化＝四隅ベタ。
+     セクション背景と fill を同じ「薄シミ色＋noise」にして継ぎ目を消す。 */
+  .coffee-stain {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+  }
+  /* edge: 画面下辺中央起点の半円じわじわ侵食（薄茶 soft radial・--stain-r 0%→260%）。
+     画面外下側でこぼしたコーヒーが下から上に染み広がる演出。
+     center を `at 50% 100%` にして下辺中央起点、farthest-corner で対角（左上/右上）を半径基準にする。
+     濃色終端 *0.85・透明 *1.05 でフェード帯を最小化し fill 層への継ぎ目を消す。
+     Gotcha: terminal は transparent 固定。任意の色変数（例: --bg-current）を入れると
+     --stain-r:0% の初期状態で全 color-stop が 0% に重なり、最終 stop の色が全画面を塗りつぶす。
+     次セクション要素の透け先走りは「侵食中だけ次セクション側を不可視化」する責務分離で対処する。 */
+  .coffee-stain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle farthest-corner at 50% 100%,
+      var(--c-coffee-stain-soft) 0%,
+      var(--c-coffee-stain-soft) calc(var(--stain-r) * 0.85),
+      transparent calc(var(--stain-r) * 1.05)
+    );
+    will-change: background;
+  }
+  /* fill: 四隅まで完全シミ色のベタ（薄シミ色＋noise）。侵食完了で不透明化。
+     色は --c-coffee-stain-soft（セクション背景と同色）・noise は --paper-noise-url（他背景と同粒）。 */
+  .coffee-stain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--c-coffee-stain-soft);
+    background-image: var(--paper-noise-url);
+    background-repeat: repeat;
+    opacity: var(--stain-fill-opacity, 0);
+    will-change: opacity;
+  }
+
+  /* === シミ駆動: CSS scroll-driven animation ===
+     view-timeline ベースで stain-sentinel の viewport 通過量に連動して
+     --stain-r / --stain-fill-opacity を駆動する。
+     上下スクロール双方向動作は CSS ネイティブ保証（JS ゼロ・状態管理ゼロ）。
+     @property で <percentage>/<number> 型を明示し、tween 補間を可能にする。
+     未サポートブラウザ（Safari 16-）では @supports が false → 静止状態で stain-r:0% 維持（演出無し・崩れなし）。
+     reduced-motion 時は media query で @supports ブロック内も無効化。 */
+  @property --stain-r {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: 0%;
+  }
+  @property --stain-fill-opacity {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+  }
+  @supports (animation-timeline: scroll()) and (timeline-scope: --stain-timeline) {
+    @media (prefers-reduced-motion: no-preference) {
+      .coffee-stain::before {
+        animation: stain-spread linear both;
+        animation-timeline: --stain-timeline;
+        animation-range: cover 20% cover 100%;
+      }
+      .coffee-stain::after {
+        animation: stain-fill linear both;
+        animation-timeline: --stain-timeline;
+        animation-range: cover 20% cover 100%;
+      }
+    }
+  }
+  /* sentinel cover phase の前半でじわっと展開、後半以降は完全展開維持。
+     末端 1 維持により sentinel 通過後の Works 区間も全画面シミ overlay で覆われ、
+     Works 入域直前の「上端から下層が一瞬透ける」問題を防ぐ。
+     Works section 自身は z:10000（シミ overlay 9999 より前面）で content をシミの上に表示する。
+     逆スクロールは keyframes を逆再生して自然双方向動作。 */
+  @keyframes stain-spread {
+    0% {
+      --stain-r: 0%;
+    }
+    55% {
+      --stain-r: 260%;
+    }
+    100% {
+      --stain-r: 260%;
+    }
+  }
+  @keyframes stain-fill {
+    0% {
+      --stain-fill-opacity: 0;
+    }
+    65% {
+      --stain-fill-opacity: 1;
+    }
+    100% {
+      --stain-fill-opacity: 1;
+    }
+  }
+
   /* fade-in 共通 */
   [data-fade] {
     opacity: 0;
@@ -193,64 +396,29 @@ const ogImageURL = Astro.site
     transform: translateY(0);
   }
 
-  /* L-2: .eyebrow / .section-label / .section-num の DRY 化 */
-  .eyebrow {
-    margin: 0 0 1rem;
-    font-family: var(--font-en);
-    font-size: 0.78rem;
-    letter-spacing: 0.32em;
-    color: var(--color-primary);
-    font-weight: 600;
-    text-transform: uppercase;
+  /* 出現アニメの初期状態（実体は scripts/reveal.ts）。
+     入域前のチラ見え防止のため、CSS でも初期 transform を持つ。
+     デフォルト（テキスト等）はフェード（translateY(20px)）。
+     `.member-card[data-reveal]` は斜め飛び込み + 反動の初期値を CSS でも分岐させて
+     チラ見えを完全に防ぐ（reveal.ts の gsap.set より早い画面初期描画段階で適用）。 */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    will-change: opacity, transform;
+  }
+  /* メンバーカード = ポップ初期: 画面下 + 左 + 左回転 + 縮小 */
+  .member-card[data-reveal] {
+    transform: translateY(200px) translateX(-80px) rotate(-15deg) scale(0.8);
+  }
+  /* 右からスライドイン初期: 画面右側 + フェード */
+  [data-reveal="slide-x"] {
+    transform: translateX(120px);
   }
 
-  /* E-05: セクション番号ラベル（"01 About" 等） */
-  .section-label {
-    position: relative;
-    display: inline-flex;
-    align-items: baseline;
-    gap: 0.85rem;
-    margin: 0 0 1rem;
-    line-height: 1;
-  }
-  .section-label .num {
-    font-family: var(--font-en);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: var(--ls-tight);
-    color: var(--color-accent);
-    font-feature-settings: "tnum" 1;
-  }
-  .section-label .text {
-    font-family: var(--font-en);
-    font-size: 0.78rem;
-    letter-spacing: 0.32em;
-    color: var(--color-primary);
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-  /* セクションタイトル背面に置く巨大番号（opacity 0.08） */
-  .section-num-bg {
-    position: absolute;
-    top: -0.15em;
-    left: -0.05em;
-    font-family: var(--font-en);
-    font-weight: 800;
-    font-size: var(--fs-section-num);
-    line-height: 1;
-    letter-spacing: var(--ls-tight);
-    color: var(--color-primary);
-    opacity: 0.08;
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-    font-feature-settings: "tnum" 1;
-  }
-
-  /* E-12: フォーカス可視（キーボード操作時のみ） */
+  /* フォーカス可視（キーボード操作時のみ） */
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--c-accent);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -263,6 +431,23 @@ const ogImageURL = Astro.site
       transition: none;
       opacity: 1;
       transform: none;
+    }
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+    }
+    /* card 側の specificity が高いので reduce 時に明示的に打ち消す */
+    .member-card[data-reveal] {
+      transform: none;
+    }
+    [data-reveal="slide-x"] {
+      transform: none;
+    }
+    /* reduce 時はコーヒーシミ演出を完全オフ。
+       edge=--stain-r:0%（透明）・fill=--stain-fill-opacity:0（非表示）。 */
+    .coffee-stain {
+      --stain-r: 0%;
+      --stain-fill-opacity: 0;
     }
   }
 </style>

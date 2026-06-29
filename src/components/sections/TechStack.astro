@@ -1,0 +1,266 @@
+---
+// S7 技術スタック。カテゴリ別 3 段グリッド・用途一言。領域 A 最終。
+// C-DEEP 背景。各技術の公式配布ロゴ（simple-icons・CC0）をインライン SVG で表示。
+// SVG は currentColor 塗りで、item ごとのブランドカラーを CSS color で当てる。
+import SectionHeading from '../SectionHeading.astro';
+import astroLogo from '../../assets/tech-logos/astro.svg?raw';
+import nextjsLogo from '../../assets/tech-logos/nextdotjs.svg?raw';
+import typescriptLogo from '../../assets/tech-logos/typescript.svg?raw';
+import html5Logo from '../../assets/tech-logos/html5.svg?raw';
+import supabaseLogo from '../../assets/tech-logos/supabase.svg?raw';
+import cfWorkersLogo from '../../assets/tech-logos/cloudflareworkers.svg?raw';
+import fastapiLogo from '../../assets/tech-logos/fastapi.svg?raw';
+import vercelLogo from '../../assets/tech-logos/vercel.svg?raw';
+import claudeLogo from '../../assets/tech-logos/claude.svg?raw';
+import wordpressLogo from '../../assets/tech-logos/wordpress.svg?raw';
+
+const categories = [
+  {
+    name: 'フロントエンド',
+    items: [
+      { name: 'Astro', use: 'サイト・LP の土台。このサイトも Astro 製。', logo: astroLogo, color: '#BC52EE' },
+      { name: 'Next.js', use: '動的な Web アプリの土台。ぎじろっとで本番投入。', logo: nextjsLogo, color: '#000000' },
+      { name: 'TypeScript', use: '型でバグを早期発見。実装の安心感に。', logo: typescriptLogo, color: '#3178C6' },
+      { name: 'HTML / CSS / JS', use: '素の Web 標準で軽く堅く作る。', logo: html5Logo, color: '#E34F26' },
+    ],
+  },
+  {
+    name: 'バックエンド・インフラ',
+    items: [
+      { name: 'Supabase', use: 'DB・認証・ストレージをまとめて無料枠で。', logo: supabaseLogo, color: '#3FCF8E' },
+      { name: 'FastAPI / SQLite', use: 'Sprout のような小さな API + DB。', logo: fastapiLogo, color: '#009688' },
+      { name: 'Cloudflare Workers', use: 'フォーム送信などのサーバー処理を無料枠で。', logo: cfWorkersLogo, color: '#F38020' },
+      { name: 'Vercel', use: 'Next.js の本番運用先。Preview URL も自動。', logo: vercelLogo, color: '#000000' },
+    ],
+  },
+  {
+    name: 'AI・その他',
+    items: [
+      { name: 'Claude API', use: 'AI 機能の組み込み。JukuMate で本番投入。', logo: claudeLogo, color: '#D97757' },
+      { name: 'WordPress', use: '既存 WordPress サイトの制作・調整。', logo: wordpressLogo, color: '#21759B' },
+    ],
+  },
+];
+---
+{/* PaperBg 駆動は section 自身の data-bg。 */}
+<section class="techstack" id="techstack" data-bg="paper">
+  <div class="techstack__grains" aria-hidden="true">
+    <div class="techstack__grain techstack__grain--1"></div>
+    <div class="techstack__grain techstack__grain--2"></div>
+    <div class="techstack__grain techstack__grain--3"></div>
+  </div>
+  <div class="techstack__inner">
+    <div class="techstack__heading">
+      <SectionHeading
+        title="技術スタック"
+        lead="案件に合わせて、ご希望のスタックも、コストを抑えながら堅く作れる組み合わせも選べます。"
+      />
+    </div>
+    <div class="techstack__grid">
+      {categories.map((cat) => (
+        <div class="techstack__cat" data-layered-reveal>
+          <h3 class="techstack__cat-name">{cat.name}</h3>
+          <ul class="techstack__items">
+            {cat.items.map((it) => (
+              <li class="techstack__item">
+                <span class="techstack__item-logo" style={`color:${it.color}`} aria-hidden="true" set:html={it.logo} />
+                <span class="techstack__item-body">
+                  <span class="techstack__item-name">{it.name}</span>
+                  <span class="techstack__item-use">{it.use}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .techstack {
+    padding: calc(var(--space-base) * 0.6) 1.5rem;
+    /* 装飾の absolute 配置基点・はみ出し防止 */
+    position: relative;
+    overflow: hidden;
+    /* 制作物以降の薄シミ色+紙テクスチャ noise 背景（シミ全面維持の継続）。
+       color-mix 非対応向けに background-color ベタ値を前置きフォールバック。 */
+    background-color: var(--c-coffee-stain);
+    background-color: var(--c-coffee-stain-soft);
+    background-image: var(--paper-noise-url);
+    background-repeat: repeat;
+  }
+  .techstack__grains {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .techstack__grain {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(94, 64, 50, 0.10);
+    pointer-events: none;
+  }
+  .techstack__grain--1 {
+    top: 22%;
+    left: 8%;
+    width: 440px;
+    height: 440px;
+    animation: grain-float 7s ease-in-out infinite;
+  }
+  .techstack__grain--2 {
+    top: 48%;
+    left: 62%;
+    width: 520px;
+    height: 520px;
+    animation: grain-float 8.5s ease-in-out infinite -2.5s;
+  }
+  .techstack__grain--3 {
+    top: 68%;
+    left: 35%;
+    width: 360px;
+    height: 360px;
+    animation: grain-float 6.5s ease-in-out infinite -4s;
+  }
+  @keyframes grain-float {
+    0%, 100% { transform: translateY(0); }
+    50%     { transform: translateY(-8px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .techstack__grain { animation: none; }
+  }
+  @media (max-width: 767px) {
+    /* SP: layered-pin が効かないため、コーヒーシミ overlay(position:fixed; z:9999) に
+       覆われないよう Works / DevFlow と同じく前面へ。これが無いとシミ不透明区間で
+       見出し・カードがシミに隠れて「背景だけ」になる。 */
+    .techstack {
+      z-index: 10000;
+    }
+    .techstack__grain--1 { width: 220px; height: 220px; }
+    .techstack__grain--2 { width: 260px; height: 260px; }
+    .techstack__grain--3 { width: 180px; height: 180px; }
+  }
+  .techstack__inner {
+    width: 100%;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  /* layered-pin 内では heading ラッパは常時表示。
+     内部 [data-reveal]（title / lead）は GSAP timeline で個別に scrub フェードインさせるため、
+     ここでは強制 opacity を当てない。SP / reduced-motion 時のみ強制表示で保護する。 */
+  .techstack__heading {
+    position: relative;
+    z-index: 2;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+    opacity: 1;
+    visibility: visible;
+  }
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .techstack__heading :global([data-reveal]) {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+  }
+  /* 共通 SectionHeading の lead 色 (--c-main-mute α=0.6) を S7 限定で α=0.85 に上書き。
+     S7 のみ濃く出して可読性確保（共通コンポは変えない）。 */
+  .techstack :global(.section-heading__lead) {
+    color: rgba(58, 50, 48, 0.85);
+  }
+  /* 段階明示で BP 揃え: ~639px 1列 / 640+ 2列 / 960+ 3列 */
+  .techstack__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .techstack__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .techstack__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .techstack__cat {
+    padding: 1.75rem;
+    background: color-mix(in srgb, var(--c-paper) 70%, transparent);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+  }
+  .techstack__cat-name {
+    margin: 0 0 1rem;
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--c-main);
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .techstack__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .techstack__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+  }
+  .techstack__item-logo {
+    flex-shrink: 0;
+    display: inline-flex;
+    width: 1.5rem;
+    margin-top: 0.15rem;
+  }
+  .techstack__item-logo :global(svg) {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .techstack__item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .techstack__item-name {
+    font-family: var(--font-accent);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--c-accent);
+  }
+  .techstack__item-use {
+    font-family: var(--font-body);
+    font-size: 1.235rem;
+    line-height: 1.7;
+    /* 説明文は本文より少し濃く出す（--c-main-soft α=0.7 → α=0.85） */
+    color: rgba(58, 50, 48, 0.85);
+  }
+
+  /* layered-pin panel 内で section を panel 一杯に広げ、中央配置でグリッドを置く。
+     重なり順は panel 側に一本化（section は z-index を持たない）。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .techstack {
+      height: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      padding-block: calc(var(--space-snug) * 0.6);
+    }
+    .techstack__inner {
+      max-height: 100%;
+    }
+  }
+
+</style>

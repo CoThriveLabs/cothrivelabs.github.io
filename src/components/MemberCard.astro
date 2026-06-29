@@ -1,0 +1,121 @@
+---
+// メンバー紹介カード。
+// color はメンバー個性色（--m-*）でカード装飾のみに使う。本文・リンクには使わない。
+export interface Props {
+  name: string;
+  role: string;
+  tagline: string;
+  color: string;
+  image: string;
+}
+const { name, role, tagline, color, image } = Astro.props;
+---
+<article class="member-card" style={`--card-accent:${color}`} data-reveal="card">
+  {/* tilt 用 inner。外殻 .member-card は reveal.ts のポップ tween + perspective だけを持つ
+       透明 wrapper。見た目（background / border / radius / padding / shadow）と bar は inner に
+       持たせてカード全体（白背景含む）が tilt で一緒に傾くようにする。 */}
+  <div class="member-card__tilt">
+    {/* 上端の個性色バー: inner の先頭に置いて .member-card__tilt 基準で top:0 に貼る。 */}
+    <span class="member-card__bar" aria-hidden="true"></span>
+    <div class="member-card__avatar">
+      <img src={image} alt={`${name}のアイコン`} loading="lazy" width="120" height="120" />
+    </div>
+    <p class="member-card__name">{name}</p>
+    <p class="member-card__role">{role}</p>
+    <p class="member-card__tagline">{tagline}</p>
+  </div>
+</article>
+
+<style>
+  /* 外殻は透明 wrapper（reveal.ts のポップ tween + tilt の perspective 基点だけ持つ）。
+     見た目は __tilt 側に移譲し、カード全体が tilt で傾くようにする。 */
+  .member-card {
+    position: relative;
+    /* 3D tilt の遠近。外殻維持・inner の rotation を奥行きに見せる。 */
+    perspective: 800px;
+  }
+  /* tilt inner — ここがカードの「見た目」本体。
+     白背景・border・radius・padding・shadow をすべてここに持って、tilt rotation/translate
+     と一緒に動かす。bar も inner 内の先頭に入れて .member-card__tilt 基準で top:0 に貼る。 */
+  .member-card__tilt {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    /* 外形の縦横比 2:3 を aspect-ratio で固定（padding 比例で縦長くなりすぎるのを防ぐ） */
+    aspect-ratio: 2 / 3;
+    padding: 2rem 1.5rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    /* Gotcha: overflow: hidden/clip は preserve-3d を flatten し、子の translateZ が無効化される。
+       角丸 clip が必要な avatar は要素単体で overflow:hidden + border-radius を持つので影響なし。 */
+    transition: box-shadow 0.3s var(--ease);
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .member-card:hover .member-card__tilt {
+    box-shadow: var(--shadow-md);
+  }
+  /* 上端の個性色バー（装飾のみ）— inner 内の最上端に貼り付け。
+     translateZ(5px) で軽く奥行きを出す（静止時の浮き違和感が出ない控えめな値）。 */
+  .member-card__bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--card-accent);
+    transform: translateZ(5px);
+  }
+  /* 3D parallax: avatar はメインの見せ場なので最も手前に浮かせる。
+     will-change は主役だけに付与（過剰指定で層を増やさない）。 */
+  .member-card__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 2px solid color-mix(in srgb, var(--card-accent) 35%, transparent);
+    background: var(--c-paper-deep);
+    transform: translateZ(50px);
+    will-change: transform;
+  }
+  .member-card__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* 3D parallax: name Z=30px / role Z=25px / tagline Z=10px で奥行きの階層を作る。 */
+  .member-card__name {
+    margin: 0 0 0.45rem;
+    font-family: var(--font-head);
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--c-main);
+    transform: translateZ(30px);
+    /* メンバー名を 1 行で収める（途中改行させない） */
+    white-space: nowrap;
+  }
+  .member-card__role {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-accent);
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    color: var(--card-accent);
+    font-weight: 600;
+    transform: translateZ(25px);
+  }
+  .member-card__tagline {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 1.235rem;
+    line-height: 1.75;
+    color: var(--c-main-soft);
+    transform: translateZ(10px);
+  }
+</style>

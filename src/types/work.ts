@@ -1,6 +1,4 @@
-// 作品紹介ページ 共通型定義 (v1)
-// 仕様書: docs/plans/work_intro_template_仕様書_2026-05-14.html
-// 設計書: docs/designs/work_intro_template_設計書_2026-05-14.md
+// 作品紹介ページ 共通型定義。
 
 export interface WorkPin {
   id: string;

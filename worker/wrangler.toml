@@ -1,0 +1,17 @@
+name = "cothrivelabs-contact"
+main = "src/index.ts"
+compatibility_date = "2026-06-28"
+
+# Custom Domain binding. Custom Domains attach the Worker to the host as a
+# whole — paths are not allowed in the pattern. Path-level routing is done
+# inside the Worker (anything other than POST /contact is rejected).
+routes = [
+  { pattern = "api.cothrivelabs.com", custom_domain = true }
+]
+
+# Secrets are injected via `wrangler secret put` and must never be committed.
+# Required secrets:
+#   RESEND_API_KEY        - Resend API key (re_...)
+#   TURNSTILE_SECRET_KEY  - Cloudflare Turnstile secret (0x4AAA...)
+#   NOTIFY_TO             - Mailbox that receives inbound enquiries
+#   NOTIFY_FROM           - From header used for both notification + ack mail

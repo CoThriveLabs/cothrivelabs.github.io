@@ -1,11 +1,20 @@
 ---
+// 公式 HP トップ。領域 A（S1-S7・背景固定 sticky）/ 領域 B（S8-S10・通常スクロール）。
+// Header は自前の sections/Header を使うため Base 既定の Header は hideHeader で抑止。
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import About from '../components/About.astro';
-import Members from '../components/Members.astro';
-import Works from '../components/Works.astro';
-import Updates from '../components/Updates.astro';
-import Footer from '../components/Footer.astro';
+import PaperBg from '../components/PaperBg.astro';
+import LeafBreeze from '../components/LeafBreeze.astro';
+import Header from '../components/sections/Header.astro';
+import Hero from '../components/sections/Hero.astro';
+import StudioAbout from '../components/sections/StudioAbout.astro';
+import Members from '../components/sections/Members.astro';
+import Services from '../components/sections/Services.astro';
+import Works from '../components/sections/Works.astro';
+import DevFlow from '../components/sections/DevFlow.astro';
+import TechStack from '../components/sections/TechStack.astro';
+import ComingSoon from '../components/sections/ComingSoon.astro';
+import Contact from '../components/sections/Contact.astro';
+import Footer from '../components/sections/Footer.astro';
 
 // 構造化データ（ホームページのみ・Google 公式ルールに準拠）
 const organizationJsonLd = {
@@ -15,7 +24,9 @@ const organizationJsonLd = {
   alternateName: ['こすらぼ', 'Co-Thrive Labs（こすらぼ）'],
   url: 'https://cothrivelabs.com',
   logo: 'https://cothrivelabs.com/logo.png',
-  description: 'Co-Thrive Labs（こすらぼ）は、4人のAIエージェントと共にスピード感のある開発を行う個人開発スタジオ。企画・設計から実装・運用まで、一人でフルスタックに手がけます。',
+  email: 'mailto:contact@cothrivelabs.com',
+  description:
+    'Co-Thrive Labs（こすらぼ）は、AIエージェント4体と共にスピード感のある開発を行う個人開発スタジオ。企画・設計から実装・運用まで、一人でフルスタックに手がけます。',
   sameAs: ['https://github.com/CoThriveLabs'],
 };
 const websiteJsonLd = {
@@ -26,8 +37,7 @@ const websiteJsonLd = {
   url: 'https://cothrivelabs.com/',
 };
 ---
-
-<Base title="Co-Thrive Labs（こすらぼ）— AI 4人と作る作品集">
+<Base title="Co-Thrive Labs（こすらぼ）— AIエージェント4体と作る作品集" hideHeader={true}>
   <script
     type="application/ld+json"
     slot="head-extra"
@@ -40,10 +50,100 @@ const websiteJsonLd = {
     is:inline
     set:html={JSON.stringify(websiteJsonLd)}
   />
-  <Hero />
-  <About />
-  <Members />
-  <Works />
-  <Updates />
+
+  <Header />
+  <main class="home">
+    {/* 領域 A: S1-S7（背景固定 sticky） */}
+    <div class="region-a">
+      <PaperBg mode="fixed" />
+      {/* ちらほら装飾「葉っぱそよ風アニメ」。fixed・z:0・最背面寄り。領域 A 限定。
+          実体は src/scripts/leafBreeze.ts（reduce で no-op）。 */}
+      <LeafBreeze />
+      <Hero />
+      <StudioAbout />
+      <Members />
+      <Services />
+      {/* コーヒーシミ侵食 overlay 層（position:fixed・z:9999）。
+          侵食駆動は reveal.ts の Services pin（STAIN_EXTRA 区間）に統合。 */}
+      <div class="coffee-stain" data-coffee-stain aria-hidden="true"></div>
+      {/* Works = 横並びカードリスト（≥1280px 横スクなし／それ未満 overflow-x: auto）、各カード data-reveal="slide-x" で IO 駆動の右からスライドイン演出。 */}
+      <Works />
+      <DevFlow />
+      <div class="layered-pin-container">
+        <div class="layered-pin-panel" data-panel="techstack">
+          <TechStack />
+        </div>
+        <div class="layered-pin-panel" data-panel="comingsoon">
+          <ComingSoon />
+        </div>
+      </div>
+    </div>
+
+    {/* 領域 B: S9-S10（通常スクロール・実背景色） */}
+    <div class="region-b">
+      <Contact />
+    </div>
+  </main>
   <Footer />
 </Base>
+
+<style>
+  .home {
+    display: block;
+  }
+  /* 領域 A: 背景は region-a 直下の PaperBg(mode="fixed") に一元化（--bg-current）。
+     ここに自前のベタ背景を持たない（グラデ背景切替を見せるため）。 */
+  .region-a {
+    position: relative;
+  }
+  /* 領域 B: 通常スクロール・実背景色（S8/S10 は C-DEEP / S9 は C2）。
+     z-index は .coffee-stain (fixed, z:9999) を覆い、Contact/Footer の隠蔽を防ぐ。 */
+  .region-b {
+    position: relative;
+    z-index: 10000;
+    background: var(--c-paper-deep);
+  }
+
+  /* Layered Pinning: TechStack / ComingSoon を同一 container に重ね、
+     ComingSoon (last-child) を下から登らせて TechStack の上に覆い被せる。
+     重なり順は panel に一本化（section 側の z-index は持たない）。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    .layered-pin-container {
+      position: relative;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .layered-pin-panel {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    .layered-pin-panel[data-panel='techstack'] { z-index: 1; }
+    .layered-pin-panel[data-panel='comingsoon'] {
+      z-index: 2;
+      will-change: transform;
+    }
+  }
+  @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .layered-pin-container {
+      position: relative;
+      height: auto;
+      overflow: visible;
+      isolation: auto;
+    }
+    .layered-pin-panel {
+      position: static;
+      height: auto;
+      overflow: visible;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  }
+</style>

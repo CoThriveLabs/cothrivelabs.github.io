@@ -1,0 +1,348 @@
+---
+// 共通ヘッダー。左ロゴ + 右ハンバーガー → 全画面オーバーレイ展開（PC/SP 共通）。
+// アンカーはルート相対（/#xxx）: トップ内ではページ内ジャンプ、works 詳細ページからはトップへ遷移して着地。
+const navItems = [
+  { label: 'こすらぼとは', href: '/#studio-about' },
+  { label: 'メンバー紹介', href: '/#members' },
+  { label: '受けられる案件', href: '/#services' },
+  { label: '制作物一覧', href: '/#works' },
+  { label: '開発フロー', href: '/#devflow' },
+  { label: '技術スタック', href: '/#techstack' },
+  { label: '連絡先', href: '/#contact' },
+];
+---
+<header class="site-header" id="site-header">
+  <div class="site-header__inner">
+    <a class="site-header__logo" href="/#hero" aria-label="Co-Thrive Labs トップへ">
+      <img
+        class="site-header__logo-icon"
+        src="/favicon.svg"
+        width="36"
+        height="36"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+      />
+      <span class="site-header__logo-text">Co-Thrive Labs</span>
+    </a>
+
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-label="メニューを開く"
+      aria-expanded="false"
+      aria-controls="site-nav-overlay"
+    >
+      <span class="site-header__bar" aria-hidden="true"></span>
+      <span class="site-header__bar" aria-hidden="true"></span>
+      <span class="site-header__bar" aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<div
+  id="site-nav-overlay"
+  class="site-nav-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="site-nav-overlay-title"
+  hidden
+>
+  <h2 id="site-nav-overlay-title" class="site-nav-overlay__visually-hidden">サイト内ナビゲーション</h2>
+  <nav class="site-nav-overlay__nav" aria-label="メインナビゲーション">
+    <ul class="site-nav-overlay__list">
+      {navItems.map((item) => (
+        <li class="site-nav-overlay__item">
+          <a class="site-nav-overlay__link" href={item.href}>{item.label}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
+<script>
+  // 左ロゴ + 右ハンバーガー → 全画面オーバーレイ。focus trap / ESC / スクロールロック対応。
+  import { instantRevealSection } from '../../scripts/instantReveal';
+
+  const header = document.getElementById('site-header');
+  const toggle = header?.querySelector<HTMLButtonElement>('.site-header__toggle');
+  const overlay = document.getElementById('site-nav-overlay');
+  const overlayLinks = overlay?.querySelectorAll<HTMLAnchorElement>('a');
+
+  const setOpen = (open: boolean) => {
+    if (!header || !toggle || !overlay) return;
+    header.classList.toggle('is-open', open);
+    document.body.classList.toggle('is-nav-open', open);
+    overlay.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'メニューを閉じる' : 'メニューを開く');
+    if (open) {
+      // 最初のリンクへフォーカス。次フレームで実行（hidden 解除直後でも確実にフォーカスが移るように）。
+      requestAnimationFrame(() => overlayLinks?.[0]?.focus());
+    } else {
+      toggle.focus();
+    }
+  };
+
+  toggle?.addEventListener('click', () => {
+    setOpen(!header!.classList.contains('is-open'));
+  });
+
+  // オーバーレイ内リンククリックで閉じる + 同一ページ内 hash 遷移なら target セクションの
+  // アニメを即時最終状態へ。Why: step-section pin scrub / layered-pin は top top 着地で
+  // progress 0 のまま固まる（手動スクロールしないと中身が見えない）。
+  // 別ページ遷移（works 詳細 → /#xxx）と #hero（heroImmersion 全体 pin を壊さない）は除外。
+  overlayLinks?.forEach((a) =>
+    a.addEventListener('click', (ev) => {
+      setOpen(false);
+      const href = a.getAttribute('href') || '';
+      const m = href.match(/#([^#]+)$/);
+      if (!m) return;
+      const id = m[1];
+      const onHome = location.pathname === '/' || location.pathname === '/index.html';
+      if (!onHome) return;
+      if (id === 'hero') return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      ev.preventDefault();
+      const { recommendedScrollY } = instantRevealSection(target);
+      // rAF 2 段で kill 後の layout / ScrollTrigger.refresh 完了を待ってから測る。
+      // layered-pin 配下は instantReveal の推奨 scrollY を、それ以外は固定ヘッダー
+      // (64px / SP 56px) 分のオフセット付きで section の top を使う。
+      // scrollTo 後にも残るズレ（refresh タイミングで scrollY が動いて計算が古くなる）
+      // を rAF でもう一度補正する。
+      const headerH = window.matchMedia('(max-width: 640px)').matches ? 56 : 64;
+      let attempts = 0;
+      const settle = () => {
+        if (recommendedScrollY !== undefined) return;
+        attempts++;
+        const after = target.getBoundingClientRect();
+        const delta = after.top - headerH;
+        if (Math.abs(delta) > 1 && attempts < 5) {
+          window.scrollTo({ top: Math.max(0, window.scrollY + delta), behavior: 'auto' });
+          requestAnimationFrame(settle);
+        }
+      };
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          let top: number;
+          if (recommendedScrollY !== undefined) {
+            top = recommendedScrollY;
+          } else {
+            const rect = target.getBoundingClientRect();
+            top = Math.max(0, window.scrollY + rect.top - headerH);
+          }
+          window.scrollTo({ top, behavior: 'auto' });
+          history.pushState(null, '', href);
+          requestAnimationFrame(settle);
+        });
+      });
+    })
+  );
+
+  // ESC で閉じる。
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header?.classList.contains('is-open')) {
+      setOpen(false);
+    }
+  });
+
+  // focus trap: Tab/Shift+Tab でオーバーレイ内のリンクを循環。
+  overlay?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !header?.classList.contains('is-open') || !overlayLinks?.length) return;
+    const first = overlayLinks[0];
+    const last = overlayLinks[overlayLinks.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+</script>
+
+<style is:global>
+  /* オーバーレイ展開時の背景スクロールロック。
+     Gotcha: <style is:global> でないと scoped CSS の壁で body セレクタが効かない。 */
+  body.is-nav-open {
+    overflow: hidden;
+  }
+</style>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* シミ(9999)・コンテンツ各層・各種 overlay より常時最前面で表示するため
+       TechStack overlay(10001) / ComingSoon overlay(10002) / nav-overlay(10003) より上に置く。 */
+    z-index: 10004;
+    height: 64px;
+  }
+  .site-header__inner {
+    height: 100%;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .site-header__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--c-main);
+    flex-shrink: 0;
+  }
+  .site-header__logo-icon {
+    width: 36px;
+    height: 36px;
+    display: block;
+    flex-shrink: 0;
+  }
+  .site-header__logo-text {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--c-main);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+  }
+
+  /* ハンバーガー（PC/SP 共通で常時表示。円形背景つき）。 */
+  .site-header__toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    background: var(--c-main);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+  }
+  .site-header__toggle:hover {
+    background: color-mix(in srgb, var(--c-main) 88%, var(--c-accent));
+  }
+  .site-header__bar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: var(--c-paper);
+    border-radius: 2px;
+    transform-origin: center;
+    transition: transform 0.25s var(--ease), opacity 0.25s var(--ease);
+  }
+  /* 開状態: 上下バー → 「×」、中バー → 消える */
+  .site-header.is-open .site-header__bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .site-header.is-open .site-header__bar:nth-child(2) {
+    opacity: 0;
+  }
+  .site-header.is-open .site-header__bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* 全画面オーバーレイ */
+  .site-nav-overlay {
+    position: fixed;
+    inset: 0;
+    /* シミ超え・各種 overlay より上で開く。Header(10004) のハンバーガーは
+       最前面のまま閉じボタンと一体で動かす。 */
+    z-index: 10003;
+    background: var(--c-paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* hidden 属性が付いている間は非表示。display:none で transition は走らない潔さを優先する。 */
+  .site-nav-overlay[hidden] {
+    display: none;
+  }
+  .site-nav-overlay__visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .site-nav-overlay__nav {
+    width: 100%;
+  }
+  .site-nav-overlay__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1rem, 2.5vh, 1.75rem);
+    text-align: center;
+  }
+  .site-nav-overlay__link {
+    font-family: var(--font-head);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 500;
+    color: var(--c-main);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s var(--ease);
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+  }
+  .site-nav-overlay__link:hover,
+  .site-nav-overlay__link:focus-visible {
+    color: var(--c-accent);
+  }
+  .site-nav-overlay__link:focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 4px;
+  }
+
+  /* SP: ヘッダー高さ 56px */
+  @media (max-width: 640px) {
+    .site-header {
+      height: 56px;
+    }
+    .site-header__inner {
+      padding: 0 1rem;
+    }
+    .site-header__logo-icon {
+      width: 28px;
+      height: 28px;
+    }
+    .site-header__logo-text {
+      font-size: 0.95rem;
+    }
+    .site-header__toggle {
+      width: 40px;
+      height: 40px;
+      gap: 4px;
+    }
+    .site-header__bar {
+      width: 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header,
+    .site-header__bar {
+      transition: none;
+    }
+  }
+</style>
