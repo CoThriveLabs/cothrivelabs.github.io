@@ -134,7 +134,7 @@ export const gizirotto: WorkDetail = {
     {
       category: 'テスト',
       items: [
-        { name: 'Vitest', note: 'unit 約 80 本 + integration 4 本（RLS 隔離テスト含む）' },
+        { name: 'Vitest', note: '単体・コンポーネントテスト約 1,500 本（integration は RLS 隔離テスト含む）' },
         { name: 'Playwright', note: 'E2E 環境' },
       ],
     },
@@ -147,7 +147,7 @@ export const gizirotto: WorkDetail = {
   ],
 
   quality: [
-    'テスト: Vitest で unit テスト約 80 本・integration テスト 4 本（うち 1 本は RLS 隔離を 2 家族 2 ユーザーで検証する integration テスト）。Playwright で E2E 環境を整備しています。',
+    'テスト: Vitest で単体・コンポーネントテストを約 1,500 本整備（うち integration テストには RLS 隔離を 2 家族 2 ユーザーで検証するケースを含む）。Playwright で E2E 環境を整備しています。',
     '型検査: tsc --noEmit を pnpm typecheck で実行可能。静的解析: ESLint 9 + eslint-config-next。',
     '依存更新: Dependabot で月次バージョン更新（PR 上限 3）+ GitHub セキュリティアップデート常時有効。',
     'ローカル開発: pnpm dev、Supabase ローカルスタックで RLS テストまで完結します。',
@@ -523,4 +523,158 @@ export const jukumate: WorkDetail = {
   links: [],
 };
 
-export const works: WorkDetail[] = [gizirotto, sprout, leCielEtoile, jukumate];
+// What: MiniDeck 案件の完成データ。自主プロダクト（受託ではない）。
+// Why: 型キーは security[] だが、本案件では「ローカル LAN 通信・ペアリング・OS 連携」の核となる技術章群を格納している（他案件同様に読み替え）。
+export const minideck: WorkDetail = {
+  slug: 'minideck',
+
+  title: 'MiniDeck',
+  subtitle: 'スマホが PC のワンタッチ・リモコン',
+  thumbnail: '/works/minideck-thumb.png',
+  challenge:
+    '作業中や少し離れた場所から、アプリの起動・音量調整・通話ミュートのためだけにマウスへ戻るのが煩わしく、その操作だけを手元のスマホに逃がしたいと考えました。',
+  summary:
+    'スマホを PC のミニ・ランチャーにする自主プロダクト。同じ Wi-Fi 内で PC の Electron アプリとスマホの PWA が WebSocket で直接つながり、6 つのボタンからアプリ起動・音量調整・Discord 操作をワンタップで行えます。クラウドを介さない完全ローカル LAN 完結型です。',
+  tags: ['Electron', 'Next.js PWA', 'WebSocket', 'mDNS', 'TypeScript'],
+  primaryLink: {
+    label: '見る',
+    url: 'https://minideck.cothrivelabs.com',
+    external: true,
+  },
+
+  tagline: 'クラウドを介さない完全ローカル LAN で、スマホを PC のワンタッチ・リモコンに変える自主プロダクト',
+
+  overview: [
+    'MiniDeck（ミニデック）は、スマートフォンを PC のミニ・ランチャー（手元のリモコン）にするデスクトップ + PWA アプリです。PC 側の Electron アプリと、スマートフォン側の PWA（Progressive Web App）が同一 LAN 内で WebSocket 越しにつながり、スマホの 6 つのボタンから PC のアプリ起動・音量調整・Discord のミュート／デフ切替をワンタップで実行できます。実在の「作業中や少し離れた場所から、決まった操作だけを手元で済ませたい」という自分自身のニーズから作った自主プロダクトです。',
+    '設計の芯は「クラウドを介さない」ことです。通信は同じ Wi-Fi に接続した PC とスマホの間で直接行われ、外部への通信はアップデート確認（GitHub Releases への HTTPS 照会）だけに限定しています。アカウント登録もサーバ運用もテレメトリもなく、家庭内 LAN で完結します。スマホ側は App Store / Google Play からの個別ダウンロードが不要で、PC 画面の QR コードを読み「ホーム画面に追加」するだけでインストールできます。',
+  ],
+
+  // What: MiniDeck の核セクション群。
+  // Gotcha: 型キーは security[] だが、本案件では「ローカル LAN 通信・ペアリング・OS 連携」の技術章群を格納している（型キーは共通）。
+  security: [
+    {
+      heading: '完全ローカル LAN 完結（クラウドレス設計）',
+      paragraphs: [
+        'MiniDeck の通信は、同じ Wi-Fi ネットワークに接続した PC とスマートフォンの間の LAN 内 WebSocket に閉じています。PC 側の Electron アプリが HTTP サーバ・WebSocket サーバ・mDNS 広告をすべて内蔵し、中継サーバやクラウド API を一切介しません。これによりレイテンシが小さく、サーバ運用コストもゼロで、通信内容が外部に出ない構成になっています。',
+        '外部への通信はアプリ更新の有無を確認する GitHub Releases への HTTPS 照会のみで、行動ログや利用状況を送るテレメトリは実装していません。アカウント登録も不要です。同じ LAN に戻れば mDNS の自動再接続で即つなぎ直し、接続を見失った際は直前の IP キャッシュにフォールバックします。運用ドキュメントでは、クライアント分離のない公衆 Wi-Fi での利用を避け家庭内 LAN での使用を推奨することも明記しています。',
+      ],
+    },
+    {
+      heading: 'LAN IP hybrid resolver（実 NIC の src IP を確実に選ぶ）',
+      paragraphs: [
+        'QR コードに埋め込む接続先 URL には、PC の「実際に LAN で使われている」IPv4 アドレスを載せる必要があります。ところが WSL2 の vEthernet や各種 VPN・仮想化ソフトが作る仮想 NIC が混在すると、単純な列挙では誤ったアドレスを選んでしまい、スマホから到達できない URL を配ってしまいます。MiniDeck はこれを二段構えの hybrid resolver で解決しています。',
+        '一次判定は dgram（UDP ソケット）による probe です。ダミーの外部アドレス（8.8.8.8:53）へ socket.connect() を呼ぶと、libuv がカーネルのルーティングテーブル lookup を実行して「外向き通信で実際に使う NIC の src IP」を確定します。connect のみで send() は呼ばないため、パケットは一切 wire に出ません。得られた IP はプライベート IPv4 の正規表現で二重チェックし、公網 IP や 0.0.0.0 が QR に混入するのを防ぎます。probe が失敗した環境では、二次判定として OS が列挙した NIC 群から仮想 NIC 名（vEthernet / Hyper-V / VMware / VirtualBox / Docker / Tailscale / ZeroTier / OpenVPN / WireGuard 等）を正規表現で除外し、最初のプライベート IPv4 を返す純粋関数にフォールバックします。解決結果は起動時 1 回だけキャッシュし、サーバ再起動時にのみ無効化します。',
+      ],
+    },
+    {
+      heading: 'ペアリング状態機械（純粋 reducer + Persist-then-Transition）',
+      paragraphs: [
+        'ペアリングの進行（未設定 → QR 待ち → 検証中 → ペアリング済み → 失敗）は、I/O を一切持たない純粋な状態機械（FSM）として実装しています。状態遷移を決める reducer と、遷移から発火すべき副作用（トークン発行・永続化・IPC 通知・WebSocket 切断）を導く効果セレクタは、いずれも引数だけを入力とする純粋関数です。実際の副作用実行は専用の effect runner が担い、「決める」と「実行する」を物理的に分離しています。これにより状態遷移の全パターンを外部依存なしにテストできます。',
+        '認証成立の確定には Persist-then-Transition ゲートを設けています。ペアリング済み状態は検証失敗イベントを無視する（後から取り消せない）設計のため、デバイス情報の永続化を必ず状態遷移より前に完了させ、永続化の成否に応じて「成功イベント」と「失敗イベント」のどちらを流すかを出し分けます。永続化に失敗したのに UI 上だけペアリング済みになる、という不整合を構造的に防いでいます。',
+      ],
+    },
+    {
+      heading: 'QR ペアリングとトークン認証（128bit 短命 + 256bit 永続）',
+      paragraphs: [
+        'ペアリングは PC 画面の QR コードをスマホで読み取る方式です。QR コードには 128bit のペアリングトークンが埋め込まれ、有効期限は 5 分で失効します。認証が成立すると 256bit の永続デバイストークンが発行され、以降の WebSocket 接続はこの永続トークンでのみ認証されます。トークンはいずれも暗号論的乱数（Node.js crypto の randomBytes）で生成します。',
+        'トークン比較には crypto.timingSafeEqual を用い、文字列比較の早期リターンによるタイミング攻撃の手がかりを与えません（長さ不一致は比較前に弾き、長さ自体は公開情報として扱います）。トークンを持たない第三者は、同じ LAN 上にいてもペアリング済みデバイスとしての操作を一切実行できません。',
+      ],
+    },
+    {
+      heading: 'Electron レンダラーの多層防御と外部プロセス実行の安全化',
+      paragraphs: [
+        'PC 側 UI（Electron レンダラー）は、contextIsolation 有効・nodeIntegration 無効・sandbox 有効・CSP（script-src \'self\' / connect-src \'none\'）を組み合わせ、レンダラーからの権限昇格経路を最小化しています。メインプロセスとの IPC は全チャネルで送信元フレームの top-frame 検証を行い、ペイロードを Zod の .strict() スキーマで検証します。WebSocket メッセージも type ホワイトリスト → Zod 検証の 2 段防御を通します。',
+        'PC のアプリを起動する・音量を操作する・Discord へキーを送るといった OS 連携はすべて外部プロセス呼び出しになりますが、shell を介さず（shell:false）配列引数固定で実行し、文字列連結によるコマンドインジェクションの経路を残していません（ボタン起動の .exe 実行は spawn、PowerShell / COM 呼び出しは execFile + 値渡し）。ログは electron-log に流れる全出力へ、トークンの部分マスク・絶対パスのファイル名化・IP のサブネット丸め・User-Agent 除外を自動適用し、機微情報を残しません。',
+      ],
+    },
+    {
+      heading: 'スマートフォン PWA と触覚代替 UX',
+      paragraphs: [
+        'スマホ側は Next.js（App Router / 静的書き出し）で作った PWA です。manifest.webmanifest と Service Worker を備え、iOS Safari の「共有 → ホーム画面に追加」／Android Chrome の「アプリをインストール」でネイティブアプリのように常駐します。standalone 表示・テーマカラー固定に加え、切り欠きのある端末でも破綻しないよう safe-area（セーフエリア）に対応し、identity / haptics / サーバキャッシュ等は IndexedDB に永続化します。ストア審査を通さず、PC が配信する PWA をそのまま使うため、配布の手間がありません。',
+        '物理的なストリームデッキのクリック感を、画面だけで再現するための「触覚代替 UX」を作り込んでいます。ボタン押下と同時に、沈み込みアニメーション（scale 縮小 + 内側フェード）、Web Audio API でその場合成する「かちっ」音（矩形波 300Hz を 50ms で指数減衰させ、物理スイッチの高域成分を模倣）、Android の振動、任意の読み上げ（SpeechSynthesis・既定 OFF）を重ねて発火します。AudioContext はブラウザごとに 1 個を使い回し、連打時の生成コストを抑えています。prefers-reduced-motion を尊重し、モーション低減設定では演出を止めます。',
+      ],
+    },
+    {
+      heading: 'Discord 連携と音量ミキサー（誤爆を防ぐ前置き確認）',
+      paragraphs: [
+        'Discord のミュート／デフ切替は、Discord クライアントのグローバルショートカット（Ctrl+Shift+M / Ctrl+Shift+D）宛に OS レベルでキーストロークを送信する方式です。合成キーストロークはフォーカスのある任意のアプリに届いてしまうため、Discord.exe が実行中であることを確認できた場合のみ送信し、非稼働時はキー送信自体をスキップして別アプリへの誤爆を防ぎます。',
+        '音量制御は、システム全体の音量・ミュート・マイクのミュートに加え、再生セッションごとのアプリ別音量（音量ミキサー）をスマホから調整できます。公開 API は 0〜100 の整数に統一し、PowerShell 側の 0〜1 スカラーと相互変換します。音量スライダーのドラッグのような短時間の連打が実処理能力を超えて詰まらないよう、set 系の呼び出しは coalescing（間引き）でラップしています。',
+      ],
+    },
+    {
+      heading: 'NSIS インストーラと Windows Firewall 自動許可',
+      paragraphs: [
+        'PC 側は electron-builder で NSIS インストーラ（Windows x64）を生成します。electron-updater との相性を優先して perMachine を false（ユーザー単位インストール）に固定し、インストール先の選択・デスクトップ／スタートメニューショートカット作成に対応します。更新は GitHub Releases 経由で、適用は利用者の明示操作に委ねます。',
+        'スマホから LAN 越しに接続できるようにするための Windows Firewall 許可ルール（TCP + UDP mDNS）は、インストーラではなく初回起動時に追加します。起動のたびにルールの存在と、それが現在の実行ファイルパスに紐付いているかを PowerShell の CIM API（読み取りのみ・管理者権限不要）で確認し、未登録または古いパスを指している場合のみ UAC 昇格で作り直します（delete-then-add）。TCP / UDP 2 ルールの追加を 1 本の一時スクリプトにまとめ、UAC ダイアログは 1 回だけに抑えています。一度登録すれば以降の起動で UAC は再表示されません。現行の配布物は未署名のため、SmartScreen 警告時は「詳細情報 → 実行」で通す手順と、GitHub Releases の SHA512 ハッシュで完全性を確認する方法を案内しています。',
+      ],
+    },
+  ],
+
+  techStack: [
+    {
+      category: 'PC 側（Electron アプリ）',
+      items: [
+        { name: 'Electron 30 + React 18 + TypeScript 5', note: 'OS ネイティブ連携（プロセス起動・音量・キー送信）が必要なため Electron を採用' },
+        { name: 'Vite', note: 'main / renderer のバンドル' },
+        { name: 'Tailwind CSS + Zustand', note: 'スタイルと renderer 状態管理' },
+        { name: 'electron-store', note: 'PC 側設定・ペアリング台帳の永続化' },
+        { name: 'electron-log', note: 'ローテーション付きログ + 機微情報の自動マスキング' },
+      ],
+    },
+    {
+      category: 'スマートフォン側（PWA）',
+      items: [
+        { name: 'Next.js 15（App Router / 静的書き出し）', note: 'ストア審査不要の PWA として配信' },
+        { name: 'React 18 + TypeScript 5 + Tailwind CSS', note: '型安全とスタイルを全レイヤで担保' },
+        { name: 'Framer Motion', note: 'ボタンの沈み込み・オーバーレイ演出' },
+        { name: 'Web Audio API + SpeechSynthesis API', note: 'クリック音のその場合成と任意の読み上げ' },
+        { name: 'IndexedDB（idb）+ Service Worker', note: 'identity / haptics / キャッシュの永続化とホーム画面追加対応' },
+      ],
+    },
+    {
+      category: '通信・探索',
+      items: [
+        { name: 'Node.js Express + ws', note: 'LAN 内 HTTP + WebSocket サーバを PC アプリに内蔵' },
+        { name: 'bonjour-service（mDNS）', note: '同一 LAN 内の自動広告・発見・再接続' },
+        { name: 'dgram（UDP probe）', note: 'カーネルの routing table lookup で実 LAN IP を確定' },
+        { name: 'Zod', note: 'IPC / WebSocket ペイロードのスキーマ検証（type ホワイトリスト + .strict()）' },
+      ],
+    },
+    {
+      category: 'ビルド・配布',
+      items: [
+        { name: 'electron-builder（NSIS）', note: 'Windows x64 インストーラ生成・perMachine:false 固定' },
+        { name: 'electron-updater', note: 'GitHub Releases 経由の更新確認（適用は利用者操作）' },
+        { name: 'Windows Firewall（netsh / CIM）', note: '初回起動時に UAC 1 回で許可ルールを自動追加（delete-then-add）' },
+        { name: 'pnpm workspace', note: 'packages/{electron, pwa, shared} の 3 パッケージ構成' },
+      ],
+    },
+    {
+      category: 'テスト・品質',
+      items: [
+        { name: 'Vitest + @testing-library/react', note: '3 パッケージ横断の単体・コンポーネントテスト' },
+        { name: 'Playwright', note: '起動・ペアリング・永続化の E2E' },
+        { name: 'ESLint + Prettier', note: 'Lint / フォーマット統一' },
+      ],
+    },
+  ],
+
+  architectureNotes: [
+    'MiniDeck の構成は「クラウドを介さず、家庭内 LAN で完結させる」という強い制約から逆算しています。中継サーバを立てればレイテンシ・運用コスト・プライバシー面の懸念がすべて増えるため、PC アプリ自身に HTTP / WebSocket / mDNS を内蔵させ、通信を同一 LAN 内に閉じました。外部通信をアップデート確認だけに絞り、アカウントもテレメトリも持たないことで、個人が自分の家で安心して使える形に振り切っています。',
+    'PC 側を Electron、スマホ側を PWA の 2 アプリ構成にしたのは、両者に求められる能力が正反対だからです。PC 側はアプリ起動（プロセス spawn）・音量制御（COM 経由）・Firewall 設定・キーストローク送信といった OS ネイティブ権限が必須で、これは Electron でしか安全に扱えません。一方スマホ側は「入れてもらう手間をなくす」ことが最優先のため、ストア審査の要らない PWA を PC アプリ自身が配信する形にしました。両者をつなぐペアリングは、正しさが最も重要かつ間違えやすい箇所なので、I/O を排した純粋 reducer と副作用分離で全遷移をテスト可能にし、Persist-then-Transition ゲートで「永続化していないのにペアリング済みになる」不整合を型と手続きの両面から封じています。',
+  ],
+
+  quality: [
+    'テスト: Vitest による単体・コンポーネントテストを 3 パッケージ合計で約 1,500 本（electron / PWA / shared、テストファイル約 140）整備。ペアリング FSM の全遷移・効果セレクタ、LAN IP resolver（dgram probe と命名ベース除外の双方）、トークン検証、Firewall スクリプト生成、音量・Discord 連携、PWA のボタン挙動などを外部依存なしに検証しています。',
+    'E2E: Playwright で起動・ペアリング・設定永続化のシナリオを検証。',
+    '型と静的解析: 各パッケージで tsc --noEmit（typecheck）と ESLint + Prettier を実行。IPC / WebSocket ペイロードは Zod スキーマで実行時にも検証します。',
+    '実機テスト: Windows PC と iOS / Android 実機を用い、QR ペアリング・再接続・アプリ起動・音量調整・Discord 連携・PWA のホーム画面追加までを実環境で確認しています。',
+  ],
+
+  links: [
+    { label: '公開サイトを見る', url: 'https://minideck.cothrivelabs.com', external: true },
+    { label: 'GitHub リポジトリ', url: 'https://github.com/CoThriveLabs/minideck', external: true },
+  ],
+};
+
+export const works: WorkDetail[] = [gizirotto, sprout, leCielEtoile, jukumate, minideck];
