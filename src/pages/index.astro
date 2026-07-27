@@ -66,7 +66,9 @@ const websiteJsonLd = {
       {/* コーヒーシミ侵食 overlay 層（position:fixed・z:9999）。
           侵食駆動は reveal.ts の Services pin（STAIN_EXTRA 区間）に統合。 */}
       <div class="coffee-stain" data-coffee-stain aria-hidden="true"></div>
-      {/* Works = 横並びカードリスト（≥1280px 横スクなし／それ未満 overflow-x: auto）、各カード data-reveal="slide-x" で IO 駆動の右からスライドイン演出。 */}
+      {/* Works = 横並びカードリスト（≥1280px 横スクなし／それ未満 overflow-x: auto）。各カード data-reveal="slide-x"。
+          見出し・説明文までは data-step-section の pin+scrub で順次表示、説明文の後カードはまとめて 1 ステップで発火。
+          中身が viewport 高さに収まらない画面幅では pin をやめ、通常スクロール + IO 駆動に切り替わる。 */}
       <Works />
       <DevFlow />
       <div class="layered-pin-container">
@@ -128,6 +130,21 @@ const websiteJsonLd = {
     .layered-pin-panel[data-panel='comingsoon'] {
       z-index: 2;
       will-change: transform;
+    }
+    /* 中身が viewport 高さに収まらないとき layeredPin.ts が付与する属性。
+       pin/覆いかぶさりを打ち消し、自然フローの縦並びに戻す（SP/reduce フォールバックと同一内容）。 */
+    .layered-pin-container[data-layered-pin='stacked'] {
+      height: auto;
+      overflow: visible;
+      isolation: auto;
+    }
+    .layered-pin-container[data-layered-pin='stacked'] .layered-pin-panel {
+      position: static;
+      height: auto;
+      overflow: visible;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
     }
   }
   @media (max-width: 767px), (prefers-reduced-motion: reduce) {

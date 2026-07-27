@@ -132,13 +132,13 @@ const categories = [
   @media (prefers-reduced-motion: reduce) {
     .techstack__grain { animation: none; }
   }
+  /* layered-pin が効いていない（SP・reduce・デスクトップ fallback）全ケースで
+     コーヒーシミ overlay(position:fixed; z:9999) に覆われないよう前面へ。これが無いと
+     シミ不透明区間で見出し・カードがシミに隠れて「背景だけ」になる。 */
+  :global(.layered-pin-container:not([data-layered-pin='pinned'])) .techstack {
+    z-index: 10000;
+  }
   @media (max-width: 767px) {
-    /* SP: layered-pin が効かないため、コーヒーシミ overlay(position:fixed; z:9999) に
-       覆われないよう Works / DevFlow と同じく前面へ。これが無いとシミ不透明区間で
-       見出し・カードがシミに隠れて「背景だけ」になる。 */
-    .techstack {
-      z-index: 10000;
-    }
     .techstack__grain--1 { width: 220px; height: 220px; }
     .techstack__grain--2 { width: 260px; height: 260px; }
     .techstack__grain--3 { width: 180px; height: 180px; }
@@ -260,6 +260,20 @@ const categories = [
     }
     .techstack__inner {
       max-height: 100%;
+    }
+  }
+
+  /* 中身が viewport 高さに収まらないとき layeredPin.ts が付与する属性。
+     panel 一杯に広げる強制サイズを解除し、section 既定の自然な高さに戻す。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    :global(.layered-pin-container[data-layered-pin='stacked']) .techstack {
+      height: auto;
+      min-height: 0;
+      display: block;
+      padding-block: calc(var(--space-base) * 0.6);
+    }
+    :global(.layered-pin-container[data-layered-pin='stacked']) .techstack__inner {
+      max-height: none;
     }
   }
 

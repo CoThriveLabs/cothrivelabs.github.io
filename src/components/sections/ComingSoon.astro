@@ -102,4 +102,15 @@
       padding-block: clamp(1.8rem, 3.6vh, 3rem);
     }
   }
+
+  /* 中身が viewport 高さに収まらないとき layeredPin.ts が付与する属性。
+     panel 一杯に広げる強制サイズを解除し、section 既定の自然な高さに戻す。 */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+    :global(.layered-pin-container[data-layered-pin='stacked']) .coming-soon {
+      height: auto;
+      min-height: 0;
+      display: block;
+      padding-block: calc(var(--space-loose) * 0.6);
+    }
+  }
 </style>

@@ -375,6 +375,29 @@ const titleId = `${modalId}-title`;
     outline-offset: 3px;
   }
 
+  /* S5 Works の余白圧縮（設計書参照）をカード外側だけに負わせると外側余白が他セクション比で
+     著しく細くなる。font-size は変えず line-height/margin/gap から確実に削れる分だけを
+     ここで負担する。十分な画面高さ（ゲート外）・SP には影響させない。 */
+  @media (min-width: 768px) and (max-height: 1100px) {
+    .pf-card {
+      gap: 0.5rem;
+      padding-bottom: 1rem;
+    }
+    .pf-card__footer {
+      margin-top: 0;
+    }
+    .pf-card__summary {
+      line-height: 1.65;
+    }
+    .pf-card__challenge {
+      margin-top: 0;
+    }
+    .pf-card__challenge-label {
+      padding-top: 0.1rem;
+      padding-bottom: 0.1rem;
+    }
+  }
+
   /* SP 全域: 課題タグは label と文章を縦並び（横並びだとカード幅が狭いと窮屈） */
   @media (max-width: 767px) {
     .pf-card__challenge {

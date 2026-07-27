@@ -231,6 +231,25 @@ import { works } from '../../data/works';
     .works__grain--2 { width: 260px; height: 260px; }
     .works__grain--3 { width: 180px; height: 180px; }
   }
+
+  /* 中身（見出し + カード段）が縦に詰まっている画面高さで、はみ出し量を減らして pin シフトの
+     必要量自体を縮める。カード段より下の余白（padding-bottom）はカードの外側にあり中身の
+     実効的な高さに影響しないため対象にできない。効くのは「カードより上」の余白だけ:
+     ・.works の上 padding（見出し title 直前の余白）
+     ・SectionHeading 直後の margin-bottom（見出しブロックとカード段の間の余白）。
+       :global() で Works スコープからのみ上書きし、他セクションの SectionHeading には影響させない。
+     圧縮量はカード内部（WorkCard.astro）と分担しており、外側だけで賄うと他セクション比で
+     余白が著しく細くなる。max-height ゲートの外（十分高さがある画面）では既存の
+     calc(var(--space-snug) * 0.6) / var(--space-snug) がそのまま上限として効くため、
+     見た目は完全に現状維持される。 */
+  @media (min-width: 768px) and (max-height: 1100px) {
+    .works {
+      padding-top: clamp(1.75rem, 3.5vh, calc(var(--space-snug) * 0.6));
+    }
+    .works :global(.section-heading) {
+      margin-bottom: clamp(2rem, 4.2vh, var(--space-snug));
+    }
+  }
 </style>
 
 <script>
